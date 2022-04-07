@@ -9,8 +9,8 @@ on:
       - main
 
 jobs:
-  lint:
-    name: Lint
+  lint_and_test:
+    name: Lint and Test
     runs-on: ubuntu-20.04
     steps:
       - name: Check out repository
@@ -26,4 +26,9 @@ jobs:
         run: yarn install --immutable
 
       - name: Lint
+        if: ${{ success() || failure() }}
         run: yarn lint
+
+      - name: Test
+        if: ${{ success() || failure() }}
+        run: yarn test
