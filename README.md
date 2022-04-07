@@ -137,10 +137,10 @@
 
     ```sh
     ## cmd.exe
-    set URL_TO_REGISTER=https://vk.com/typical_city_n
+    set URL_TO_REGISTER=https://vk.com/typical_ensk
     
     ## любой другой терминал
-    export URL_TO_REGISTER=https://vk.com/typical_city_n
+    export URL_TO_REGISTER=https://vk.com/typical_ensk
     ```
 
 1.  Запустите скрипт для регистрации этой страницы:
@@ -148,6 +148,9 @@
     ```sh
     yarn exe scripts/web-pages/register-url.script.ts
     ```
+
+    Повторите эти шаги для каждой страницы, которую хотите добавить.
+    Метод пока не очень удобный, но мы его упростим.
 
 ## Работа с международным веб-архивом
 
