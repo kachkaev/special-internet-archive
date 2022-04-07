@@ -2,7 +2,7 @@ import chalk from "chalk";
 import * as envalid from "envalid";
 import sleep from "sleep-promise";
 
-import { cleanEnv } from "../shared/script-helpers";
+import { cleanEnv } from "../shared/clean-env";
 
 const script = async () => {
   const output = process.stdout;
