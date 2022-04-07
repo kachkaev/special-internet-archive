@@ -1,85 +1,82 @@
 # Special archive
 
+`collection-config.yml`
+
 ```yaml
 capturing:
   default:
     timeZone: "UTC+03:00" ## MSK+0h
-  vkAccount:
-    scrollToPostAt: "2022-04-07T11:08:00.420Z"
-
-## collection config
-vk:
-  feeds:
-    - url: https://vk.com/penza_live
-      name: Пенза live
-      labels:
-        - z
-        - тип|городское сообщество
-        - география|Пенза
-
-    - url: https://vk.com/penzaoblgov
-      name: Пензенская область
-      labels:
-        - z
-        - тип|официальная страница
-        - география|Пензенская область
-        - z
-
-    - url: https://vk.com/pnzgu
-      name: Пензенский государственный университет | ПГУ
-        labels:
-          - z
-          - тип|университет
-          - область Пензенская
+  vk:
+    scrollWallUntil: "2022-04-07T11:08:00.420Z"
 ```
 
 Shared between collections
 
 ```yaml
 labels:
-  -
-
-importantAutoSelectors:
-  - \#зароссию
-  - \#мыzaмир
-  - \#мызaмир
-  - \#своихнебросаем
   - z
-  - санкции
-  - санкций
-  - нацизм
-  - киев
-  - военн
-  - украин
+  - v
+  - география|Пенза
+  - тема|погибшие
+  - тема|фейки
+  - тип|местное сообщество
+  - тип|государственный орган
+  - тип|университет
+  - тип|школа
 
-earliest date:
-  -
+annotation:
+  relevantText:
+    - z
+    - v
+    - военн
+    - зароссию
+    - киев
+    - мыzaмир
+    - мызaмир
+    - нацизм
+    - нацист
+    - санкции
+    - санкций
+    - своихнебросаем
+    - украин
+    - фашист
 ```
 
 data
 
 ```yaml
-sources:
+collection-config.yml
+web-pages:
   vk:
     accounts:
       penza_live:
-        captures:
-          2022-03-10-011223-utc.zip
-          2022-03-10-011223-utc.json
-          2022-04-05-424312-utc.zip
-          2022-04-05-424312-utc.json
-        capture-compilation.json
-        web-resource.json
+        capturing:
+          capture-2022-03-10-011223.zip
+          capture-2022-03-10-011223-info.json
+          capture-2022-04-05-424312.zip
+          capture-2022-04-05-424312-info.json
+          capture-info-combination.json
+        web-page.json
     posts:
-      wall-161982468:
+      "-161982468":
         "12345":
-          captures:
-            2022-03-10-011223-utc.zip
-            2022-03-10-011223-utc.json
-            2022-04-05-424312-utc.zip
-            2022-04-05-424312-utc.json
-          capture-compilation.json
-          web-resource.json
+          capturing:
+            capture-2022-03-10-011223.zip
+            capture-2022-03-10-011223-info.json
+            capture-2022-04-05-424312.zip
+            capture-2022-04-05-424312-info.json
+            capture-info-combination.json
+          web-page.json
+    photos:
+      "-189058660":
+        "457289204":
+          capturing:
+            capture-2022-03-10-011223.zip
+            capture-2022-03-10-011223-info.json
+            capture-2022-04-05-424312.zip
+            capture-2022-04-05-424312-info.json
+            capture-info-combination.json
+          web-page.json
 ```
 
 ```txt
@@ -91,59 +88,61 @@ steps
 
 mvp
 
-1.  get feed snapshot (local time = MSK?)
-1.  parse feed snapshot
-1.  pick important posts (populate `post-config.json`)
-1.  fetch `post-web-archive.json`
-1.  submit posts to web archive
-1.  fetch `post-web-archive.json`
-
-post-mvp
-
-1.  submit feeds to web archive (interval)
-
-1.  get post snapshot
-
-`web-resource.json`
+`web-page.json`
 
 ```json
 {
-  "documentKind": "webResource",
+  "documentType": "webPage",
   "url": "https://vk.com/penza_live",
-  "urlAddedAt": "2022-04-07T11:08:00.420Z",
-  "urlAddedVia": "??",
+  "registeredAt": "2022-04-07T11:08:00.420Z",
+  "registeredVia": "??",
+  "annotation": {
+    "webPageType": "vkUser",
+    "labels": ["hello|world"],
+    "vkWall": {
+      "allRelevant": true,
+      "allRelevantVia": "ui",
+      "postLookup": {
+        "/wall-12345-12345": {
+          "relevant": true,
+          "relevantVia": "ui"
+        }
+      }
+    }
+  },
   "capturing": {
     "submissions": [
       {
-        "requestedAt": "2022-04-07T11:08:00.420Z",
-        "requestedVia": "??",
-        "config": {
-          "scrollToPostAt": "2022-04-07T11:08:00.420Z"
+        "plannedAt": "2022-04-07T11:08:00.420Z",
+        "plannedVia": "script",
+        "reason": "",
+        "interactionConfig": {
+          "scrollWallUntil": "2022-04-07T11:08:00.420Z"
         },
         "attempts": [
           {
             "startedAt": "2022-04-07T11:08:00.420Z",
-            "status": "success"
+            "status": "completed"
           }
         ]
       }
     ]
   },
   "internetArchive": {
-    "cdxByAlias": {
+    "snapshotListByAlias": {
       "https://vk.com/penza_live": {
         "fetchedAt": "2022-04-07T11:08:00.420Z",
-        "timestmaps": []
+        "snapshotTimestamps": []
       },
       "https://m.vk.com/penza_live": {
         "fetchedAt": "2022-04-07T11:08:00.420Z",
-        "timestmaps": []
+        "snapshotTimestamps": []
       }
     },
     "submissions": [
       {
-        "requestedAt": "2022-04-07T11:08:00.420Z",
-        "requestedVia": "??",
+        "plannedAt": "2022-04-07T11:08:00.420Z",
+        "plannedVia": "??",
         "attempts": [
           {
             "startedAt": "2022-04-07T11:08:00.420Z",
@@ -152,36 +151,27 @@ post-mvp
         ]
       }
     ]
-  },
-  "contentAnnotation": {
-    "labels": ["hello|world"],
-    "postLookup": {
-      "/wall-12345-12345": {
-        "important": true,
-        "importantVia": "ui"
-      }
-    }
   }
 }
 ```
 
-`capture-2022-03-10-011223.json`
+`capture-2022-03-10-011223-info.json`
 
 ```json
 {
-  "documentKind": "captureExtract",
+  "documentType": "captureInfo",
   "url": "https://vk.com/penza_live",
   "capturedAt": "2022-04-07T11:08:00.420Z",
   "extractedAt": "2022-04-07T11:08:00.420Z"
 }
 ```
 
-`capture-compilation.json`
+`capture-info-combination.json`
 
 ```json
 {
-  "documentKind": "captureCompilation",
+  "documentType": "captureInfoCombination",
   "url": "https://vk.com/penza_live",
-  "compiledAt": "2022-04-07T11:08:00.420Z"
+  "combinedAt": "2022-04-07T11:08:00.420Z"
 }
 ```
