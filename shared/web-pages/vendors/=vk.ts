@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { getWebPagesDirPath } from "../../archive-collection";
+import { getWebPagesDirPath } from "../../collection";
 import { UserFriendlyError } from "../../user-friendly-error";
 import { assertWebPageUrlVendor } from "../shared/assert-web-page-url-vendor";
 import { generateUrlExamplesMessage } from "./shared/generate-url-examples-message";
