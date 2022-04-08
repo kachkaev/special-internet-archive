@@ -9,10 +9,10 @@ import {
   writeWebPageDocument,
 } from "../../shared/web-pages";
 
-const script = async () => {
-  const output = process.stdout;
+const output = process.stdout;
 
-  output.write(chalk.bold("Registering web page by URL...\n"));
+const script = async () => {
+  output.write(chalk.bold("Registering web page by URL\n"));
 
   const { URL: urlsToRegister } = cleanEnv({
     URL: envalid.str({
