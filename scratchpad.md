@@ -122,11 +122,11 @@ mvp
     "snapshotInfoByAlias": {
       "https://vk.com/penza_live": {
         "fetchedAt": "2022-04-06T00:00:00Z",
-        "snapshotTimestamps": []
+        "snapshotTimes": []
       },
       "https://m.vk.com/penza_live": {
         "fetchedAt": "2022-04-06T00:00:00Z",
-        "snapshotTimestamps": []
+        "snapshotTimes": []
       }
     },
     "submissions": [

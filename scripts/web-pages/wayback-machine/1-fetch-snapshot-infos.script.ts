@@ -75,7 +75,7 @@ const script = async () => {
         try {
           const aliasInfo: WaybackMachineAliasInfo = {
             fetchedAt: serializeTime(),
-            snapshotTimestamps: [],
+            snapshotTimes: [],
           };
 
           // E.g. http://web.archive.org/cdx/search/cdx?url=https://vk.com/penza_live&output=json
@@ -105,7 +105,7 @@ const script = async () => {
           for (const cells of csvRows) {
             const statusCode = cells[4];
 
-            if (statusCode !== "200") {
+            if (statusCode !== "200" && statusCode !== "404") {
               continue;
             }
 
@@ -115,15 +115,13 @@ const script = async () => {
               continue;
             }
 
-            aliasInfo.snapshotTimestamps.push(serializedTime);
+            aliasInfo.snapshotTimes.push(serializedTime);
           }
 
           webPageDocument.waybackMachine.snapshotInfoByAlias[aliasUrl] =
             aliasInfo;
 
-          output.write(
-            ` ${aliasUrl} [${aliasInfo.snapshotTimestamps.length}]  `,
-          );
+          output.write(` ${aliasUrl} [${aliasInfo.snapshotTimes.length}]  `);
         } catch (error) {
           output.write(` ${aliasUrl} ${error as string}  `);
         }

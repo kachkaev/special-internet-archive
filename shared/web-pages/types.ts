@@ -1,6 +1,6 @@
 export interface WaybackMachineAliasInfo {
   fetchedAt: string;
-  snapshotTimestamps: string[];
+  snapshotTimes: string[];
 }
 
 export interface WaybackMachineInfo {
