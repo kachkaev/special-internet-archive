@@ -23,7 +23,7 @@ const extractPathSegments = (url: string): string[] => {
 
   if (slug) {
     const [, wallOrPhoto, accountId, postId] =
-      slug.match(/^(wall|photo)(-?\d+)-(\d+)$/) ?? [];
+      slug.match(/^(wall|photo)(-?\d+)_(\d+)$/) ?? [];
 
     if (wallOrPhoto && accountId && postId) {
       return [wallOrPhoto === "wall" ? "posts" : "photos", accountId, postId];

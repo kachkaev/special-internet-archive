@@ -1,15 +1,5 @@
 # Special archive
 
-`collection-config.yml`
-
-```yaml
-capturing:
-  default:
-    timeZone: "UTC+03:00" ## MSK+0h
-  vk:
-    scrollWallUntil: "2022-04-07T11:08:00.420Z"
-```
-
 Shared between collections
 
 ```yaml

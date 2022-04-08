@@ -40,6 +40,9 @@ const script = async () => {
     url: urlsToRegister,
     registeredAt: serializeTime(),
     registeredVia: "script:register-by-url",
+    annotation: {},
+    capturing: {},
+    internetArchive: {},
   });
 
   output.write(
