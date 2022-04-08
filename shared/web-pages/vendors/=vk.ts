@@ -54,4 +54,10 @@ export const vkWebPageVendor: WebPageVendor = {
 
     return path.resolve(getWebPagesDirPath(), "vk", ...pathSegments);
   },
+
+  listWebPageAliases: (url) => {
+    assertWebPageUrlVendor(url, matchVkUrl);
+
+    return [url, url.replace("//vk", "//m.vk")];
+  },
 };

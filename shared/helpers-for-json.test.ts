@@ -15,6 +15,10 @@ describe("serializeTime", () => {
     );
   });
 
+  it("parses YYYYMMDDHHMMSS", () => {
+    expect(serializeTime("20210226082027")).toBe("2021-02-26T08:20:27Z");
+  });
+
   it("works without an argument", () => {
     expect(serializeTime()).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
   });

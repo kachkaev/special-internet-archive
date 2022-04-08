@@ -3,12 +3,19 @@ import _ from "lodash";
 import { DateTime } from "luxon";
 import path from "node:path";
 
-export const serializeTime = (time?: string): string => {
-  let dateTime: DateTime | undefined;
-  if (time) {
-    dateTime = DateTime.fromRFC2822(time).setZone("utc");
-    if (!dateTime.isValid) {
-      dateTime = DateTime.fromISO(time).setZone("utc");
+export const serializeTime = (time?: string | DateTime): string => {
+  let dateTime: DateTime | undefined =
+    time instanceof DateTime ? time : undefined;
+
+  if (typeof time === "string") {
+    // YYYYMMDDHHMMSS
+    if (time.length === 14) {
+      dateTime = DateTime.fromFormat(time, "yyyyMMddHHmmss").setZone("utc");
+    } else {
+      dateTime = DateTime.fromRFC2822(time).setZone("utc");
+      if (!dateTime.isValid) {
+        dateTime = DateTime.fromISO(time).setZone("utc");
+      }
     }
   }
 

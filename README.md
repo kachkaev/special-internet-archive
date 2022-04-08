@@ -161,7 +161,7 @@
 1.  Получите список снимков в международном веб-архиве для зарегистрированных в коллекции страниц.
 
     ```sh
-    yarn exe scripts/web-pages/wayback-machine/1-fetch-snapshot-lists.script.ts
+    yarn exe scripts/web-pages/wayback-machine/1-fetch-snapshot-infos.script.ts
     ```
 
 1.  Запланируйте отправку заявок на новые снимки:

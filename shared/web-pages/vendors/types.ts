@@ -5,4 +5,5 @@ export interface WebPageVendor {
   matchWebPageUrl: MatchWebPageUrl;
   generateWebPageDirPath: GenerateWebPageDirPath;
   listUrlExamples: () => string[];
+  listWebPageAliases: (url: string) => string[];
 }

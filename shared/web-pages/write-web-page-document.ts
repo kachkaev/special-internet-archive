@@ -1,5 +1,5 @@
 import { writeFormattedJson } from "../helpers-for-json";
-import { generateWebPageFilePath } from "./path-helpers";
+import { generateWebPageFilePath } from "./helpers";
 import { WebPageDocument } from "./types";
 
 export const writeWebPageDocument = async (

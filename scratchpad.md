@@ -41,30 +41,30 @@ web-pages:
     accounts:
       penza_live:
         capturing:
-          capture-2022-03-10-011223.zip
-          capture-2022-03-10-011223-info.json
-          capture-2022-04-05-424312.zip
-          capture-2022-04-05-424312-info.json
+          capture-2022-03-10-011223z.zip
+          capture-2022-03-10-011223z-info.json
+          capture-2022-04-05-424312z.zip
+          capture-2022-04-05-424312z-info.json
           capture-info-combination.json
         web-page.json
     posts:
       "-161982468":
         "12345":
           capturing:
-            capture-2022-03-10-011223.zip
-            capture-2022-03-10-011223-info.json
-            capture-2022-04-05-424312.zip
-            capture-2022-04-05-424312-info.json
+            capture-2022-03-10-011223z.zip
+            capture-2022-03-10-011223z-info.json
+            capture-2022-04-05-424312z.zip
+            capture-2022-04-05-424312z-info.json
             capture-info-combination.json
           web-page.json
     photos:
       "-189058660":
         "457289204":
           capturing:
-            capture-2022-03-10-011223.zip
-            capture-2022-03-10-011223-info.json
-            capture-2022-04-05-424312.zip
-            capture-2022-04-05-424312-info.json
+            capture-2022-03-10-011223z.zip
+            capture-2022-03-10-011223z-info.json
+            capture-2022-04-05-424312z.zip
+            capture-2022-04-05-424312z-info.json
             capture-info-combination.json
           web-page.json
 ```
@@ -119,7 +119,7 @@ mvp
     ]
   },
   "waybackMachine": {
-    "snapshotListByAlias": {
+    "snapshotInfoByAlias": {
       "https://vk.com/penza_live": {
         "fetchedAt": "2022-04-06T00:00:00Z",
         "snapshotTimestamps": []
@@ -145,7 +145,7 @@ mvp
 }
 ```
 
-`capture-2022-03-10-011223-info.json`
+`capture-2022-03-10-011223z-info.json`
 
 ```json
 {
