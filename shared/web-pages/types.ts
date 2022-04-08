@@ -5,5 +5,5 @@ export interface WebPageDocument {
   registeredVia: string;
   annotation: unknown; // @todo specify
   capturing: unknown; // @todo specify
-  internetArchive: unknown; // @todo specify
+  waybackMachine: unknown; // @todo specify
 }

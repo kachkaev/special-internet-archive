@@ -146,30 +146,34 @@
 1.  Запустите скрипт для регистрации этой страницы:
 
     ```sh
-    yarn exe scripts/web-pages/register-url.script.ts
+    yarn exe scripts/web-pages/register-by-url.script.ts
     ```
 
     Повторите эти шаги для каждой страницы, которую хотите добавить.
-    Метод пока не очень удобный — мы его упростим.
+    Метод пока не очень удобный — мы подумаем, как его улучшить.
 
-## Работа с международным веб-архивом
+## Работа с Wayback Machine
+
+[Wayback Machine](https://ru.wikipedia.org/wiki/Wayback_Machine) — бесплатный онлайн-архив некоммерческой библиотеки «Архив Интернета».
+Для нас это внешнее хранилище резервных копий релевантных веб-страниц.
+Чисто в теории локально собранный архив может быть подделкой, поэтому синхронизация с международно признанным архивом интернета — что-то вроде похода к нотариусу.
 
 1.  Получите список снимков в международном веб-архиве для зарегистрированных в коллекции страниц.
 
     ```sh
-    yarn exe scripts/web-pages/internet-archive/1-fetch-snapshot-lists.script.ts
+    yarn exe scripts/web-pages/wayback-machine/1-fetch-snapshot-lists.script.ts
     ```
 
 1.  Запланируйте отправку заявок на новые снимки:
 
     ```sh
-    yarn exe scripts/web-pages/internet-archive/2-plan-submissions.script.ts
+    yarn exe scripts/web-pages/wayback-machine/2-plan-submissions.script.ts
     ```
 
 1.  Запустите отправку заявок на новые снимки:
 
     ```sh
-    yarn exe scripts/web-pages/internet-archive/3-attempt-planned-submissions.script.ts
+    yarn exe scripts/web-pages/wayback-machine/3-attempt-planned-submissions.script.ts
     ```
 
 1.  Подождите пару часов — веб-архиву нужно время для создания новых снимков.
@@ -177,7 +181,7 @@
 1.  Обновите список снимков в международном веб-архиве для зарегистрированных в коллекции страниц.
 
     ```sh
-    yarn exe scripts/web-pages/internet-archive/1-fetch-snapshot-lists.script.ts
+    yarn exe scripts/web-pages/wayback-machine/1-fetch-snapshot-lists.script.ts
     ```
 
 <!--

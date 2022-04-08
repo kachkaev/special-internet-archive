@@ -42,7 +42,7 @@ const script = async () => {
     registeredVia: "script:register-by-url",
     annotation: {},
     capturing: {},
-    internetArchive: {},
+    waybackMachine: {},
   });
 
   output.write(

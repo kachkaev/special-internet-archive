@@ -118,7 +118,7 @@ mvp
       }
     ]
   },
-  "internetArchive": {
+  "waybackMachine": {
     "snapshotListByAlias": {
       "https://vk.com/penza_live": {
         "fetchedAt": "2022-04-07T11:08:00.420Z",
