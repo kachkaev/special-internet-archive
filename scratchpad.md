@@ -84,7 +84,7 @@ mvp
 {
   "documentType": "webPage",
   "url": "https://vk.com/penza_live",
-  "registeredAt": "2022-04-07T11:08:00.420Z",
+  "registeredAt": "2022-04-06T00:00:00Z",
   "registeredVia": "??",
   "annotation": {
     "webPageType": "vkUser",
@@ -103,15 +103,15 @@ mvp
   "capturing": {
     "submissions": [
       {
-        "plannedAt": "2022-04-07T11:08:00.420Z",
+        "plannedAt": "2022-04-06T00:00:00Z",
         "plannedVia": "script",
         "reason": "",
         "interactionConfig": {
-          "scrollWallUntil": "2022-04-07T11:08:00.420Z"
+          "scrollWallUntil": "2022-04-06T00:00:00Z"
         },
         "attempts": [
           {
-            "startedAt": "2022-04-07T11:08:00.420Z",
+            "startedAt": "2022-04-06T00:00:00Z",
             "status": "completed"
           }
         ]
@@ -121,21 +121,21 @@ mvp
   "waybackMachine": {
     "snapshotListByAlias": {
       "https://vk.com/penza_live": {
-        "fetchedAt": "2022-04-07T11:08:00.420Z",
+        "fetchedAt": "2022-04-06T00:00:00Z",
         "snapshotTimestamps": []
       },
       "https://m.vk.com/penza_live": {
-        "fetchedAt": "2022-04-07T11:08:00.420Z",
+        "fetchedAt": "2022-04-06T00:00:00Z",
         "snapshotTimestamps": []
       }
     },
     "submissions": [
       {
-        "plannedAt": "2022-04-07T11:08:00.420Z",
+        "plannedAt": "2022-04-06T00:00:00Z",
         "plannedVia": "??",
         "attempts": [
           {
-            "startedAt": "2022-04-07T11:08:00.420Z",
+            "startedAt": "2022-04-06T00:00:00Z",
             "status": "success"
           }
         ]
@@ -151,8 +151,8 @@ mvp
 {
   "documentType": "captureInfo",
   "url": "https://vk.com/penza_live",
-  "capturedAt": "2022-04-07T11:08:00.420Z",
-  "extractedAt": "2022-04-07T11:08:00.420Z"
+  "capturedAt": "2022-04-06T00:00:00Z",
+  "extractedAt": "2022-04-06T00:00:00Z"
 }
 ```
 
@@ -162,6 +162,6 @@ mvp
 {
   "documentType": "captureInfoCombination",
   "url": "https://vk.com/penza_live",
-  "combinedAt": "2022-04-07T11:08:00.420Z"
+  "combinedAt": "2022-04-06T00:00:00Z"
 }
 ```
