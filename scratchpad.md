@@ -35,6 +35,7 @@ annotation:
 data
 
 ```yaml
+# = .gitignore
 collection-config.yml
 web-pages:
   vk:
@@ -42,30 +43,30 @@ web-pages:
       penza_live:
         capturing:
           capture-2022-03-10-011223z.zip
-          capture-2022-03-10-011223z-info.json
+          # capture-2022-03-10-011223z-info.json
           capture-2022-04-05-424312z.zip
-          capture-2022-04-05-424312z-info.json
-          capture-info-combination.json
+          # capture-2022-04-05-424312z-info.json
+          # capture-info-combination.json
         web-page.json
     posts:
       "-161982468":
         "12345":
           capturing:
             capture-2022-03-10-011223z.zip
-            capture-2022-03-10-011223z-info.json
+            # capture-2022-03-10-011223z-info.json
             capture-2022-04-05-424312z.zip
-            capture-2022-04-05-424312z-info.json
-            capture-info-combination.json
+            # capture-2022-04-05-424312z-info.json
+            # capture-info-combination.json
           web-page.json
     photos:
       "-189058660":
         "457289204":
           capturing:
             capture-2022-03-10-011223z.zip
-            capture-2022-03-10-011223z-info.json
+            # capture-2022-03-10-011223z-info.json
             capture-2022-04-05-424312z.zip
-            capture-2022-04-05-424312z-info.json
-            capture-info-combination.json
+            # capture-2022-04-05-424312z-info.json
+            # capture-info-combination.json
           web-page.json
 ```
 
