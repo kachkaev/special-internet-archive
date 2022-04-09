@@ -1,12 +1,15 @@
 import axios from "axios";
 import chalk from "chalk";
+import * as envalid from "envalid";
 import _ from "lodash";
 import { DateTime } from "luxon";
 import sortKeys from "sort-keys";
 
+import { cleanEnv } from "../../../shared/clean-env";
 import { relevantTimeMin } from "../../../shared/collection";
 import { serializeTime } from "../../../shared/helpers-for-json";
 import { processWebPages } from "../../../shared/process-web-pages";
+import { UserFriendlyError } from "../../../shared/user-friendly-error";
 import {
   listWebPageAliases,
   writeWebPageDocument,
@@ -75,7 +78,26 @@ const fetchSnapshotTimes = async (url: string): Promise<string[]> => {
 };
 
 const script = async () => {
-  output.write(chalk.bold("Fetching Wayback Machine snapshot infos\n"));
+  output.write(chalk.bold("Updating Wayback Machine snapshot inventory\n"));
+
+  const env = cleanEnv({
+    INVENTORY_UPDATE_INTERVAL_IN_MINUTES: envalid.num({
+      default: 10,
+    }),
+  });
+
+  const inventoryUpdateIntervalInMinutes =
+    env.INVENTORY_UPDATE_INTERVAL_IN_MINUTES;
+
+  if (
+    inventoryUpdateIntervalInMinutes < 0 ||
+    Math.round(inventoryUpdateIntervalInMinutes) !==
+      inventoryUpdateIntervalInMinutes
+  ) {
+    throw new UserFriendlyError(
+      "Expected INVENTORY_UPDATE_INTERVAL_IN_MINUTES to be a non-negative integer number",
+    );
+  }
 
   await processWebPages({
     output,
@@ -87,7 +109,7 @@ const script = async () => {
       updatedWebPageDocument.waybackMachine.snapshotInfoByAlias ??= {};
 
       const minSerializedTimeToRefetch = serializeTime(
-        DateTime.utc().minus({ minutes: 1 }),
+        DateTime.utc().minus({ minutes: inventoryUpdateIntervalInMinutes }),
       );
 
       for (const aliasUrl of aliasUrls) {
