@@ -12,7 +12,7 @@ import {
 const output = process.stdout;
 
 const script = async () => {
-  output.write(chalk.bold("Registering a web page from environment\n"));
+  output.write(chalk.bold("Registering one web page from environment\n"));
 
   const { URL_TO_REGISTER: urlsToRegister } = cleanEnv({
     URL_TO_REGISTER: envalid.str({
