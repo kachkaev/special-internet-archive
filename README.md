@@ -146,11 +146,18 @@
 1.  Запустите скрипт для регистрации этой страницы:
 
     ```sh
-    yarn exe scripts/web-pages/register-by-url.script.ts
+    yarn exe scripts/web-pages/register-from-env.script.ts
     ```
 
     Повторите эти шаги для каждой страницы, которую хотите добавить.
     Метод пока не очень удобный — мы подумаем, как его улучшить.
+
+1.  TODO
+
+    ```sh
+    yarn exe scripts/web-pages/register-from-url-inbox-file.script.ts
+    yarn exe scripts/web-pages/cleanup-url-inbox-file.script.ts
+    ```
 
 ## Работа с Wayback Machine
 
@@ -161,13 +168,13 @@
 1.  Получите список снимков в международном веб-архиве для зарегистрированных в коллекции страниц.
 
     ```sh
-    yarn exe scripts/web-pages/wayback-machine/1-fetch-snapshot-infos.script.ts
+    yarn exe scripts/web-pages/snapshots/wayback-machine/1-update-inventory.script.ts
     ```
 
 1.  Запланируйте отправку заявок на новые снимки:
 
     ```sh
-    yarn exe scripts/web-pages/wayback-machine/2-plan-submissions.script.ts
+    yarn exe scripts/web-pages/snapshots/wayback-machine/2-generate-queue.script.ts
     ```
 
     Эта команда посмотрит на даты страниц в онлайн-архиве.
@@ -176,7 +183,7 @@
 1.  Запустите отправку заявок на новые снимки:
 
     ```sh
-    yarn exe scripts/web-pages/wayback-machine/3-attempt-planned-submissions.script.ts
+    yarn exe scripts/web-pages/snapshots/wayback-machine/3-flush-queue.script.ts
     ```
 
     Эту команду можно запускать несколько раз.
@@ -187,7 +194,7 @@
 1.  Обновите список снимков в международном веб-архиве для зарегистрированных в коллекции страниц.
 
     ```sh
-    yarn exe scripts/web-pages/wayback-machine/1-fetch-snapshot-lists.script.ts
+    yarn exe scripts/web-pages/snapshots/wayback-machine/1-update-inventory.script.ts
     ```
 
 <!--
@@ -199,14 +206,17 @@ yarn exe scripts/collection/init.script.ts
 ```
 
 ```sh
-yarn exe scripts/web-pages/capturing/1-plan-submissions.script.ts
-yarn exe scripts/web-pages/capturing/2-attempt-planned-submissions.script.ts
-yarn exe scripts/web-pages/capturing/3-extract-capture-infos.script.ts
-yarn exe scripts/web-pages/capturing/4-extract-capture-info-combinations.script.ts
+yarn exe scripts/web-pages/snapshots/playwright/1-update-inventory.script.ts
+yarn exe scripts/web-pages/snapshots/playwright/2-generate-queue.script.ts
+yarn exe scripts/web-pages/snapshots/playwright/3-flush-queue.script.ts
+yarn exe scripts/web-pages/snapshots/playwright/9-generate-summaries.script.ts
+
+yarn exe scripts/web-pages/snapshots/playwright/1-update-inventory.script.ts
 ```
 
 ```sh
-yarn exe scripts/web-pages/update-annotations-from-capture-info-combinations.script.ts
+yarn exe scripts/web-pages/snapshots/generate-summary-combinations.script.ts
+yarn exe scripts/web-pages/annotations/update-from-snapshot-summary-combinations.script.ts
 yarn exe scripts/web-pages/register-from-annotations.script.ts
 ```
 
