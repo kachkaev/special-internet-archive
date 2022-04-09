@@ -37,36 +37,39 @@ data
 ```yaml
 # = .gitignore
 collection-config.yml
+snapshot-queues:
+  playwright.json
+  wayback-machine.json
 web-pages:
   vk:
     accounts:
       penza_live:
-        capturing:
-          capture-2022-03-10-011223z.zip
-          # capture-2022-03-10-011223z-info.json
-          capture-2022-04-05-424312z.zip
-          # capture-2022-04-05-424312z-info.json
-          # capture-info-combination.json
+        snapshots:
+          2022-03-10-011223z-playwright.zip
+        # 2022-03-10-011223z-playwright.zip.summary.json
+          2022-04-05-424312z-playwright.zip
+        # 2022-04-05-424312z-playwright.zip.summary.json
+      # snapshot-summary-combination.json
         web-page.json
     posts:
       "-161982468":
         "12345":
-          capturing:
-            capture-2022-03-10-011223z.zip
-            # capture-2022-03-10-011223z-info.json
-            capture-2022-04-05-424312z.zip
-            # capture-2022-04-05-424312z-info.json
-            # capture-info-combination.json
+          snapshots:
+            2022-03-10-011223z-playwright.zip
+          # 2022-03-10-011223z-playwright.zip.summary.json
+            2022-04-05-424312z-playwright.zip
+          # 2022-04-05-424312z-playwright.zip.summary.json
+        # snapshot-summary-combination.json
           web-page.json
     photos:
       "-189058660":
         "457289204":
-          capturing:
-            capture-2022-03-10-011223z.zip
-            # capture-2022-03-10-011223z-info.json
-            capture-2022-04-05-424312z.zip
-            # capture-2022-04-05-424312z-info.json
-            # capture-info-combination.json
+          snapshots:
+            2022-03-10-011223z-playwright.zip
+          # 2022-03-10-011223z-playwright.zip.summary.json
+            2022-04-05-424312z-playwright.zip
+          # 2022-04-05-424312z-playwright.zip.summary.json
+        # snapshot-summary-combination.json
           web-page.json
 ```
 
@@ -101,68 +104,98 @@ mvp
       }
     }
   },
-  "capturing": {
-    "submissions": [
-      {
-        "plannedAt": "2022-04-06T00:00:00Z",
-        "plannedVia": "script",
-        "reason": "",
-        "interactionConfig": {
-          "scrollWallUntil": "2022-04-06T00:00:00Z"
+  "snapshotInventoryLookup": {
+    "playwright": {
+      "syncedAt": "2022-04-06T00:00:00Z",
+      "snapshots": [
+        {
+          "capturedAt": "2022-04-06T00:00:00Z"
         },
-        "attempts": [
-          {
-            "startedAt": "2022-04-06T00:00:00Z",
-            "status": "completed"
-          }
-        ]
-      }
-    ]
-  },
-  "waybackMachine": {
-    "snapshotInfoByAlias": {
-      "https://vk.com/penza_live": {
-        "fetchedAt": "2022-04-06T00:00:00Z",
-        "snapshotTimes": []
-      },
-      "https://m.vk.com/penza_live": {
-        "fetchedAt": "2022-04-06T00:00:00Z",
-        "snapshotTimes": []
-      }
+        {
+          "capturedAt": "2022-04-06T00:00:00Z"
+        },
+        {
+          "capturedAt": "2022-04-06T00:00:00Z"
+        }
+      ]
     },
-    "submissions": [
-      {
-        "plannedAt": "2022-04-06T00:00:00Z",
-        "plannedVia": "??",
-        "attempts": [
-          {
-            "startedAt": "2022-04-06T00:00:00Z",
-            "status": "success"
-          }
-        ]
-      }
-    ]
+    "waybackMachine": {
+      "syncedAt": "2022-04-06T00:00:00Z",
+      "snapshots": [
+        {
+          "capturedAt": "2022-04-06T00:00:00Z"
+        },
+        {
+          "aliasUrl": "https://vk.com/penza_live",
+          "capturedAt": "2022-04-06T00:00:00Z"
+        },
+        {
+          "capturedAt": "2022-04-06T00:00:00Z"
+        }
+      ]
+    }
   }
 }
 ```
 
-`capture-2022-03-10-011223z-info.json`
+`2022-03-10-011223z-playwright.zip.summary.json`
 
 ```json
 {
-  "documentType": "captureInfo",
-  "url": "https://vk.com/penza_live",
-  "capturedAt": "2022-04-06T00:00:00Z",
-  "extractedAt": "2022-04-06T00:00:00Z"
+  "documentType": "snapshotQueue",
+  "snapshotGenerator": "playwright",
+  "items": [
+    {
+      "url": "https://vk.com/penza_live",
+      "requestedAt": "2022-04-06T00:00:00Z",
+      "context": {
+        "relevantTimeMin": "2022-04-06T00:00:00Z"
+      }
+    }
+  ]
 }
 ```
 
-`capture-info-combination.json`
+`2022-03-10-011223z-playwright.zip.summary.json`
 
 ```json
 {
-  "documentType": "captureInfoCombination",
+  "documentType": "snapshotSummary",
+  "url": "https://vk.com/penza_live",
+  "capturedAt": "2022-04-06T00:00:00Z",
+  "generatedAt": "2022-04-06T00:00:00Z"
+}
+```
+
+`snapshot-summary-combination.json`
+
+```json
+{
+  "documentType": "snapshotSummaryCombination",
   "url": "https://vk.com/penza_live",
   "combinedAt": "2022-04-06T00:00:00Z"
 }
 ```
+
+Glossary
+
+```txt
+snapshot
+  снимок
+
+summary
+  сводка
+
+to capture
+  сделать снимок
+
+snapshot generator
+  генератор снимков
+
+inventory
+  инвентаризация (учёт?)
+```
+
+telegram logo
+
+https://www.fotojet.com/apps/?entry=edit (old photo 3v)
