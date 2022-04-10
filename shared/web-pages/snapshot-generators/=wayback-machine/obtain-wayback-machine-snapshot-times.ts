@@ -65,5 +65,6 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async (
     result.push(serializedTime);
   }
 
-  return result;
+  // Wayback Machine sometimes reports duplicate timestamps
+  return _.uniq(result);
 };
