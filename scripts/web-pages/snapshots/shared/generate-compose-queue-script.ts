@@ -1,11 +1,17 @@
 import chalk from "chalk";
+import _ from "lodash";
 import { WriteStream } from "node:tty";
 
+import { serializeTime } from "../../../../shared/helpers-for-json";
 import {
   getSnapshotGenerator,
   SnapshotGeneratorId,
 } from "../../../../shared/snapshot-generators";
-import { readSnapshotQueueDocument } from "../../../../shared/snapshot-queues/io";
+import {
+  generateSnapshotQueueDocumentPath,
+  readSnapshotQueueDocument,
+  writeSnapshotQueueDocument,
+} from "../../../../shared/snapshot-queues";
 
 export const generateComposeQueueScript =
   ({
@@ -22,11 +28,25 @@ export const generateComposeQueueScript =
       chalk.bold(`Composing ${snapshotGenerator.name} snapshot queue\n`),
     );
 
-    const snapshotQueueDocument = await readSnapshotQueueDocument(
-      snapshotGeneratorId,
+    output.write(
+      `${chalk.green(`Queue file:`)} ${generateSnapshotQueueDocumentPath(
+        snapshotGeneratorId,
+      )}\n`,
     );
 
-    output.write(
-      `Initial queue length: ${snapshotQueueDocument.items.length}\n`,
+    const existingSnapshotQueueDocument = await readSnapshotQueueDocument(
+      snapshotGeneratorId,
     );
+    const snapshotQueueDocument = _.cloneDeep(existingSnapshotQueueDocument);
+
+    snapshotQueueDocument.items.push({
+      addedAt: serializeTime(),
+      webPageUrl: "TODO",
+    });
+
+    output.write(
+      `Initial queue length: ${existingSnapshotQueueDocument.items.length}. New queue length: ${snapshotQueueDocument.items.length}.\n`,
+    );
+
+    await writeSnapshotQueueDocument(snapshotQueueDocument);
   };

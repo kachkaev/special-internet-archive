@@ -3,6 +3,7 @@ import _ from "lodash";
 import path from "node:path";
 
 import { getCollectionDirPath } from "../collection";
+import { writeFormattedJson } from "../helpers-for-json";
 import { SnapshotGeneratorId } from "../snapshot-generators";
 import { SnapshotQueueDocument } from "./types";
 
@@ -10,7 +11,7 @@ const generateSnapshotQueueDirPath = (): string => {
   return path.resolve(getCollectionDirPath(), "snapshot-queues");
 };
 
-const generateSnapshotQueueDocumentPath = (
+export const generateSnapshotQueueDocumentPath = (
   snapshotGeneratorId: SnapshotGeneratorId,
 ) => {
   return path.resolve(
@@ -43,4 +44,22 @@ export const readSnapshotQueueDocument = async (
   }
 
   return document;
+};
+
+export const writeSnapshotQueueDocument = async (
+  snapshotQueueDocument: SnapshotQueueDocument,
+): Promise<void> => {
+  const documentPath = generateSnapshotQueueDocumentPath(
+    snapshotQueueDocument.snapshotGeneratorId,
+  );
+
+  const sortedItems = _.sortBy(
+    snapshotQueueDocument.items,
+    (item) => item.addedAt,
+  );
+
+  await writeFormattedJson(documentPath, {
+    ...snapshotQueueDocument,
+    items: sortedItems,
+  });
 };
