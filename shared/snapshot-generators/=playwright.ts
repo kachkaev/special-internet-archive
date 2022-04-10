@@ -35,6 +35,7 @@ const obtainSnapshotTimes: ObtainSnapshotTimes = async (
 
 export const playwrightSnapshotGenerator: SnapshotGenerator = {
   aliasesSupported: false,
+  checkIfNewSnapshotIsDue: () => false,
   name: "Playwright",
   obtainSnapshotTimes,
 };

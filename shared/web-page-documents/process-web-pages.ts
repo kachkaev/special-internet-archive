@@ -29,7 +29,7 @@ export const processWebPages = async ({
   let numberOfErrors = 0;
   let numberOfSkipped = 0;
 
-  const webPageDocumentFilePaths = await listFilePaths({
+  const webPageDocumentPaths = await listFilePaths({
     filesNicknameToLog: "web pages",
     fileSearchPattern: "**/web-page.json",
     fileSearchDirPath: getWebPagesDirPath(),
@@ -38,9 +38,9 @@ export const processWebPages = async ({
 
   output?.write(chalk.green("Processing web pages..."));
 
-  for (const webPageDocumentFilePath of webPageDocumentFilePaths) {
+  for (const webPageDocumentPath of webPageDocumentPaths) {
     const webPageDocument = (await fs.readJson(
-      webPageDocumentFilePath,
+      webPageDocumentPath,
     )) as WebPageDocument;
 
     output?.write(`\n${chalk.underline(webPageDocument.url)} `);

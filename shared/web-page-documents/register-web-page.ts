@@ -3,7 +3,7 @@ import { serializeTime } from "../helpers-for-json";
 import { OperationResult } from "../operations";
 import {
   checkIfWebPageDocumentExists,
-  generateWebPageFilePath,
+  generateWebPagePath,
   writeWebPageDocument,
 } from "./io";
 
@@ -11,9 +11,9 @@ export const registerWebPage = async (
   url: string,
   via: string,
 ): Promise<OperationResult> => {
-  let webPageDocumentFilePath: string;
+  let webPageDocumentPath: string;
   try {
-    webPageDocumentFilePath = generateWebPageFilePath(url);
+    webPageDocumentPath = generateWebPagePath(url);
   } catch (error) {
     return {
       status: "failed",
@@ -21,7 +21,7 @@ export const registerWebPage = async (
     };
   }
 
-  if (await checkIfWebPageDocumentExists(webPageDocumentFilePath)) {
+  if (await checkIfWebPageDocumentExists(webPageDocumentPath)) {
     return { status: "skipped" };
   }
 

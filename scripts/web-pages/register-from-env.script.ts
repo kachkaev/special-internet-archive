@@ -4,7 +4,7 @@ import * as envalid from "envalid";
 import { cleanEnv } from "../../shared/clean-env";
 import { EarlyExitError } from "../../shared/errors";
 import {
-  generateWebPageFilePath,
+  generateWebPagePath,
   registerWebPage,
 } from "../../shared/web-page-documents";
 import { generateUrlExamplesMessage } from "../../shared/web-page-vendors";
@@ -35,7 +35,7 @@ const script = async () => {
       `Web page ${chalk.underline(
         urlToRegister,
       )} was registered: ${chalk.magenta(
-        generateWebPageFilePath(urlToRegister),
+        generateWebPagePath(urlToRegister),
       )}\n`,
     );
   } else {
@@ -43,7 +43,7 @@ const script = async () => {
       `Web page ${chalk.underline(
         urlToRegister,
       )} is already registered: ${chalk.gray(
-        generateWebPageFilePath(urlToRegister),
+        generateWebPagePath(urlToRegister),
       )}\n`,
     );
   }

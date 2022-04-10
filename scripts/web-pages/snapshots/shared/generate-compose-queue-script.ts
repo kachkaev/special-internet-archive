@@ -1,12 +1,11 @@
 import chalk from "chalk";
 import { WriteStream } from "node:tty";
-import sleep from "sleep-promise";
 
-import { UserFriendlyError } from "../../../../shared/errors";
 import {
   getSnapshotGenerator,
   SnapshotGeneratorId,
 } from "../../../../shared/snapshot-generators";
+import { readSnapshotQueueDocument } from "../../../../shared/snapshot-queues/io";
 
 export const generateComposeQueueScript =
   ({
@@ -23,6 +22,11 @@ export const generateComposeQueueScript =
       chalk.bold(`Composing ${snapshotGenerator.name} snapshot queue\n`),
     );
 
-    await sleep(500);
-    throw new UserFriendlyError("Not implemented yet");
+    const snapshotQueueDocument = await readSnapshotQueueDocument(
+      snapshotGeneratorId,
+    );
+
+    output.write(
+      `Initial queue length: ${snapshotQueueDocument.items.length}\n`,
+    );
   };
