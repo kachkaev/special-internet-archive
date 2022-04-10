@@ -4,7 +4,7 @@ export type SnapshotAttemptStatus =
   | "completed"
   | "failed"
   | "interrupted"
-  | "started"
+  | "active"
   | "timedOut";
 
 export interface SnapshotAttempt {
@@ -17,7 +17,7 @@ export interface SnapshotQueueItem {
   webPageUrl: string;
   addedAt: string;
   context?: SnapshotContext;
-  attempts?: SnapshotAttempt;
+  attempts?: SnapshotAttempt[];
 }
 
 export interface SnapshotQueueDocument {

@@ -12,9 +12,13 @@ import { WebPageDocument } from "../web-page-documents";
 
 export const processWebPages = async ({
   output,
+  handleSkippedWebPage,
   processWebPage,
 }: {
   output?: WriteStream | undefined;
+  handleSkippedWebPage?: (
+    webPageDocument: WebPageDocument,
+  ) => void | Promise<void>;
   processWebPage: (webPageDocument: WebPageDocument) => void | Promise<void>;
 }) => {
   const env = cleanEnv({
@@ -48,6 +52,7 @@ export const processWebPages = async ({
     if (!filterUrlRegex.test(webPageDocument.webPageUrl)) {
       numberOfSkipped += 1;
       output?.write(chalk.gray(`does not match FILTER_URL`));
+      await handleSkippedWebPage?.(webPageDocument);
 
       continue;
     }

@@ -262,14 +262,12 @@ Playwright — программа с открытым исходным кодо�
 1.  TODO
 
     ```sh
-    ## 🚧 🚧 🚧 пока не работает 🚧 🚧 🚧
     yarn exe scripts/web-pages/snapshots/playwright/1-update-inventory.script.ts
     ```
 
 1.  TODO
 
     ```sh
-    ## 🚧 🚧 🚧 пока не работает 🚧 🚧 🚧
     yarn exe scripts/web-pages/snapshots/playwright/2-compose-queue.script.ts
     ```
 
@@ -302,7 +300,6 @@ Playwright — программа с открытым исходным кодо�
 1.  Составьте очередь заявок на новые снимки:
 
     ```sh
-    ## 🚧 🚧 🚧 пока не работает 🚧 🚧 🚧
     yarn exe scripts/web-pages/snapshots/wayback-machine/2-compose-queue.script.ts
     ```
 
@@ -326,7 +323,6 @@ Playwright — программа с открытым исходным кодо�
     Веб-архиву нужно время для создания новых снимков, поэтому желательно подождать минут 10-30.
 
     ```sh
-    ## 🚧 🚧 🚧 пока не работает 🚧 🚧 🚧
     yarn exe scripts/web-pages/snapshots/wayback-machine/1-update-inventory.script.ts
     ```
 

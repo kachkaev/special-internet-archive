@@ -1,5 +1,6 @@
 import { playwrightSnapshotGenerator } from "./snapshot-generators/=playwright";
 import { waybackMachineSnapshotGenerator } from "./snapshot-generators/=wayback-machine";
+import { SnapshotGenerator } from "./snapshot-generators/types";
 
 export type { SnapshotContext } from "./snapshot-generators/types";
 
@@ -10,6 +11,8 @@ const snapshotGeneratorLookup = {
 
 export type SnapshotGeneratorId = keyof typeof snapshotGeneratorLookup;
 
-export const getSnapshotGenerator = (id: SnapshotGeneratorId) => {
+export const getSnapshotGenerator = (
+  id: SnapshotGeneratorId,
+): SnapshotGenerator => {
   return snapshotGeneratorLookup[id];
 };

@@ -56,6 +56,7 @@ export const writeSnapshotQueueDocument = async (
   const sortedItems = _.sortBy(
     snapshotQueueDocument.items,
     (item) => item.addedAt,
+    (item) => item.webPageUrl,
   );
 
   await writeFormattedJson(documentPath, {

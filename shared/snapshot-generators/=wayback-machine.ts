@@ -6,5 +6,6 @@ export const waybackMachineSnapshotGenerator: SnapshotGenerator = {
   aliasesSupported: true,
   name: "Wayback Machine",
   obtainSnapshotTimes: obtainWaybackMachineSnapshotTimes,
+  snapshotAttemptStaleIntervalInSeconds: 30,
   checkIfNewSnapshotIsDue: checkIfNewWaybackMachineSnapshotIsDue,
 };
