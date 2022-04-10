@@ -8,7 +8,7 @@ import { cleanEnv } from "./clean-env";
 import { getWebPagesDirPath } from "./collection";
 import { getErrorMessage } from "./errors";
 import { listFilePaths } from "./list-file-paths";
-import { WebPageDocument } from "./web-pages/types";
+import { WebPageDocument } from "./web-pages";
 
 export const processWebPages = async ({
   output,

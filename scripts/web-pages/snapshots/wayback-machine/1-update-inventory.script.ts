@@ -1,6 +1,6 @@
-import { generateUpdateSnapshotInventoryScript } from "../../../../shared/web-pages";
+import { generateUpdateInventoryScript } from "../shared/generate-update-inventory-script";
 
-const script = generateUpdateSnapshotInventoryScript({
+const script = generateUpdateInventoryScript({
   defaultInventoryUpdateIntervalInMinutes: 10,
   output: process.stdout,
   snapshotGeneratorId: "waybackMachine",

@@ -5,8 +5,8 @@ import { readUrlInboxRows } from "../../shared/collection";
 import {
   generateUrlExamplesMessage,
   listWebPageUrlExamples,
+  registerWebPage,
 } from "../../shared/web-pages";
-import { registerWebPage } from "../../shared/web-pages/register-web-page";
 
 const output = process.stdout;
 

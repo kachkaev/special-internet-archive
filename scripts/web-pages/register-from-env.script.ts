@@ -7,8 +7,8 @@ import {
   generateUrlExamplesMessage,
   generateWebPageFilePath,
   listWebPageUrlExamples,
+  registerWebPage,
 } from "../../shared/web-pages";
-import { registerWebPage } from "../../shared/web-pages/register-web-page";
 
 const output = process.stdout;
 

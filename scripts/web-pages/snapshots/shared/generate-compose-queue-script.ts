@@ -2,13 +2,13 @@ import chalk from "chalk";
 import { WriteStream } from "node:tty";
 import sleep from "sleep-promise";
 
-import { UserFriendlyError } from "../errors";
+import { UserFriendlyError } from "../../../../shared/errors";
 import {
   getSnapshotGenerator,
   SnapshotGeneratorId,
-} from "./snapshot-generators";
+} from "../../../../shared/web-page-snapshots/snapshot-generators";
 
-export const generateSnapshotQueueScript =
+export const generateComposeQueueScript =
   ({
     output,
     snapshotGeneratorId,

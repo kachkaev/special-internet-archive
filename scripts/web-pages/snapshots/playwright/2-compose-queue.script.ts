@@ -1,6 +1,6 @@
-import { generateSnapshotQueueScript } from "../../../../shared/web-pages";
+import { generateComposeQueueScript } from "../shared/generate-compose-queue-script";
 
-const script = generateSnapshotQueueScript({
+const script = generateComposeQueueScript({
   output: process.stdout,
   snapshotGeneratorId: "playwright",
 });

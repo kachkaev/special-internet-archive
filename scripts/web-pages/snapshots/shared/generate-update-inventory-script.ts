@@ -5,18 +5,21 @@ import { DateTime } from "luxon";
 import { WriteStream } from "node:tty";
 import sortKeys from "sort-keys";
 
-import { cleanEnv } from "../clean-env";
-import { relevantTimeMin } from "../collection";
-import { UserFriendlyError } from "../errors";
-import { serializeTime } from "../helpers-for-json";
-import { processWebPages } from "../process-web-pages";
-import { listWebPageAliases } from "./helpers";
-import { writeWebPageDocument } from "./io";
+import { cleanEnv } from "../../../../shared/clean-env";
+import { relevantTimeMin } from "../../../../shared/collection";
+import { UserFriendlyError } from "../../../../shared/errors";
+import { serializeTime } from "../../../../shared/helpers-for-json";
+import { processWebPages } from "../../../../shared/process-web-pages";
 import {
   getSnapshotGenerator,
   SnapshotGeneratorId,
-} from "./snapshot-generators";
-import { SnapshotInventory, SnapshotInventoryItem } from "./types";
+} from "../../../../shared/web-page-snapshots/snapshot-generators";
+import {
+  listWebPageAliases,
+  SnapshotInventory,
+  SnapshotInventoryItem,
+  writeWebPageDocument,
+} from "../../../../shared/web-pages";
 
 const calculateSnapshotCount = (
   snapshotInventoryItems: SnapshotInventoryItem[],
@@ -52,7 +55,7 @@ const reportUpdateInSnapshots = (
   }
 };
 
-export const generateUpdateSnapshotInventoryScript =
+export const generateUpdateInventoryScript =
   ({
     defaultInventoryUpdateIntervalInMinutes,
     output,
