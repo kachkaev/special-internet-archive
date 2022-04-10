@@ -1,15 +1,8 @@
-import chalk from "chalk";
-import sleep from "sleep-promise";
+import { generateProcessQueueScript } from "../shared/generate-process-queue-script";
 
-import { UserFriendlyError } from "../../../../shared/errors";
-
-const output = process.stdout;
-
-const script = async () => {
-  output.write(chalk.bold("Processing Wayback Machine snapshot queue\n"));
-
-  await sleep(500);
-  throw new UserFriendlyError("Not implemented yet");
-};
+const script = generateProcessQueueScript({
+  output: process.stdout,
+  snapshotGeneratorId: "playwright",
+});
 
 await script();
