@@ -7,15 +7,16 @@ export interface SnapshotContext {
   relevantTimeMin?: string;
 }
 
-export type TakeSnapshot = (
-  webPageUrl: string,
-  context: SnapshotContext,
-) => Promise<void | string>;
+export type TakeSnapshot = (payload: {
+  abortController?: AbortController;
+  snapshotContext?: SnapshotContext | undefined;
+  webPageUrl: string;
+}) => Promise<undefined | string>;
 
 export interface SnapshotGenerator {
   aliasesSupported: boolean;
   name: string;
   obtainSnapshotTimes: ObtainSnapshotTimes;
   snapshotAttemptStaleIntervalInSeconds: number;
-  takeSnapshot?: TakeSnapshot;
+  takeSnapshot: TakeSnapshot;
 }

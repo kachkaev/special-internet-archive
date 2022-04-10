@@ -1,5 +1,6 @@
 import { globby } from "globby";
 import path from "node:path";
+import sleep from "sleep-promise";
 
 import { serializeTime } from "../helpers-for-json";
 import { generateWebPageDirPath } from "../web-page-vendors";
@@ -37,5 +38,9 @@ export const playwrightSnapshotGenerator: SnapshotGenerator = {
   aliasesSupported: false,
   name: "Playwright",
   snapshotAttemptStaleIntervalInSeconds: 120,
+  takeSnapshot: async () => {
+    await sleep(100);
+    throw new Error("Playwright snapshots are not implemented yet");
+  },
   obtainSnapshotTimes,
 };

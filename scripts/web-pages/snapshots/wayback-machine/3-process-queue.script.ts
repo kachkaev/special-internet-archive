@@ -2,7 +2,7 @@ import { generateProcessQueueScript } from "../shared/generate-process-queue-scr
 
 const script = generateProcessQueueScript({
   output: process.stdout,
-  snapshotGeneratorId: "playwright",
+  snapshotGeneratorId: "waybackMachine",
 });
 
 await script();

@@ -2,6 +2,7 @@ import chalk from "chalk";
 import envalid from "envalid";
 import _ from "lodash";
 import { DateTime } from "luxon";
+import { randomUUID } from "node:crypto";
 import { WriteStream } from "node:tty";
 
 import { cleanEnv } from "../../../../shared/clean-env";
@@ -64,12 +65,12 @@ export const generateComposeQueueScript =
       existingSnapshotQueueDocument.items,
     );
 
-    let numberOfActiveAttempts = 0;
+    let numberOfStartedAttempts = 0;
     let numberOfTimedOutAttempts = 0;
     for (const existingQueueItem of allExistingQueueItems) {
       for (const attempt of existingQueueItem.attempts ?? []) {
-        if (attempt.status === "active") {
-          numberOfActiveAttempts += 1;
+        if (attempt.status === "started") {
+          numberOfStartedAttempts += 1;
 
           if (
             serializeTime(
@@ -86,10 +87,10 @@ export const generateComposeQueueScript =
       }
     }
 
-    if (numberOfActiveAttempts > 0) {
+    if (numberOfStartedAttempts > 0) {
       output.write(
         chalk.yellow(
-          `Number of already started snapshot attempts: ${numberOfActiveAttempts} (${numberOfTimedOutAttempts} are marked as timed out).\n`,
+          `Number of already started snapshot attempts: ${numberOfStartedAttempts} (${numberOfTimedOutAttempts} are marked as timed out).\n`,
         ),
       );
       output.write(
@@ -117,11 +118,11 @@ export const generateComposeQueueScript =
 
         if (
           existingQueueItems.some((item) =>
-            item.attempts?.find((attempt) => attempt.status === "active"),
+            item.attempts?.find((attempt) => attempt.status === "started"),
           )
         ) {
           output.write(
-            chalk.gray("skipping because there is an active snapshot attempt"),
+            chalk.gray("skipping because there is a started snapshot attempt"),
           );
           allNewQueueItems.push(...existingQueueItems);
 
@@ -143,7 +144,7 @@ export const generateComposeQueueScript =
           existingQueueItems.filter((item) => {
             const completedAttemptTime = item.attempts?.find(
               (attempt) => attempt.status === "completed",
-            )?.attemptedAt;
+            )?.startedAt;
 
             return (
               completedAttemptTime &&
@@ -158,12 +159,12 @@ export const generateComposeQueueScript =
           existingQueueItems.filter((item) =>
             item.attempts?.find((attempt) => attempt.status === "completed"),
           ),
-          (item) => _.max(item.attempts?.map((attempt) => attempt.attemptedAt)),
+          (item) => _.max(item.attempts?.map((attempt) => attempt.startedAt)),
         ).at(-1);
 
         const mostRecentSnapshotTime = _.max([
           mostRecentSnapshotTimeInInventory,
-          mostRecentlyCompletedQueueItem?.attempts?.at(-1)?.attemptedAt,
+          mostRecentlyCompletedQueueItem?.attempts?.at(-1)?.startedAt,
         ]);
 
         const newSnapshotIsDue =
@@ -176,6 +177,7 @@ export const generateComposeQueueScript =
 
         if (newSnapshotIsDue) {
           const newQueueItem: SnapshotQueueItem = {
+            id: randomUUID(),
             webPageUrl: webPageDocument.webPageUrl,
             addedAt: newQueueItemAddedAt,
           };

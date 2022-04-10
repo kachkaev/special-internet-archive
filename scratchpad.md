@@ -146,6 +146,7 @@ mvp
   "snapshotGeneratorId": "playwright",
   "items": [
     {
+      "id": "...",
       "webPageUrl": "https://vk.com/penza_live",
       "addedAt": "2022-04-06T00:00:00Z",
       "context": {
@@ -153,7 +154,7 @@ mvp
       },
       "attempts": [
         {
-          "attemptedAt": "2022-04-06T00:00:00Z",
+          "startedAt": "2022-04-06T00:00:00Z",
           "status": "started",
           "message": "..."
         }

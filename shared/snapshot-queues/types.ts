@@ -3,17 +3,18 @@ import { SnapshotContext, SnapshotGeneratorId } from "../snapshot-generators";
 export type SnapshotAttemptStatus =
   | "completed"
   | "failed"
-  | "interrupted"
-  | "active"
+  | "aborted"
+  | "started"
   | "timedOut";
 
 export interface SnapshotAttempt {
-  attemptedAt: string;
+  startedAt: string;
   status: SnapshotAttemptStatus;
   message?: string;
 }
 
 export interface SnapshotQueueItem {
+  id: string;
   webPageUrl: string;
   addedAt: string;
   context?: SnapshotContext;
