@@ -1,4 +1,4 @@
-import { MatchWebPageUrl } from "../vendors/types";
+import { MatchWebPageUrl } from "../types";
 
 export const assertWebPageUrlVendor = (
   url: string,

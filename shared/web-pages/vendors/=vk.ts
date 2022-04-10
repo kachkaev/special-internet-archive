@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { getWebPagesDirPath } from "../../collection";
 import { UserFriendlyError } from "../../errors";
-import { assertWebPageUrlVendor } from "../shared/assert-web-page-url-vendor";
+import { assertWebPageUrlVendor } from "./shared/assert-web-page-url-vendor";
 import { MatchWebPageUrl, WebPageVendor } from "./types";
 
 const matchVkUrl: MatchWebPageUrl = (url) =>
