@@ -4,11 +4,11 @@ import fs from "fs-extra";
 import { WriteStream } from "node:tty";
 import RegexParser from "regex-parser";
 
-import { cleanEnv } from "./clean-env";
-import { getWebPagesDirPath } from "./collection";
-import { getErrorMessage } from "./errors";
-import { listFilePaths } from "./list-file-paths";
-import { WebPageDocument } from "./web-pages";
+import { cleanEnv } from "../clean-env";
+import { getWebPagesDirPath } from "../collection";
+import { getErrorMessage } from "../errors";
+import { listFilePaths } from "../list-file-paths";
+import { WebPageDocument } from "../web-page-documents";
 
 export const processWebPages = async ({
   output,

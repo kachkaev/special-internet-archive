@@ -1,8 +1,8 @@
 import axios from "axios";
 import _ from "lodash";
 
-import { relevantTimeMin } from "../../../collection";
-import { serializeTime } from "../../../helpers-for-json";
+import { relevantTimeMin } from "../../collection";
+import { serializeTime } from "../../helpers-for-json";
 import { ObtainSnapshotTimes } from "../types";
 
 type CdxApiResponse = Array<

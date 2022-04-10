@@ -1,6 +1,6 @@
-import { UserFriendlyError } from "../errors";
-import { vkWebPageVendor } from "./vendors/=vk";
-import { WebPageVendor } from "./vendors/types";
+import { UserFriendlyError } from "./errors";
+import { vkWebPageVendor } from "./web-page-vendors/=vk";
+import { WebPageVendor } from "./web-page-vendors/types";
 
 export const webPageVendorLookup = {
   vk: vkWebPageVendor,

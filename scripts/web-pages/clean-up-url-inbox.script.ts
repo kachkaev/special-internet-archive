@@ -6,7 +6,7 @@ import {
   ParsedUrlInboxRow,
   readUrlInboxRows,
 } from "../../shared/collection";
-import { checkIfWebPageDocumentExists } from "../../shared/web-pages";
+import { checkIfWebPageDocumentExists } from "../../shared/web-page-documents";
 
 const output = process.stdout;
 

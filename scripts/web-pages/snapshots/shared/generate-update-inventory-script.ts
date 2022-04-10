@@ -9,17 +9,17 @@ import { cleanEnv } from "../../../../shared/clean-env";
 import { relevantTimeMin } from "../../../../shared/collection";
 import { UserFriendlyError } from "../../../../shared/errors";
 import { serializeTime } from "../../../../shared/helpers-for-json";
-import { processWebPages } from "../../../../shared/process-web-pages";
 import {
   getSnapshotGenerator,
   SnapshotGeneratorId,
-} from "../../../../shared/web-page-snapshots/snapshot-generators";
+} from "../../../../shared/snapshot-generators";
 import {
   listWebPageAliases,
+  processWebPages,
   SnapshotInventory,
   SnapshotInventoryItem,
   writeWebPageDocument,
-} from "../../../../shared/web-pages";
+} from "../../../../shared/web-page-documents";
 
 const calculateSnapshotCount = (
   snapshotInventoryItems: SnapshotInventoryItem[],

@@ -1,6 +1,6 @@
 import chalk from "chalk";
 
-import { ensureFileExists } from "../shared/ensure-file-exists";
+import { ensureFileExists } from "./shared/ensure-file-exists";
 
 const output = process.stdout;
 

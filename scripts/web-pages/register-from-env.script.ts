@@ -8,7 +8,7 @@ import {
   generateWebPageFilePath,
   listWebPageUrlExamples,
   registerWebPage,
-} from "../../shared/web-pages";
+} from "../../shared/web-page-documents";
 
 const output = process.stdout;
 

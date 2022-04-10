@@ -6,7 +6,7 @@ import { UserFriendlyError } from "../../../../shared/errors";
 import {
   getSnapshotGenerator,
   SnapshotGeneratorId,
-} from "../../../../shared/web-page-snapshots/snapshot-generators";
+} from "../../../../shared/snapshot-generators";
 
 export const generateComposeQueueScript =
   ({

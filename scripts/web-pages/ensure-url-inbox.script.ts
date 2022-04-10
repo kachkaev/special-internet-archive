@@ -1,7 +1,7 @@
 import chalk from "chalk";
 
 import { getUrlInboxFilePath } from "../../shared/collection";
-import { ensureFileExists } from "../../shared/ensure-file-exists";
+import { ensureFileExists } from "../shared/ensure-file-exists";
 
 const output = process.stdout;
 

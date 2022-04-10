@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { getWebPageVendor, webPageVendorLookup } from "./vendors";
+import { getWebPageVendor, webPageVendorLookup } from "../web-page-vendors";
 
 export const generateWebPageDirPath = (url: string): string => {
   return getWebPageVendor(url).generateWebPageDirPath(url);
