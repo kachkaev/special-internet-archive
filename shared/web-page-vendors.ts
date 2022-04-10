@@ -22,3 +22,20 @@ export const getWebPageVendor = (url: string): WebPageVendor => {
 
   throw new UserFriendlyError(`URL ${url} is invalid or is not supported.`);
 };
+
+export const generateWebPageDirPath = (url: string): string => {
+  return getWebPageVendor(url).generateWebPageDirPath(url);
+};
+
+export const listWebPageAliases = (url: string): string[] => {
+  return getWebPageVendor(url).listWebPageAliases(url);
+};
+
+const listWebPageUrlExamples = (): string[] => {
+  return Object.values(webPageVendorLookup)
+    .flatMap((vendor) => vendor.listUrlExamples())
+    .sort();
+};
+
+export const generateUrlExamplesMessage = (): string =>
+  `Please follow these examples:\n- ${listWebPageUrlExamples().join("\n- ")}\n`;

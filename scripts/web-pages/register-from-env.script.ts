@@ -4,11 +4,10 @@ import * as envalid from "envalid";
 import { cleanEnv } from "../../shared/clean-env";
 import { EarlyExitError } from "../../shared/errors";
 import {
-  generateUrlExamplesMessage,
   generateWebPageFilePath,
-  listWebPageUrlExamples,
   registerWebPage,
 } from "../../shared/web-page-documents";
+import { generateUrlExamplesMessage } from "../../shared/web-page-vendors";
 
 const output = process.stdout;
 
@@ -29,7 +28,7 @@ const script = async () => {
 
   if (operationResult.status === "failed") {
     output.write(`${chalk.red(operationResult.message)}\n\n`);
-    output.write(generateUrlExamplesMessage(listWebPageUrlExamples()));
+    output.write(generateUrlExamplesMessage());
     throw new EarlyExitError();
   } else if (operationResult.status === "processed") {
     output.write(

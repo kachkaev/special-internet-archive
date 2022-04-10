@@ -2,11 +2,8 @@ import chalk from "chalk";
 import _ from "lodash";
 
 import { readUrlInboxRows } from "../../shared/collection";
-import {
-  generateUrlExamplesMessage,
-  listWebPageUrlExamples,
-  registerWebPage,
-} from "../../shared/web-page-documents";
+import { registerWebPage } from "../../shared/web-page-documents";
+import { generateUrlExamplesMessage } from "../../shared/web-page-vendors";
 
 const output = process.stdout;
 
@@ -63,7 +60,7 @@ const script = async () => {
     output.write(
       `Done with warnings. ${chalk.red(
         `Number of invalid URLs: ${numberOfErrors}.`,
-      )} ${generateUrlExamplesMessage(listWebPageUrlExamples())}`,
+      )} ${generateUrlExamplesMessage()}`,
     );
   } else {
     output.write("Done.\n");

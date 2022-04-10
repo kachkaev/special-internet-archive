@@ -1,9 +1,14 @@
 import fs from "fs-extra";
+import path from "node:path";
 
 import { writeFormattedJson } from "../helpers-for-json";
 import { isUrl } from "../urls";
-import { generateWebPageFilePath } from "./helpers";
+import { generateWebPageDirPath } from "../web-page-vendors";
 import { WebPageDocument } from "./types";
+
+export const generateWebPageFilePath = (url: string): string => {
+  return path.resolve(generateWebPageDirPath(url), "web-page.json");
+};
 
 const resolveWebDocumentFilePath = (urlOrFilePath: string): string =>
   isUrl(urlOrFilePath) ? generateWebPageFilePath(urlOrFilePath) : urlOrFilePath;

@@ -14,12 +14,12 @@ import {
   SnapshotGeneratorId,
 } from "../../../../shared/snapshot-generators";
 import {
-  listWebPageAliases,
   processWebPages,
   SnapshotInventory,
   SnapshotInventoryItem,
   writeWebPageDocument,
 } from "../../../../shared/web-page-documents";
+import { listWebPageAliases } from "../../../../shared/web-page-vendors";
 
 const calculateSnapshotCount = (
   snapshotInventoryItems: SnapshotInventoryItem[],
