@@ -47,7 +47,7 @@ export const processWebPages = async ({
 
     if (!filterUrlRegex.test(webPageDocument.url)) {
       numberOfSkipped += 1;
-      output?.write(chalk.gray(` does not match FILTER_URL`));
+      output?.write(chalk.gray(`does not match FILTER_URL`));
 
       continue;
     }
