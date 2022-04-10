@@ -105,7 +105,7 @@ const reportUpdateInSnapshots = (
   if (oldCount === count) {
     output.write(`snapshot count: ${count}`);
   } else {
-    output.write(`snapshot count: ${oldCount} → ${chalk.magenta(count)}`);
+    output.write(`snapshot count: ${oldCount} ${chalk.magenta(`→ ${count}`)}`);
   }
 };
 
@@ -190,9 +190,7 @@ const script = async () => {
       for (const aliasUrl of aliasUrls) {
         output.write(`\n  alias ${chalk.underline(aliasUrl)} `);
 
-        const aliasSnapshotTimes = await fetchSnapshotTimes(
-          webPageDocument.url,
-        );
+        const aliasSnapshotTimes = await fetchSnapshotTimes(aliasUrl);
 
         for (const aliasSnapshotTime of aliasSnapshotTimes) {
           snapshotInventoryItems.push({
