@@ -1,15 +1,14 @@
 import chalk from "chalk";
-import sleep from "sleep-promise";
 
-import { UserFriendlyError } from "../../shared/errors";
+import { getUrlInboxFilePath } from "../../shared/collection";
+import { ensureFileExists } from "../../shared/ensure-file-exists";
 
 const output = process.stdout;
 
 const script = async () => {
   output.write(chalk.bold("Ensuring URL inbox exists\n"));
 
-  await sleep(500);
-  throw new UserFriendlyError("Not implemented yet");
+  await ensureFileExists(getUrlInboxFilePath(), output);
 };
 
 await script();

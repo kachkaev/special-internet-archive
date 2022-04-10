@@ -17,4 +17,7 @@ export const getCollectionDirPath = (): string => {
 export const getWebPagesDirPath = (): string =>
   path.resolve(getCollectionDirPath(), "web-pages");
 
+export const getUrlInboxFilePath = (): string =>
+  path.resolve(getCollectionDirPath(), "url-inbox.txt");
+
 export const relevantTimeMin = "2022-02-20T00:00:00Z";

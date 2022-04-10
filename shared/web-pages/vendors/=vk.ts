@@ -40,6 +40,7 @@ export const vkWebPageVendor: WebPageVendor = {
 
   generateWebPageDirPath: (url) => {
     assertWebPageUrlVendor(url, matchVkUrl);
+
     const pathSegments = extractPathSegments(url);
     if (pathSegments.length === 0) {
       throw new UserFriendlyError(

@@ -1,20 +1,12 @@
 import chalk from "chalk";
-import fs from "fs-extra";
-import path from "node:path";
+
+import { ensureFileExists } from "../shared/ensure-file-exists";
 
 const output = process.stdout;
 
 const script = async () => {
-  const filePath = path.resolve(".env.local");
-  if (await fs.pathExists(filePath)) {
-    output.write(`File already exists: ${chalk.gray(`${filePath}`)}\n`);
-
-    return;
-  }
-
-  output.write(`Creating ${chalk.magenta(`${filePath}`)}...`);
-  await fs.ensureFile(filePath);
-  output.write(" Done.\n");
+  output.write(chalk.bold("Ensuring .env.local exists\n"));
+  await ensureFileExists(".env.local", output);
 };
 
 await script();
