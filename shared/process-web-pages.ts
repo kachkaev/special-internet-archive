@@ -65,6 +65,6 @@ export const processWebPages = async ({
   output?.write(
     `\n\nWeb pages in collection: ${
       numberOfDone + numberOfErrors + numberOfSkipped
-    } (processed: ${numberOfDone}, errors: ${numberOfErrors}, filtered out: ${numberOfSkipped})\n`,
+    } (processed: ${numberOfDone}, errors: ${numberOfErrors}, filtered out: ${numberOfSkipped}).\n`,
   );
 };

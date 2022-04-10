@@ -111,6 +111,11 @@ const reportUpdateInSnapshots = (
 
 const script = async () => {
   output.write(chalk.bold("Updating Wayback Machine snapshot inventory\n"));
+  output.write(
+    chalk.blue(
+      `Only snapshots since ${relevantTimeMin} are taken into account.\n`,
+    ),
+  );
 
   const env = cleanEnv({
     INVENTORY_UPDATE_INTERVAL_IN_MINUTES: envalid.num({
