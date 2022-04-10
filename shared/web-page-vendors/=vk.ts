@@ -1,7 +1,9 @@
+import { DateTime } from "luxon";
 import path from "node:path";
 
 import { getWebPagesDirPath } from "../collection";
 import { UserFriendlyError } from "../errors";
+import { serializeTime } from "../helpers-for-json";
 import { assertWebPageUrlVendor } from "./shared/assert-web-page-url-vendor";
 import { MatchWebPageUrl, WebPageVendor } from "./types";
 
@@ -27,6 +29,27 @@ const extractPathSegments = (url: string): string[] => {
 };
 
 export const vkWebPageVendor: WebPageVendor = {
+  checkIfNewSnapshotIsDue: (webPageUrl, mostRecentSnapshotTime) => {
+    assertWebPageUrlVendor(webPageUrl, matchVkUrl);
+
+    return (
+      serializeTime(DateTime.utc().minus({ days: 2 })) > mostRecentSnapshotTime
+    );
+  },
+
+  generateWebPageDirPath: (webPageUrl) => {
+    assertWebPageUrlVendor(webPageUrl, matchVkUrl);
+
+    const pathSegments = extractPathSegments(webPageUrl);
+    if (pathSegments.length === 0) {
+      throw new UserFriendlyError(
+        `URL ${webPageUrl} is not canonical or is not supported for VK.`,
+      );
+    }
+
+    return path.resolve(getWebPagesDirPath(), "vk", ...pathSegments);
+  },
+
   listUrlExamples: () => [
     "https://vk.com/group123",
     "https://vk.com/id123",
@@ -36,24 +59,11 @@ export const vkWebPageVendor: WebPageVendor = {
     "https://vk.com/wall-123-456",
   ],
 
-  matchWebPageUrl: matchVkUrl,
-
-  generateWebPageDirPath: (url) => {
-    assertWebPageUrlVendor(url, matchVkUrl);
-
-    const pathSegments = extractPathSegments(url);
-    if (pathSegments.length === 0) {
-      throw new UserFriendlyError(
-        `URL ${url} is not canonical or is not supported for VK.`,
-      );
-    }
-
-    return path.resolve(getWebPagesDirPath(), "vk", ...pathSegments);
-  },
-
   listWebPageAliases: (url) => {
     assertWebPageUrlVendor(url, matchVkUrl);
 
     return [url.replace("//vk", "//m.vk")];
   },
+
+  matchWebPageUrl: matchVkUrl,
 };

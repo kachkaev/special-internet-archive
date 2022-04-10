@@ -17,6 +17,10 @@ import {
   writeSnapshotQueueDocument,
 } from "../../../../shared/snapshot-queues";
 import { processWebPages } from "../../../../shared/web-page-documents";
+import {
+  calculateRelevantTimeMinForNewIncrementalSnapshot,
+  checkIfNewSnapshotIsDue,
+} from "../../../../shared/web-page-vendors";
 
 export const generateComposeQueueScript =
   ({
@@ -165,7 +169,7 @@ export const generateComposeQueueScript =
         const newSnapshotIsDue =
           force ||
           !mostRecentSnapshotTime ||
-          snapshotGenerator.checkIfNewSnapshotIsDue(
+          checkIfNewSnapshotIsDue(
             webPageDocument.webPageUrl,
             mostRecentSnapshotTime,
           );
@@ -179,7 +183,7 @@ export const generateComposeQueueScript =
           const relevantTimeMin =
             force || !mostRecentSnapshotTime
               ? undefined
-              : await snapshotGenerator.calculateRelevantTimeMinForNewIncrementalSnapshot?.(
+              : await calculateRelevantTimeMinForNewIncrementalSnapshot(
                   webPageDocument.webPageUrl,
                   mostRecentSnapshotTime,
                 );

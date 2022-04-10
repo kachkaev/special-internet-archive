@@ -1,6 +1,10 @@
 import { UserFriendlyError } from "./errors";
 import { vkWebPageVendor } from "./web-page-vendors/=vk";
-import { WebPageVendor } from "./web-page-vendors/types";
+import {
+  CalculateRelevantTimeMinForNewIncrementalSnapshot,
+  CheckIfNewSnapshotIsDue,
+  WebPageVendor,
+} from "./web-page-vendors/types";
 
 export const webPageVendorLookup = {
   vk: vkWebPageVendor,
@@ -8,27 +12,49 @@ export const webPageVendorLookup = {
 
 type WebPageVendorId = keyof typeof webPageVendorLookup;
 
-export const getWebPageVendor = (url: string): WebPageVendor => {
+const getWebPageVendor = (webPageUrl: string): WebPageVendor => {
   for (const webpageVendorId in webPageVendorLookup) {
     if (Object.hasOwn(webPageVendorLookup, webpageVendorId)) {
       const webPageVendor =
         webPageVendorLookup[webpageVendorId as WebPageVendorId];
 
-      if (webPageVendor.matchWebPageUrl(url)) {
+      if (webPageVendor.matchWebPageUrl(webPageUrl)) {
         return webPageVendor;
       }
     }
   }
 
-  throw new UserFriendlyError(`URL ${url} is invalid or is not supported.`);
+  throw new UserFriendlyError(
+    `URL ${webPageUrl} is invalid or is not supported.`,
+  );
 };
 
-export const generateWebPageDirPath = (url: string): string => {
-  return getWebPageVendor(url).generateWebPageDirPath(url);
+export const generateWebPageDirPath = (webPageUrl: string): string => {
+  return getWebPageVendor(webPageUrl).generateWebPageDirPath(webPageUrl);
 };
 
-export const listWebPageAliases = (url: string): string[] => {
-  return getWebPageVendor(url).listWebPageAliases(url);
+export const listWebPageAliases = (webPageUrl: string): string[] => {
+  return getWebPageVendor(webPageUrl).listWebPageAliases(webPageUrl);
+};
+
+export const calculateRelevantTimeMinForNewIncrementalSnapshot: CalculateRelevantTimeMinForNewIncrementalSnapshot =
+  (webPageUrl, mostRecentSnapshotTime) => {
+    return getWebPageVendor(
+      webPageUrl,
+    ).calculateRelevantTimeMinForNewIncrementalSnapshot?.(
+      webPageUrl,
+      mostRecentSnapshotTime,
+    );
+  };
+
+export const checkIfNewSnapshotIsDue: CheckIfNewSnapshotIsDue = (
+  webPageUrl,
+  mostRecentSnapshotTime,
+) => {
+  return getWebPageVendor(webPageUrl).checkIfNewSnapshotIsDue(
+    webPageUrl,
+    mostRecentSnapshotTime,
+  );
 };
 
 const listWebPageUrlExamples = (): string[] => {
