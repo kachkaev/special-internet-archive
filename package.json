@@ -28,6 +28,7 @@
   "dependencies": {
     "@next/eslint-plugin-next": "^12.1.5-canary.4",
     "axios": "^0.26.1",
+    "axios-retry": "^3.2.4",
     "dotenv-flow": "^3.2.0",
     "lodash": "^4.17.21",
     "luxon": "^2.3.1",

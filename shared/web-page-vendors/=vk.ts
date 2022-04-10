@@ -15,10 +15,10 @@ const extractPathSegments = (url: string): string[] => {
 
   if (slug) {
     const [, wallOrPhoto, accountId, postId] =
-      slug.match(/^(wall|photo)(-?\d+)_(\d+)$/) ?? [];
+      slug.match(/^(wall)(-?\d+)_(\d+)$/) ?? [];
 
     if (wallOrPhoto && accountId && postId) {
-      return [wallOrPhoto === "wall" ? "posts" : "photos", accountId, postId];
+      return ["posts", accountId, postId];
     }
 
     // https://vk.com/faq18038
@@ -33,6 +33,7 @@ export const vkWebPageVendor: WebPageVendor = {
     assertWebPageUrlVendor(webPageUrl, matchVkUrl);
 
     return (
+      // @todo improve based on page type and snapshot summary combination
       serializeTime(DateTime.utc().minus({ days: 2 })) > mostRecentSnapshotTime
     );
   },
@@ -53,7 +54,6 @@ export const vkWebPageVendor: WebPageVendor = {
   listUrlExamples: () => [
     "https://vk.com/group123",
     "https://vk.com/id123",
-    "https://vk.com/photo-123-456",
     "https://vk.com/public123",
     "https://vk.com/something",
     "https://vk.com/wall-123-456",

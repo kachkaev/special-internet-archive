@@ -1,7 +1,10 @@
 import chalk from "chalk";
+import envalid from "envalid";
 import _ from "lodash";
 import { WriteStream } from "node:tty";
+import RegexParser from "regex-parser";
 
+import { cleanEnv } from "../../../../shared/clean-env";
 import { getErrorMessage } from "../../../../shared/errors";
 import { serializeTime } from "../../../../shared/helpers-for-json";
 import {
@@ -23,6 +26,14 @@ export const generateProcessQueueScript =
     snapshotGeneratorId: SnapshotGeneratorId;
   }) =>
   async () => {
+    const env = cleanEnv({
+      FILTER_URL: envalid.str({
+        desc: "Regex to use when filtering URLs",
+        default: ".*",
+      }),
+    });
+    const filterUrlRegex = RegexParser(env.FILTER_URL);
+
     const snapshotGenerator = getSnapshotGenerator(snapshotGeneratorId);
     output.write(
       chalk.bold(`Processing ${snapshotGenerator.name} snapshot queue\n`),
@@ -40,10 +51,13 @@ export const generateProcessQueueScript =
 
     const itemsToProcess = snapshotQueueDocument.items.filter(
       (item) =>
+        item.webPageUrl.match(filterUrlRegex) &&
         !item.attempts?.some((attempt) => attempt.status === "completed"),
     );
 
-    output.write(chalk.green(`Items to process: ${itemsToProcess.length}\n`));
+    output.write(
+      chalk.green(`Queue items to process: ${itemsToProcess.length}\n`),
+    );
 
     const orderedItemsToProcess = _.orderBy(
       itemsToProcess,
@@ -72,15 +86,16 @@ export const generateProcessQueueScript =
       if (aborted) {
         break;
       }
+
       output.write(`\n${chalk.underline(item.webPageUrl)}`);
 
       output.write(
-        chalk.green(`\n  Added to queue at: ${chalk.blue(item.addedAt)}`),
+        chalk.green(`\n  added to queue at: ${chalk.blue(item.addedAt)}`),
       );
 
       if (item.attempts?.length) {
         output.write(
-          chalk.yellow(` previous attempts: ${item.attempts.length}`),
+          chalk.yellow(`  previous attempts: ${item.attempts.length}`),
         );
       }
 
@@ -104,11 +119,11 @@ export const generateProcessQueueScript =
       };
 
       try {
-        const message = await snapshotGenerator.takeSnapshot({
+        const message = (await snapshotGenerator.takeSnapshot({
           abortController,
           snapshotContext: item.context,
           webPageUrl: item.webPageUrl,
-        });
+        })) as string | undefined;
 
         abortHandler = undefined;
         if (aborted as boolean) {
@@ -131,7 +146,7 @@ export const generateProcessQueueScript =
         }
 
         const attemptMessage = getErrorMessage(error);
-        output.write(chalk.red(`\n  Attempt Failed: ${attemptMessage}`));
+        output.write(chalk.red(`\n  attempt failed: ${attemptMessage}`));
 
         await reportSnapshotQueueAttempt({
           attemptMessage,
@@ -146,8 +161,11 @@ export const generateProcessQueueScript =
     }
 
     if (!aborted) {
+      if (itemsToProcess.length > 0) {
+        output.write("\n");
+      }
       output.write(
-        `\n\nDone. Attempts: ${numberOfAttempts} (${numberOfCompletedAttempts} completed, ${numberOfFailedAttempts} failed)\n`,
+        `\nDone. Attempts: ${numberOfAttempts} (${numberOfCompletedAttempts} completed, ${numberOfFailedAttempts} failed)\n`,
       );
     }
   };

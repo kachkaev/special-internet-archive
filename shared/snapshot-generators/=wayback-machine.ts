@@ -1,6 +1,5 @@
-import sleep from "sleep-promise";
-
 import { obtainWaybackMachineSnapshotTimes } from "./=wayback-machine/obtain-wayback-machine-snapshot-times";
+import { takeWaybackMachineSnapshot } from "./=wayback-machine/take-wayback-machine-snapshot";
 import { SnapshotGenerator } from "./types";
 
 export const waybackMachineSnapshotGenerator: SnapshotGenerator = {
@@ -8,8 +7,5 @@ export const waybackMachineSnapshotGenerator: SnapshotGenerator = {
   name: "Wayback Machine",
   obtainSnapshotTimes: obtainWaybackMachineSnapshotTimes,
   snapshotAttemptStaleIntervalInSeconds: 30,
-  takeSnapshot: async () => {
-    await sleep(100);
-    throw new Error("Wayback Machine snapshots are not implemented yet");
-  },
+  takeSnapshot: takeWaybackMachineSnapshot,
 };

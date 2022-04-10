@@ -11,7 +11,7 @@ export type TakeSnapshot = (payload: {
   abortController?: AbortController;
   snapshotContext?: SnapshotContext | undefined;
   webPageUrl: string;
-}) => Promise<undefined | string>;
+}) => Promise<void | string>;
 
 export interface SnapshotGenerator {
   aliasesSupported: boolean;

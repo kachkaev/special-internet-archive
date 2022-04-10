@@ -1,9 +1,9 @@
-import axios from "axios";
 import _ from "lodash";
 
 import { relevantTimeMin } from "../../collection";
 import { serializeTime } from "../../helpers-for-json";
 import { ObtainSnapshotTimes } from "../types";
+import { createAxiosInstanceForWaybackMachine } from "./shared/create-axios-instance-for-wayback-machine";
 
 type CdxApiResponse = Array<
   [string, string, string, string, string, string, string]
@@ -19,6 +19,8 @@ const expectedColumnsInCdxApiResponse: CdxApiResponse[number] = [
   "length",
 ];
 
+const axiosInstance = createAxiosInstanceForWaybackMachine();
+
 export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async (
   webPageUrl,
   aliasUrl,
@@ -26,7 +28,7 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async (
   const url = aliasUrl ?? webPageUrl;
   const result: string[] = [];
   // E.g. http://web.archive.org/cdx/search/cdx?url=https://vk.com/penza_live&output=json
-  const { data: rawCdxApiResponse } = await axios.get<CdxApiResponse>(
+  const { data: rawCdxApiResponse } = await axiosInstance.get<CdxApiResponse>(
     "https://web.archive.org/cdx/search/cdx",
     {
       responseType: "json",
