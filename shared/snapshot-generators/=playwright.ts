@@ -37,7 +37,7 @@ const obtainSnapshotTimes: ObtainSnapshotTimes = async (
 export const playwrightSnapshotGenerator: SnapshotGenerator = {
   aliasesSupported: false,
   name: "Playwright",
-  snapshotAttemptStaleIntervalInSeconds: 120,
+  snapshotAttemptTimeoutInSeconds: 120,
   takeSnapshot: async () => {
     await sleep(100);
     throw new Error("Playwright snapshots are not implemented yet");

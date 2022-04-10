@@ -75,8 +75,7 @@ export const generateComposeQueueScript =
           if (
             serializeTime(
               DateTime.utc().minus({
-                seconds:
-                  snapshotGenerator.snapshotAttemptStaleIntervalInSeconds,
+                seconds: snapshotGenerator.snapshotAttemptTimeoutInSeconds,
               }),
             )
           ) {

@@ -17,6 +17,6 @@ export interface SnapshotGenerator {
   aliasesSupported: boolean;
   name: string;
   obtainSnapshotTimes: ObtainSnapshotTimes;
-  snapshotAttemptStaleIntervalInSeconds: number;
+  snapshotAttemptTimeoutInSeconds: number;
   takeSnapshot: TakeSnapshot;
 }
