@@ -101,7 +101,7 @@ export const generateUpdateInventoryScript =
       processWebPage: async (webPageDocument) => {
         const updatedWebPageDocument = _.cloneDeep(webPageDocument);
         const aliasUrls = snapshotGenerator.aliasesSupported
-          ? listWebPageAliases(webPageDocument.url)
+          ? listWebPageAliases(webPageDocument.webPageUrl)
           : [];
 
         const snapshotInventoryItems: SnapshotInventoryItem[] = [];
@@ -142,7 +142,7 @@ export const generateUpdateInventoryScript =
         }
 
         const snapshotTimes = await snapshotGenerator.obtainSnapshotTimes(
-          webPageDocument.url,
+          webPageDocument.webPageUrl,
         );
 
         for (const snapshotTime of snapshotTimes) {
@@ -160,7 +160,7 @@ export const generateUpdateInventoryScript =
 
           const aliasSnapshotTimes =
             await snapshotGenerator.obtainSnapshotTimes(
-              webPageDocument.url,
+              webPageDocument.webPageUrl,
               aliasUrl,
             );
 

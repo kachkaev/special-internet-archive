@@ -8,12 +8,12 @@ import {
 } from "./io";
 
 export const registerWebPage = async (
-  url: string,
+  webPageUrl: string,
   via: string,
 ): Promise<OperationResult> => {
   let webPageDocumentPath: string;
   try {
-    webPageDocumentPath = generateWebPagePath(url);
+    webPageDocumentPath = generateWebPagePath(webPageUrl);
   } catch (error) {
     return {
       status: "failed",
@@ -27,7 +27,7 @@ export const registerWebPage = async (
 
   await writeWebPageDocument({
     documentType: "webPage",
-    url,
+    webPageUrl,
     registeredAt: serializeTime(),
     registeredVia: via,
     annotation: {},

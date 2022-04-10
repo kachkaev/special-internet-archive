@@ -1,4 +1,4 @@
-# Special archive
+# Special Internet Archive – scratchpad
 
 Shared between collections
 
@@ -87,7 +87,7 @@ mvp
 ```json
 {
   "documentType": "webPage",
-  "url": "https://vk.com/penza_live",
+  "webPageUrl": "https://vk.com/penza_live",
   "registeredAt": "2022-04-06T00:00:00Z",
   "registeredVia": "??",
   "annotation": {
@@ -138,12 +138,12 @@ mvp
 }
 ```
 
-`2022-03-10-011223z-playwright.zip.summary.json`
+`snapshot-queues/playwright.json`
 
 ```json
 {
   "documentType": "snapshotQueue",
-  "snapshotGenerator": "playwright",
+  "snapshotGeneratorId": "playwright",
   "items": [
     {
       "webPageUrl": "https://vk.com/penza_live",
@@ -167,8 +167,8 @@ mvp
 
 ```json
 {
-  "documentType": "itemsummary",
-  "url": "https://vk.com/penza_live",
+  "documentType": "snapshotSummary",
+  "webPageUrl": "https://vk.com/penza_live",
   "capturedAt": "2022-04-06T00:00:00Z",
   "generatedAt": "2022-04-06T00:00:00Z"
 }
@@ -178,13 +178,13 @@ mvp
 
 ```json
 {
-  "documentType": "itemsummaryCombination",
-  "url": "https://vk.com/penza_live",
+  "documentType": "snapshotSummaryCombination",
+  "webPageUrl": "https://vk.com/penza_live",
   "combinedAt": "2022-04-06T00:00:00Z"
 }
 ```
 
-Glossary
+## Glossary
 
 ```txt
 snapshot
@@ -203,6 +203,6 @@ inventory
   инвентаризация (учёт?)
 ```
 
-telegram logo
+## Telegram chat logo
 
 https://www.fotojet.com/apps/?entry=edit (old photo 3v)

@@ -6,27 +6,31 @@ import { isUrl } from "../urls";
 import { generateWebPageDirPath } from "../web-page-vendors";
 import { WebPageDocument } from "./types";
 
-export const generateWebPagePath = (url: string): string => {
-  return path.resolve(generateWebPageDirPath(url), "web-page.json");
+export const generateWebPagePath = (webPageUrl: string): string => {
+  return path.resolve(generateWebPageDirPath(webPageUrl), "web-page.json");
 };
 
-const resolveWebPageDocumentPath = (urlOrFilePath: string): string =>
-  isUrl(urlOrFilePath) ? generateWebPagePath(urlOrFilePath) : urlOrFilePath;
+const resolveWebPageDocumentPath = (webPageUrlOrDocumentPath: string): string =>
+  isUrl(webPageUrlOrDocumentPath)
+    ? generateWebPagePath(webPageUrlOrDocumentPath)
+    : webPageUrlOrDocumentPath;
 
 export const checkIfWebPageDocumentExists = async (
-  urlOrFilePath: string,
+  webPageUrlOrDocumentPath: string,
 ): Promise<boolean> => {
   try {
-    return await fs.pathExists(resolveWebPageDocumentPath(urlOrFilePath));
+    return await fs.pathExists(
+      resolveWebPageDocumentPath(webPageUrlOrDocumentPath),
+    );
   } catch {
     return false;
   }
 };
 
 export const readWebPageDocument = async (
-  urlOrFilePath: string,
+  webPageUrlOrDocumentPath: string,
 ): Promise<WebPageDocument> => {
-  const filePath = resolveWebPageDocumentPath(urlOrFilePath);
+  const filePath = resolveWebPageDocumentPath(webPageUrlOrDocumentPath);
 
   const fileContents = (await fs.readJson(filePath)) as unknown;
 
@@ -36,5 +40,5 @@ export const readWebPageDocument = async (
 export const writeWebPageDocument = async (
   payload: WebPageDocument,
 ): Promise<void> => {
-  await writeFormattedJson(generateWebPagePath(payload.url), payload);
+  await writeFormattedJson(generateWebPagePath(payload.webPageUrl), payload);
 };

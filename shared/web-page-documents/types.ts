@@ -10,7 +10,7 @@ export interface SnapshotInventory {
 
 export interface WebPageDocument {
   documentType: "webPage";
-  url: string;
+  webPageUrl: string;
   registeredAt: string;
   registeredVia: string;
   annotation: unknown; // @todo specify
