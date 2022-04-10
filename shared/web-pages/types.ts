@@ -1,10 +1,11 @@
-export interface WaybackMachineAliasInfo {
-  fetchedAt: string;
-  snapshotTimes: string[];
+export interface SnapshotInventoryItem {
+  capturedAt: string;
+  aliasUrl?: string;
 }
 
-export interface WaybackMachineInfo {
-  snapshotInfoByAlias?: Record<string, WaybackMachineAliasInfo>;
+export interface SnapshotInventory {
+  updatedAt: string;
+  items: SnapshotInventoryItem[];
 }
 
 export interface WebPageDocument {
@@ -13,6 +14,5 @@ export interface WebPageDocument {
   registeredAt: string;
   registeredVia: string;
   annotation: unknown; // @todo specify
-  capturing: unknown; // @todo specify
-  waybackMachine: WaybackMachineInfo;
+  snapshotInventoryLookup: Record<string, SnapshotInventory>;
 }

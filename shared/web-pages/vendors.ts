@@ -20,5 +20,5 @@ export const getWebPageVendor = (url: string): WebPageVendor => {
     }
   }
 
-  throw new UserFriendlyError(`URL ${url} is not supported.`);
+  throw new UserFriendlyError(`URL ${url} is invalid or is not supported.`);
 };

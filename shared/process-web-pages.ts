@@ -43,7 +43,7 @@ export const processWebPages = async ({
       webPageDocumentFilePath,
     )) as WebPageDocument;
 
-    output?.write(`\n${chalk.underline(webPageDocument.url)}`);
+    output?.write(`\n${chalk.underline(webPageDocument.url)} `);
 
     if (!filterUrlRegex.test(webPageDocument.url)) {
       numberOfSkipped += 1;

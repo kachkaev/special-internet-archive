@@ -8,6 +8,7 @@ import { writeWebPageDocument } from "./write-web-page-document";
 
 export const registerWebPage = async (
   url: string,
+  via: string,
 ): Promise<OperationResult> => {
   let webPageDocumentFilePath: string;
   try {
@@ -27,10 +28,9 @@ export const registerWebPage = async (
     documentType: "webPage",
     url,
     registeredAt: serializeTime(),
-    registeredVia: "script:register-by-url",
+    registeredVia: via,
     annotation: {},
-    capturing: {},
-    waybackMachine: {},
+    snapshotInventoryLookup: {},
   });
 
   return { status: "processed" };

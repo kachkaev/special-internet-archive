@@ -53,6 +53,6 @@ export const vkWebPageVendor: WebPageVendor = {
   listWebPageAliases: (url) => {
     assertWebPageUrlVendor(url, matchVkUrl);
 
-    return [url, url.replace("//vk", "//m.vk")];
+    return [url.replace("//vk", "//m.vk")];
   },
 };

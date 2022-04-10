@@ -44,7 +44,7 @@ web-pages:
   vk:
     accounts:
       penza_live:
-        snapshots:
+        items:
           2022-03-10-011223z-playwright.zip
         # 2022-03-10-011223z-playwright.zip.summary.json
           2022-04-05-424312z-playwright.zip
@@ -54,7 +54,7 @@ web-pages:
     posts:
       "-161982468":
         "12345":
-          snapshots:
+          items:
             2022-03-10-011223z-playwright.zip
           # 2022-03-10-011223z-playwright.zip.summary.json
             2022-04-05-424312z-playwright.zip
@@ -64,7 +64,7 @@ web-pages:
     photos:
       "-189058660":
         "457289204":
-          snapshots:
+          items:
             2022-03-10-011223z-playwright.zip
           # 2022-03-10-011223z-playwright.zip.summary.json
             2022-04-05-424312z-playwright.zip
@@ -106,8 +106,8 @@ mvp
   },
   "snapshotInventoryLookup": {
     "playwright": {
-      "syncedAt": "2022-04-06T00:00:00Z",
-      "snapshots": [
+      "updatedAt": "2022-04-06T00:00:00Z",
+      "items": [
         {
           "capturedAt": "2022-04-06T00:00:00Z"
         },
@@ -120,8 +120,8 @@ mvp
       ]
     },
     "waybackMachine": {
-      "syncedAt": "2022-04-06T00:00:00Z",
-      "snapshots": [
+      "updatedAt": "2022-04-06T00:00:00Z",
+      "items": [
         {
           "capturedAt": "2022-04-06T00:00:00Z"
         },
@@ -160,7 +160,7 @@ mvp
 
 ```json
 {
-  "documentType": "snapshotSummary",
+  "documentType": "itemsummary",
   "url": "https://vk.com/penza_live",
   "capturedAt": "2022-04-06T00:00:00Z",
   "generatedAt": "2022-04-06T00:00:00Z"
@@ -171,7 +171,7 @@ mvp
 
 ```json
 {
-  "documentType": "snapshotSummaryCombination",
+  "documentType": "itemsummaryCombination",
   "url": "https://vk.com/penza_live",
   "combinedAt": "2022-04-06T00:00:00Z"
 }

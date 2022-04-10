@@ -2,6 +2,7 @@ import chalk from "chalk";
 import * as envalid from "envalid";
 
 import { cleanEnv } from "../../shared/clean-env";
+import { EarlyExitError } from "../../shared/errors";
 import {
   generateUrlExamplesMessage,
   generateWebPageFilePath,
@@ -21,16 +22,20 @@ const script = async () => {
     }),
   });
 
-  const operationResult = await registerWebPage(urlToRegister);
+  const operationResult = await registerWebPage(
+    urlToRegister,
+    "script:register-from-env",
+  );
 
   if (operationResult.status === "failed") {
     output.write(`${chalk.red(operationResult.message)}\n\n`);
     output.write(generateUrlExamplesMessage(listWebPageUrlExamples()));
+    throw new EarlyExitError();
   } else if (operationResult.status === "processed") {
     output.write(
       `Web page ${chalk.underline(
         urlToRegister,
-      )} is already registered: ${chalk.gray(
+      )} was registered: ${chalk.magenta(
         generateWebPageFilePath(urlToRegister),
       )}\n`,
     );
@@ -38,7 +43,7 @@ const script = async () => {
     output.write(
       `Web page ${chalk.underline(
         urlToRegister,
-      )} was registered: ${chalk.magenta(
+      )} is already registered: ${chalk.gray(
         generateWebPageFilePath(urlToRegister),
       )}\n`,
     );
