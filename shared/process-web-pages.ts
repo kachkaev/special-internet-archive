@@ -6,6 +6,7 @@ import RegexParser from "regex-parser";
 
 import { cleanEnv } from "./clean-env";
 import { getWebPagesDirPath } from "./collection";
+import { getErrorMessage } from "./errors";
 import { listFilePaths } from "./list-file-paths";
 import { WebPageDocument } from "./web-pages/types";
 
@@ -56,7 +57,7 @@ export const processWebPages = async ({
       numberOfDone += 1;
     } catch (error) {
       numberOfErrors += 1;
-      output?.write(chalk.red(`Unexpected error ${error as string}`));
+      output?.write(chalk.red(`Unexpected error ${getErrorMessage(error)}`));
       // throw error;
     }
   }

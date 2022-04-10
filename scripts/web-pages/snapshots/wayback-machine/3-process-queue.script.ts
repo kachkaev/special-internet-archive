@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import sleep from "sleep-promise";
 
-import { UserFriendlyError } from "../../../../shared/user-friendly-error";
+import { UserFriendlyError } from "../../../../shared/errors";
 
 const output = process.stdout;
 

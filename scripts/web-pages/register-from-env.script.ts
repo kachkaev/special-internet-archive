@@ -1,55 +1,48 @@
 import chalk from "chalk";
 import * as envalid from "envalid";
-import fs from "fs-extra";
 
 import { cleanEnv } from "../../shared/clean-env";
-import { serializeTime } from "../../shared/helpers-for-json";
 import {
+  generateUrlExamplesMessage,
   generateWebPageFilePath,
-  writeWebPageDocument,
+  listWebPageUrlExamples,
 } from "../../shared/web-pages";
+import { registerWebPage } from "../../shared/web-pages/register-web-page";
 
 const output = process.stdout;
 
 const script = async () => {
   output.write(chalk.bold("Registering one web page from environment\n"));
 
-  const { URL_TO_REGISTER: urlsToRegister } = cleanEnv({
-    URL_TO_REGISTER: envalid.str({
+  const { URL_TO_REGISTER: urlToRegister } = cleanEnv({
+    URL_TO_REGISTER: envalid.url({
       desc: "Web page URL to register",
       example: "https://example.com/hello-world",
     }),
   });
 
-  const webPageDocumentFilePath = generateWebPageFilePath(urlsToRegister);
+  const operationResult = await registerWebPage(urlToRegister);
 
-  if (await fs.pathExists(webPageDocumentFilePath)) {
+  if (operationResult.status === "failed") {
+    output.write(`${chalk.red(operationResult.message)}\n\n`);
+    output.write(generateUrlExamplesMessage(listWebPageUrlExamples()));
+  } else if (operationResult.status === "processed") {
     output.write(
-      chalk.gray(
-        `Web page ${chalk.underline(
-          urlsToRegister,
-        )} is already registered: ${webPageDocumentFilePath}\n`,
-      ),
+      `Web page ${chalk.underline(
+        urlToRegister,
+      )} is already registered: ${chalk.gray(
+        generateWebPageFilePath(urlToRegister),
+      )}\n`,
     );
-
-    return;
+  } else {
+    output.write(
+      `Web page ${chalk.underline(
+        urlToRegister,
+      )} was registered: ${chalk.magenta(
+        generateWebPageFilePath(urlToRegister),
+      )}\n`,
+    );
   }
-
-  await writeWebPageDocument({
-    documentType: "webPage",
-    url: urlsToRegister,
-    registeredAt: serializeTime(),
-    registeredVia: "script:register-by-url",
-    annotation: {},
-    capturing: {},
-    waybackMachine: {},
-  });
-
-  output.write(
-    `Web page ${chalk.underline(
-      urlsToRegister,
-    )} was registered: ${chalk.magenta(webPageDocumentFilePath)}\n`,
-  );
 };
 
 await script();

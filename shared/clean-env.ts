@@ -1,7 +1,7 @@
 import { config } from "dotenv-flow";
 import * as envalid from "envalid";
 
-import { UserFriendlyError } from "./user-friendly-error";
+import { UserFriendlyError } from "./errors";
 
 export const cleanEnv = <T>(specs: {
   [K in keyof T]: envalid.ValidatorSpec<T[K]>;

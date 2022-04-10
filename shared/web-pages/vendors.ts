@@ -1,9 +1,8 @@
-import { UserFriendlyError } from "../user-friendly-error";
+import { UserFriendlyError } from "../errors";
 import { vkWebPageVendor } from "./vendors/=vk";
-import { generateUrlExamplesMessage } from "./vendors/shared/generate-url-examples-message";
 import { WebPageVendor } from "./vendors/types";
 
-const webPageVendorLookup = {
+export const webPageVendorLookup = {
   vk: vkWebPageVendor,
 };
 
@@ -21,11 +20,5 @@ export const getWebPageVendor = (url: string): WebPageVendor => {
     }
   }
 
-  const urlExamples = Object.values(webPageVendorLookup)
-    .flatMap((vendor) => vendor.listUrlExamples())
-    .sort();
-
-  throw new UserFriendlyError(
-    `URL ${url} is not supported. ${generateUrlExamplesMessage(urlExamples)}`,
-  );
+  throw new UserFriendlyError(`URL ${url} is not supported.`);
 };
