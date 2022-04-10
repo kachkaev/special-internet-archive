@@ -19,7 +19,7 @@ export const processWebPages = async ({
 }) => {
   const env = cleanEnv({
     FILTER_URL: envalid.str({
-      desc: "Glob to use when filtering URLs",
+      desc: "Regex to use when filtering URLs",
       default: ".*",
     }),
   });
@@ -58,7 +58,6 @@ export const processWebPages = async ({
     } catch (error) {
       numberOfErrors += 1;
       output?.write(chalk.red(`Unexpected error ${getErrorMessage(error)}`));
-      // throw error;
     }
   }
 
