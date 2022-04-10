@@ -1,10 +1,7 @@
 import chalk from "chalk";
-import fs from "fs-extra";
 import _ from "lodash";
 
-import { getUrlInboxFilePath } from "../../shared/collection";
-import { UserFriendlyError } from "../../shared/errors";
-import { isUrl } from "../../shared/urls";
+import { readUrlInboxRows } from "../../shared/collection";
 import {
   generateUrlExamplesMessage,
   listWebPageUrlExamples,
@@ -13,51 +10,32 @@ import { registerWebPage } from "../../shared/web-pages/register-web-page";
 
 const output = process.stdout;
 
-const readUrlInboxRows = async (): Promise<string[] | undefined> => {
-  const filePath = getUrlInboxFilePath();
-  try {
-    const fileContents = await fs.readFile(filePath, "utf8");
-
-    if (fileContents.trim().length === 0) {
-      return undefined;
-    }
-
-    return fileContents.split(/\r?\n/g);
-  } catch {
-    throw new UserFriendlyError(
-      "Unable tor read url inbox file. Try running `yarn exe scripts/web-pages/ensure-url-inbox.script.ts` first.",
-    );
-  }
-};
-
 const script = async () => {
   output.write(chalk.bold("Registering web pages from URL inbox\n"));
-  output.write(`${getUrlInboxFilePath()}\n`);
 
-  const urlInboxRows = await readUrlInboxRows();
-  if (!urlInboxRows) {
+  const parsedRows = await readUrlInboxRows(output);
+  if (!parsedRows) {
     output.write(chalk.yellow("File is empty.\n"));
 
     return;
   }
 
-  const maxRowLength = _.max(urlInboxRows.map((row) => row.length)) ?? 0;
+  const maxRowLength = _.max(parsedRows.map((row) => row.text.length)) ?? 0;
 
   let numberOfErrors = 0;
 
-  for (const row of urlInboxRows) {
-    output.write(`\n${chalk.blue(row.padEnd(maxRowLength + 1))}`);
+  for (const parsedRow of parsedRows) {
+    output.write(`\n${chalk.blue(parsedRow.text.padEnd(maxRowLength + 1))}`);
 
-    const url = row.trim();
-    if (!isUrl(url)) {
-      if (url.length > 0) {
+    if (parsedRow.type !== "url") {
+      if (parsedRow.text.trim().length > 0) {
         output.write(`${chalk.yellow("not a URL")}`);
       }
       continue;
     }
 
     const operationResult = await registerWebPage(
-      url,
+      parsedRow.url,
       "script:register-from-url-inbox",
     );
 
@@ -83,13 +61,13 @@ const script = async () => {
 
   if (numberOfErrors) {
     output.write(
-      `${chalk.red(
+      `Done with warnings. ${chalk.red(
         `Number of invalid URLs: ${numberOfErrors}.`,
       )} ${generateUrlExamplesMessage(listWebPageUrlExamples())}`,
     );
+  } else {
+    output.write("Done.\n");
   }
-
-  output.write("Done.\n");
 };
 
 await script();

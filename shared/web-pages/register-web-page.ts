@@ -1,10 +1,8 @@
-import fs from "fs-extra";
-
 import { getErrorMessage } from "../errors";
 import { serializeTime } from "../helpers-for-json";
 import { OperationResult } from "../operations";
 import { generateWebPageFilePath } from "./helpers";
-import { writeWebPageDocument } from "./write-web-page-document";
+import { checkIfWebPageDocumentExists, writeWebPageDocument } from "./io";
 
 export const registerWebPage = async (
   url: string,
@@ -20,7 +18,7 @@ export const registerWebPage = async (
     };
   }
 
-  if (await fs.pathExists(webPageDocumentFilePath)) {
+  if (await checkIfWebPageDocumentExists(webPageDocumentFilePath)) {
     return { status: "skipped" };
   }
 
