@@ -1,3 +1,8 @@
+import fs from "fs-extra";
+import { randomUUID } from "node:crypto";
+import path from "node:path";
+
+import { getCollectionDirPath } from "../../collection";
 import { TakeSnapshot } from "../types";
 import { createAxiosInstanceForWaybackMachine } from "./shared/create-axios-instance-for-wayback-machine";
 
@@ -25,7 +30,19 @@ export const takeWaybackMachineSnapshot: TakeSnapshot = async ({
   const watchJobId = html.match(/spn\.watchJob\("([\w-]+)"/)?.[1];
 
   if (!watchJobId) {
-    throw new Error("Could not find watchJob id in Wayback Machine response");
+    const tmpFilePath = path.resolve(
+      getCollectionDirPath(),
+      "snapshot-logs",
+      "wayback-machine",
+      `${randomUUID()}.txt`,
+    );
+
+    await fs.ensureDir(path.dirname(tmpFilePath));
+    await fs.writeFile(tmpFilePath, html, "utf8");
+
+    throw new Error(
+      `Could not find watchJob id in Wayback Machine response. Response data saved to ${tmpFilePath}.`,
+    );
   }
 
   return `Status: https://web.archive.org/save/status/${watchJobId}`;
