@@ -25,7 +25,7 @@ const getWebPageVendor = (webPageUrl: string): WebPageVendor => {
   }
 
   throw new UserFriendlyError(
-    `URL ${webPageUrl} is invalid or is not supported.`,
+    `URL ${webPageUrl} is invalid or is not currently supported.`,
   );
 };
 

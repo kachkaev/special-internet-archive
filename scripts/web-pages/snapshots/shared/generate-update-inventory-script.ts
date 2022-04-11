@@ -38,7 +38,7 @@ const reportUpdateInSnapshots = (
   const count = calculateSnapshotCount(snapshotInventoryItems, aliasUrl);
 
   if (!existingSnapshotInventory) {
-    output.write(chalk.magenta(`snapshot count: ${count}`));
+    output.write(`snapshot count: ${chalk.magenta(count)}`);
 
     return;
   }

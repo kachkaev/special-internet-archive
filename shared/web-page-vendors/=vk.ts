@@ -44,7 +44,7 @@ export const vkWebPageVendor: WebPageVendor = {
     const pathSegments = extractPathSegments(webPageUrl);
     if (pathSegments.length === 0) {
       throw new UserFriendlyError(
-        `URL ${webPageUrl} is not canonical or is not supported for VK.`,
+        `URL ${webPageUrl} is not canonical or is not currently supported for VK.`,
       );
     }
 
