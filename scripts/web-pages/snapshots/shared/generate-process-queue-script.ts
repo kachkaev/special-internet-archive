@@ -69,21 +69,15 @@ export const generateProcessQueueScript =
     let numberOfFailedAttempts = 0;
 
     const abortController = new AbortController();
-    let aborted = false as boolean;
-
-    let abortHandler: (() => void) | undefined;
-
     process.on("SIGINT", () => {
       output.write(
         chalk.yellow("\n\nQueue processing was aborted with SIGINT.\n"),
       );
       abortController.abort();
-      aborted = true;
-      abortHandler?.();
     });
 
     for (const item of orderedItemsToProcess) {
-      if (aborted) {
+      if (abortController.signal.aborted as unknown as boolean) {
         break;
       }
 
@@ -109,7 +103,7 @@ export const generateProcessQueueScript =
         snapshotQueueItemId: item.id,
       });
 
-      abortHandler = () => {
+      const abortHandler = () => {
         void reportSnapshotQueueAttempt({
           attemptStartedAt,
           attemptStatus: "aborted",
@@ -117,6 +111,7 @@ export const generateProcessQueueScript =
           snapshotQueueItemId: item.id,
         });
       };
+      abortController.signal.addEventListener("abort", abortHandler);
 
       try {
         const message = (await snapshotGenerator.takeSnapshot({
@@ -125,8 +120,7 @@ export const generateProcessQueueScript =
           webPageUrl: item.webPageUrl,
         })) as string | undefined;
 
-        abortHandler = undefined;
-        if (aborted as boolean) {
+        if (abortController.signal.aborted) {
           return;
         }
 
@@ -140,8 +134,8 @@ export const generateProcessQueueScript =
 
         numberOfCompletedAttempts += 1;
       } catch (error) {
-        abortHandler = undefined;
-        if (aborted as boolean) {
+        abortController.signal.removeEventListener("abort", abortHandler);
+        if (abortController.signal.aborted) {
           return;
         }
 
@@ -160,7 +154,7 @@ export const generateProcessQueueScript =
       }
     }
 
-    if (!aborted) {
+    if (abortController.signal.aborted) {
       if (itemsToProcess.length > 0) {
         output.write("\n");
       }
