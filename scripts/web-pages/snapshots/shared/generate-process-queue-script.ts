@@ -154,7 +154,7 @@ export const generateProcessQueueScript =
       }
     }
 
-    if (abortController.signal.aborted) {
+    if (!abortController.signal.aborted) {
       if (itemsToProcess.length > 0) {
         output.write("\n");
       }
