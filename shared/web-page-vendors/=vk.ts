@@ -29,8 +29,13 @@ const extractPathSegments = (url: string): string[] => {
 };
 
 export const vkWebPageVendor: WebPageVendor = {
-  checkIfNewSnapshotIsDue: (webPageUrl, mostRecentSnapshotTime) => {
+  checkIfNewSnapshotIsDue: ({ webPageUrl, knownSnapshotTimesInAscOrder }) => {
     assertWebPageUrlVendor(webPageUrl, matchVkUrl);
+
+    const mostRecentSnapshotTime = knownSnapshotTimesInAscOrder.at(-1);
+    if (!mostRecentSnapshotTime) {
+      return true;
+    }
 
     return (
       // @todo improve based on page type and snapshot summary combination

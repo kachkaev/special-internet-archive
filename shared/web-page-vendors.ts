@@ -38,23 +38,14 @@ export const listWebPageAliases = (webPageUrl: string): string[] => {
 };
 
 export const calculateRelevantTimeMinForNewIncrementalSnapshot: CalculateRelevantTimeMinForNewIncrementalSnapshot =
-  (webPageUrl, mostRecentSnapshotTime) => {
+  (payload) => {
     return getWebPageVendor(
-      webPageUrl,
-    ).calculateRelevantTimeMinForNewIncrementalSnapshot?.(
-      webPageUrl,
-      mostRecentSnapshotTime,
-    );
+      payload.webPageUrl,
+    ).calculateRelevantTimeMinForNewIncrementalSnapshot?.(payload);
   };
 
-export const checkIfNewSnapshotIsDue: CheckIfNewSnapshotIsDue = (
-  webPageUrl,
-  mostRecentSnapshotTime,
-) => {
-  return getWebPageVendor(webPageUrl).checkIfNewSnapshotIsDue(
-    webPageUrl,
-    mostRecentSnapshotTime,
-  );
+export const checkIfNewSnapshotIsDue: CheckIfNewSnapshotIsDue = (payload) => {
+  return getWebPageVendor(payload.webPageUrl).checkIfNewSnapshotIsDue(payload);
 };
 
 const listWebPageUrlExamples = (): string[] => {

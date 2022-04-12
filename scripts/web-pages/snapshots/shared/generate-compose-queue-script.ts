@@ -133,11 +133,8 @@ export const generateComposeQueueScript =
 
         const snapshotInventoryUpdatedAt = snapshotInventory?.updatedAt;
 
-        const mostRecentSnapshotTimeInInventory = _.max(
-          snapshotInventory?.items
-            .filter((item) => !item.aliasUrl)
-            .map((item) => item.capturedAt),
-        );
+        const snapshotTimesInInventory =
+          snapshotInventory?.items.map((item) => item.capturedAt) ?? [];
 
         const queueItemsCompletedAfterInventoryUpdate =
           existingQueueItems.filter((item) => {
@@ -154,25 +151,25 @@ export const generateComposeQueueScript =
 
         allNewQueueItems.push(...queueItemsCompletedAfterInventoryUpdate);
 
-        const mostRecentlyCompletedQueueItem = _.orderBy(
-          existingQueueItems.filter((item) =>
+        const snapshotTimesInCompletedQueueItems = existingQueueItems
+          .filter((item) =>
             item.attempts?.find((attempt) => attempt.status === "completed"),
-          ),
-          (item) => _.max(item.attempts?.map((attempt) => attempt.startedAt)),
-        ).at(-1);
+          )
+          .flatMap(
+            (item) => item.attempts?.map((attempt) => attempt.startedAt) ?? [],
+          );
 
-        const mostRecentSnapshotTime = _.max([
-          mostRecentSnapshotTimeInInventory,
-          mostRecentlyCompletedQueueItem?.attempts?.at(-1)?.startedAt,
+        const knownSnapshotTimesInAscOrder = _.orderBy([
+          ...snapshotTimesInInventory,
+          ...snapshotTimesInCompletedQueueItems,
         ]);
 
         const newSnapshotIsDue =
           force ||
-          !mostRecentSnapshotTime ||
-          checkIfNewSnapshotIsDue(
-            webPageDocument.webPageUrl,
-            mostRecentSnapshotTime,
-          );
+          checkIfNewSnapshotIsDue({
+            webPageUrl: webPageDocument.webPageUrl,
+            knownSnapshotTimesInAscOrder,
+          });
 
         if (newSnapshotIsDue) {
           const newQueueItem: SnapshotQueueItem = {
@@ -181,13 +178,14 @@ export const generateComposeQueueScript =
             addedAt: newQueueItemAddedAt,
           };
 
+          const mostRecentSnapshotTime = knownSnapshotTimesInAscOrder.at(-1);
           const relevantTimeMin =
             force || !mostRecentSnapshotTime
               ? undefined
-              : await calculateRelevantTimeMinForNewIncrementalSnapshot(
-                  webPageDocument.webPageUrl,
+              : await calculateRelevantTimeMinForNewIncrementalSnapshot({
+                  webPageUrl: webPageDocument.webPageUrl,
                   mostRecentSnapshotTime,
-                );
+                });
 
           if (relevantTimeMin) {
             newQueueItem.context = {
