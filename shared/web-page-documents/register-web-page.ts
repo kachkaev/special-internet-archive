@@ -1,6 +1,6 @@
 import { getErrorMessage } from "../errors";
-import { serializeTime } from "../helpers-for-json";
 import { OperationResult } from "../operations";
+import { serializeTime } from "../time";
 import {
   checkIfWebPageDocumentExists,
   generateWebPagePath,

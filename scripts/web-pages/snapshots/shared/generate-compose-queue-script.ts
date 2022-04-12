@@ -6,7 +6,6 @@ import { randomUUID } from "node:crypto";
 import { WriteStream } from "node:tty";
 
 import { cleanEnv } from "../../../../shared/clean-env";
-import { serializeTime } from "../../../../shared/helpers-for-json";
 import {
   getSnapshotGenerator,
   SnapshotGeneratorId,
@@ -17,6 +16,7 @@ import {
   SnapshotQueueItem,
   writeSnapshotQueueDocument,
 } from "../../../../shared/snapshot-queues";
+import { serializeTime } from "../../../../shared/time";
 import { processWebPages } from "../../../../shared/web-page-documents";
 import {
   calculateRelevantTimeMinForNewIncrementalSnapshot,

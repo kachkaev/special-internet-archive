@@ -8,11 +8,11 @@ import sortKeys from "sort-keys";
 import { cleanEnv } from "../../../../shared/clean-env";
 import { relevantTimeMin } from "../../../../shared/collection";
 import { UserFriendlyError } from "../../../../shared/errors";
-import { serializeTime } from "../../../../shared/helpers-for-json";
 import {
   getSnapshotGenerator,
   SnapshotGeneratorId,
 } from "../../../../shared/snapshot-generators";
+import { serializeTime } from "../../../../shared/time";
 import {
   processWebPages,
   SnapshotInventory,

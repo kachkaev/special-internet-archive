@@ -1,32 +1,16 @@
-import { DateTime } from "luxon";
 import path from "node:path";
 
 import { getWebPagesDirPath } from "../collection";
-import { serializeTime } from "../helpers-for-json";
-import { assertWebPageUrlVendor } from "./shared/assert-web-page-url-vendor";
-import { categorizeVkUrl } from "./shared/categorize-vk-url";
-import { MatchWebPageUrl, WebPageVendor } from "./types";
-
-const matchVkUrl: MatchWebPageUrl = (webPageUrl) =>
-  Boolean(/^https?:\/\/(m\.)?vk\.com(\/.*|)/.test(webPageUrl));
+import { assertVkUrl } from "./=vk/assert-vk-url";
+import { categorizeVkUrl } from "./=vk/categorize-vk-url";
+import { checkIfNewVkSnapshotIsDue } from "./=vk/check-if-new-vk-snapshot-is-due";
+import { WebPageVendor } from "./types";
 
 export const vkWebPageVendor: WebPageVendor = {
-  checkIfNewSnapshotIsDue: ({ webPageUrl, knownSnapshotTimesInAscOrder }) => {
-    assertWebPageUrlVendor(webPageUrl, matchVkUrl);
-
-    const mostRecentSnapshotTime = knownSnapshotTimesInAscOrder.at(-1);
-    if (!mostRecentSnapshotTime) {
-      return true;
-    }
-
-    return (
-      // @todo improve based on page type and snapshot summary combination
-      serializeTime(DateTime.utc().minus({ days: 2 })) > mostRecentSnapshotTime
-    );
-  },
+  checkIfNewSnapshotIsDue: checkIfNewVkSnapshotIsDue,
 
   generateWebPageDirPath: (webPageUrl) => {
-    assertWebPageUrlVendor(webPageUrl, matchVkUrl);
+    assertVkUrl(webPageUrl);
 
     let pathSegments: string[];
     const categorizedVkUrl = categorizeVkUrl(webPageUrl);
@@ -34,6 +18,7 @@ export const vkWebPageVendor: WebPageVendor = {
       case "account":
         pathSegments = ["accounts", categorizedVkUrl.accountId];
         break;
+
       case "post":
         pathSegments = [
           "posts",
@@ -54,11 +39,11 @@ export const vkWebPageVendor: WebPageVendor = {
     "https://vk.com/wall-123-456",
   ],
 
-  listWebPageAliases: (url) => {
-    assertWebPageUrlVendor(url, matchVkUrl);
+  listWebPageAliases: (webPageUrl) => {
+    assertVkUrl(webPageUrl);
 
-    return [url.replace("//vk", "//m.vk")];
+    return [webPageUrl.replace("//vk", "//m.vk")];
   },
 
-  matchWebPageUrl: matchVkUrl,
+  assertWebPageUrl: assertVkUrl,
 };

@@ -1,7 +1,7 @@
 import _ from "lodash";
 
 import { relevantTimeMin } from "../../collection";
-import { serializeTime } from "../../helpers-for-json";
+import { serializeTime } from "../../time";
 import { ObtainSnapshotTimes } from "../types";
 import { createAxiosInstanceForWaybackMachine } from "./shared/create-axios-instance-for-wayback-machine";
 

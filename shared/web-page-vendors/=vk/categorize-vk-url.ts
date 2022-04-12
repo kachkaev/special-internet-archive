@@ -1,4 +1,5 @@
 import { UserFriendlyError } from "../../errors";
+import { assertVkUrl } from "./assert-vk-url";
 
 export type CategorizedVkUrl =
   | {
@@ -12,6 +13,8 @@ export type CategorizedVkUrl =
     };
 
 export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
+  assertVkUrl(webPageUrl);
+
   const slug = webPageUrl.match(/^https:\/\/vk.com\/([\d._a-z-]+)$/)?.[1];
 
   if (slug) {

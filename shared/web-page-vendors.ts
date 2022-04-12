@@ -18,8 +18,12 @@ const getWebPageVendor = (webPageUrl: string): WebPageVendor => {
       const webPageVendor =
         webPageVendorLookup[webpageVendorId as WebPageVendorId];
 
-      if (webPageVendor.matchWebPageUrl(webPageUrl)) {
+      try {
+        webPageVendor.assertWebPageUrl(webPageUrl);
+
         return webPageVendor;
+      } catch {
+        // noop (trying another vendor)
       }
     }
   }

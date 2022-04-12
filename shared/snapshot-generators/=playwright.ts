@@ -2,7 +2,7 @@ import { globby } from "globby";
 import path from "node:path";
 import sleep from "sleep-promise";
 
-import { serializeTime } from "../helpers-for-json";
+import { serializeTime } from "../time";
 import { generateWebPageDirPath } from "../web-page-vendors";
 import { ObtainSnapshotTimes, SnapshotGenerator } from "./types";
 

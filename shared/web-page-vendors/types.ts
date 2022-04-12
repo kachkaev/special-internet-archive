@@ -1,5 +1,5 @@
-export type MatchWebPageUrl = (webPageUrl: string) => boolean;
 export type GenerateWebPageDirPath = (webPageUrl: string) => string;
+export type AssertVendorUrl = (webPageUrl: string) => void;
 
 export type CalculateRelevantTimeMinForNewIncrementalSnapshot = (payload: {
   webPageUrl: string;
@@ -17,5 +17,5 @@ export interface WebPageVendor {
   generateWebPageDirPath: GenerateWebPageDirPath;
   listUrlExamples: () => string[];
   listWebPageAliases: (webPageUrl: string) => string[];
-  matchWebPageUrl: MatchWebPageUrl;
+  assertWebPageUrl: AssertVendorUrl;
 }

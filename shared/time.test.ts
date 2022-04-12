@@ -1,4 +1,4 @@
-import { serializeTime } from "./helpers-for-json";
+import { serializeTime } from "./time";
 
 describe("serializeTime", () => {
   it("parses RFC2822", () => {

@@ -6,7 +6,6 @@ import RegexParser from "regex-parser";
 
 import { cleanEnv } from "../../../../shared/clean-env";
 import { getErrorMessage } from "../../../../shared/errors";
-import { serializeTime } from "../../../../shared/helpers-for-json";
 import {
   getSnapshotGenerator,
   SnapshotGeneratorId,
@@ -16,6 +15,7 @@ import {
   readSnapshotQueueDocument,
   reportSnapshotQueueAttempt,
 } from "../../../../shared/snapshot-queues";
+import { serializeTime } from "../../../../shared/time";
 
 export const generateProcessQueueScript =
   ({
