@@ -1,7 +1,8 @@
 import fs from "fs-extra";
 import _ from "lodash";
 import { DateTime } from "luxon";
-import path from "node:path";
+import path, { resolve } from "node:path";
+import sleep from "sleep-promise";
 
 export const serializeTime = (time?: string | DateTime): string => {
   let dateTime: DateTime | undefined =
@@ -205,11 +206,24 @@ export const formatJson = (
   return result;
 };
 
+const fileLockByPath: Record<string, true> = {};
+
 export const writeFormattedJson = async (
   filePath: string,
   object: unknown,
   options?: FormatJsonOptions,
 ) => {
-  await fs.mkdirp(path.dirname(filePath));
-  await fs.writeFile(filePath, formatJson(object, options), "utf8");
+  const resolvedPath = path.resolve(filePath);
+
+  while (fileLockByPath[resolvedPath]) {
+    await sleep(10);
+  }
+
+  try {
+    fileLockByPath[resolvedPath] = true;
+    await fs.mkdirp(path.dirname(filePath));
+    await fs.writeFile(filePath, formatJson(object, options), "utf8");
+  } finally {
+    delete fileLockByPath[resolvedPath];
+  }
 };
