@@ -330,7 +330,8 @@ Playwright — программа с открытым исходным кодо�
 
     ```sh
     ## 🚧 🚧 🚧 пока не работает 🚧 🚧 🚧
-    yarn exe scripts/web-pages/snapshots/extract-summaries.script.ts
+    yarn exe scripts/web-pages/snapshots/playwright/4-extract-summaries.script.ts
+    yarn exe scripts/web-pages/snapshots/wayback-machine/4-extract-summaries.script.ts
     ```
 
     ```sh
