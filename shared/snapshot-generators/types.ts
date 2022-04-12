@@ -1,3 +1,5 @@
+import { WriteStream } from "node:tty";
+
 export type ObtainSnapshotTimes = (
   webPageUrl: string,
   aliasUrl?: string | undefined,
@@ -9,6 +11,7 @@ export interface SnapshotContext {
 
 export type TakeSnapshot = (payload: {
   abortController?: AbortController;
+  output?: WriteStream | undefined;
   snapshotContext?: SnapshotContext | undefined;
   webPageUrl: string;
 }) => Promise<void | string>;

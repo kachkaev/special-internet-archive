@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import _ from "lodash";
 import { DateTime } from "luxon";
-import path, { resolve } from "node:path";
+import path from "node:path";
 import sleep from "sleep-promise";
 
 export const serializeTime = (time?: string | DateTime): string => {

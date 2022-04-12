@@ -10,8 +10,8 @@ export const createAxiosInstanceForWaybackMachine = (): AxiosInstance => {
   });
 
   axiosRetry(axiosInstance, {
-    retries: 2,
-    retryDelay: (retryCount) => (retryCount - 1) * 500,
+    retries: 10,
+    retryDelay: (retryCount) => axiosRetry.exponentialDelay(retryCount),
     retryCondition: (error) =>
       ![200, 204, 404].includes(error.response?.status ?? 0),
     shouldResetTimeout: true,
