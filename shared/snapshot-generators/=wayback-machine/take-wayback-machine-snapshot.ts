@@ -41,7 +41,7 @@ export const takeWaybackMachineSnapshot: TakeSnapshot = async ({
     await fs.writeFile(tmpFilePath, html, "utf8");
 
     throw new Error(
-      `Could not find watchJob id in Wayback Machine response. Response data saved to ${tmpFilePath}.`,
+      `Could not find watchJob id in Wayback Machine response. Response data saved to ${tmpFilePath}`,
     );
   }
 

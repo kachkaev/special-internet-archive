@@ -34,7 +34,7 @@ export const processWebPages = async ({
   let numberOfSkipped = 0;
 
   const webPageDocumentPaths = await listFilePaths({
-    filesNicknameToLog: "web pages",
+    filesNicknameToLog: "web page documents",
     fileSearchPattern: "**/web-page.json",
     fileSearchDirPath: getWebPagesDirPath(),
     output,
