@@ -273,7 +273,7 @@ Playwright — программа с открытым исходным кодо�
 1.  TODO
 
     ```sh
-    ## 🚧 🚧 🚧 пока не работает 🚧 🚧 🚧
+    ## 🚧 🚧 🚧 работает в бета-режиме 🚧 🚧 🚧
     yarn exe scripts/web-pages/snapshots/playwright/3-process-queue.script.ts
     ```
 
