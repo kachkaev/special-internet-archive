@@ -32,52 +32,6 @@ annotation:
     - фашист
 ```
 
-data
-
-```yaml
-# = .gitignore
-collection-config.yml
-snapshot-queues:
-  playwright.json
-  wayback-machine.json
-web-pages:
-  vk:
-    accounts:
-      penza_live:
-        items:
-          2022-03-10-011223z-playwright.zip
-        # 2022-03-10-011223z-playwright.zip.summary.json
-          2022-04-05-424312z-playwright.zip
-        # 2022-04-05-424312z-playwright.zip.summary.json
-      # snapshot-summary-combination.json
-        web-page.json
-    posts:
-      "-161982468":
-        "12345":
-          items:
-            2022-03-10-011223z-playwright.zip
-          # 2022-03-10-011223z-playwright.zip.summary.json
-            2022-04-05-424312z-playwright.zip
-          # 2022-04-05-424312z-playwright.zip.summary.json
-        # snapshot-summary-combination.json
-          web-page.json
-    photos:
-      "-189058660":
-        "457289204":
-          items:
-            2022-03-10-011223z-playwright.zip
-          # 2022-03-10-011223z-playwright.zip.summary.json
-            2022-04-05-424312z-playwright.zip
-          # 2022-04-05-424312z-playwright.zip.summary.json
-        # snapshot-summary-combination.json
-          web-page.json
-```
-
-```txt
-http://web.archive.org/cdx/search/cdx?url=https://vk.com/penza_live
-http://web.archive.org/cdx/search/cdx?url=https://m.vk.com/penza_live
-```
-
 steps
 
 mvp
@@ -202,6 +156,9 @@ snapshot generator
 
 inventory
   инвентаризация (учёт?)
+
+label
+  метка
 ```
 
 ## Telegram chat logo
