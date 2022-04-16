@@ -1,5 +1,7 @@
 import chalk from "chalk";
 
+export class AbortError extends Error {}
+
 export class UserFriendlyError extends Error {}
 
 export class EarlyExitError extends Error {

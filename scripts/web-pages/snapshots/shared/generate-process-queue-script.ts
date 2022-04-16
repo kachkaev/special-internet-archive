@@ -115,7 +115,7 @@ export const generateProcessQueueScript =
 
       try {
         const message = (await snapshotGenerator.takeSnapshot({
-          abortController,
+          abortSignal: abortController.signal,
           snapshotContext: item.context,
           webPageUrl: item.webPageUrl,
         })) as string | undefined;

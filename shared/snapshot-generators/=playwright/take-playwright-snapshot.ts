@@ -3,6 +3,7 @@ import path from "node:path";
 import { chromium, Page } from "playwright";
 import sleep from "sleep-promise";
 
+import { AbortError } from "../../errors";
 import { generateWebPageDirPath } from "../../web-page-vendors";
 import { TakeSnapshot } from "../types";
 
@@ -30,6 +31,7 @@ const loadAllLazyImages = async (page: Page) => {
 export const takePlaywrightSnapshot: TakeSnapshot = async ({
   webPageUrl,
   // snapshotContext,
+  abortSignal,
 }) => {
   const timezoneId = "Europe/Moscow";
   const browser = await chromium.launch({ headless: false });
@@ -51,6 +53,10 @@ export const takePlaywrightSnapshot: TakeSnapshot = async ({
       window.scrollTo(0, document.body.scrollHeight);
     });
 
+    if (abortSignal?.aborted) {
+      throw new AbortError();
+    }
+
     await sleep(100);
     await page
       .locator("#wall_more_link #btn_lock")
@@ -70,12 +76,6 @@ export const takePlaywrightSnapshot: TakeSnapshot = async ({
       .last()
       .textContent();
 
-    // const oldestVisiblePostDateAsDateTime = DateTime.fromFormat(
-    //   oldestVisiblePostDateText,
-    //   "",
-    //   { locale: "ru-RU", zone: timezoneId },
-    // );
-
     scrollingMakesSense =
       (await page.locator("#wall_more_link").isVisible()) &&
       // @todo Replace with real time checking
@@ -84,9 +84,9 @@ export const takePlaywrightSnapshot: TakeSnapshot = async ({
 
   await loadAllLazyImages(page);
 
-  // await context.tracing.startChunk();
-
-  // await page.evaluate(() => {});
+  if (abortSignal?.aborted) {
+    throw new AbortError();
+  }
 
   await context.tracing.stop({
     path: path.resolve(

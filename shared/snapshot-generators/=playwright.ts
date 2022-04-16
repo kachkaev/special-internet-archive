@@ -1,11 +1,15 @@
 import { obtainPlaywrightSnapshotTimes } from "./=playwright/obtain-playwright-snapshot-times";
+import { parsePlaywrightSnapshot } from "./=playwright/parse-playwright-snapshot";
 import { takePlaywrightSnapshot } from "./=playwright/take-playwright-snapshot";
+import { ensureTraceViewerServerStopped } from "./=playwright/traces";
 import { SnapshotGenerator } from "./types";
 
 export const playwrightSnapshotGenerator: SnapshotGenerator = {
   aliasesSupported: false,
   name: "Playwright",
-  snapshotAttemptTimeoutInSeconds: 120,
-  takeSnapshot: takePlaywrightSnapshot,
   obtainSnapshotTimes: obtainPlaywrightSnapshotTimes,
+  parseSnapshot: parsePlaywrightSnapshot,
+  snapshotAttemptTimeoutInSeconds: 120,
+  stopParseSnapshotBatch: ensureTraceViewerServerStopped,
+  takeSnapshot: takePlaywrightSnapshot,
 };
