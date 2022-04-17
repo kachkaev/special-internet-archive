@@ -19,7 +19,7 @@ import {
   SnapshotInventoryItem,
   writeWebPageDocument,
 } from "../../../../shared/web-page-documents";
-import { listWebPageAliases } from "../../../../shared/web-page-vendors";
+import { listWebPageAliases } from "../../../../shared/web-page-sources";
 
 const calculateSnapshotCount = (
   snapshotInventoryItems: SnapshotInventoryItem[],

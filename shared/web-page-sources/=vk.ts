@@ -4,9 +4,9 @@ import { getWebPagesDirPath } from "../collection";
 import { assertVkUrl } from "./=vk/assert-vk-url";
 import { categorizeVkUrl } from "./=vk/categorize-vk-url";
 import { checkIfNewVkSnapshotIsDue } from "./=vk/check-if-new-vk-snapshot-is-due";
-import { WebPageVendor } from "./types";
+import { WebPageSource } from "./types";
 
-export const vkWebPageVendor: WebPageVendor = {
+export const vkWebPageSource: WebPageSource = {
   checkIfNewSnapshotIsDue: checkIfNewVkSnapshotIsDue,
 
   generateWebPageDirPath: (webPageUrl) => {

@@ -7,7 +7,7 @@ import {
   generateWebPagePath,
   registerWebPage,
 } from "../../shared/web-page-documents";
-import { generateUrlExamplesMessage } from "../../shared/web-page-vendors";
+import { generateUrlExamplesMessage } from "../../shared/web-page-sources";
 
 const output = process.stdout;
 

@@ -21,7 +21,7 @@ import { processWebPages } from "../../../../shared/web-page-documents";
 import {
   calculateRelevantTimeMinForNewIncrementalSnapshot,
   checkIfNewSnapshotIsDue,
-} from "../../../../shared/web-page-vendors";
+} from "../../../../shared/web-page-sources";
 
 export const generateComposeQueueScript =
   ({

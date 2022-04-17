@@ -2,7 +2,7 @@ import { globby } from "globby";
 import path from "node:path";
 
 import { serializeTime } from "../../time";
-import { generateWebPageDirPath } from "../../web-page-vendors";
+import { generateWebPageDirPath } from "../../web-page-sources";
 import { ObtainSnapshotTimes } from "../types";
 
 export const obtainPlaywrightSnapshotTimes: ObtainSnapshotTimes = async (

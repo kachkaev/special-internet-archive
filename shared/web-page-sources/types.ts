@@ -1,5 +1,5 @@
 export type GenerateWebPageDirPath = (webPageUrl: string) => string;
-export type AssertVendorUrl = (webPageUrl: string) => void;
+export type AssertSourceUrl = (webPageUrl: string) => void;
 
 export type CalculateRelevantTimeMinForNewIncrementalSnapshot = (payload: {
   webPageUrl: string;
@@ -11,11 +11,11 @@ export type CheckIfNewSnapshotIsDue = (payload: {
   knownSnapshotTimesInAscOrder: string[];
 }) => boolean | Promise<boolean>;
 
-export interface WebPageVendor {
+export interface WebPageSource {
   calculateRelevantTimeMinForNewIncrementalSnapshot?: CalculateRelevantTimeMinForNewIncrementalSnapshot;
   checkIfNewSnapshotIsDue: CheckIfNewSnapshotIsDue;
   generateWebPageDirPath: GenerateWebPageDirPath;
   listUrlExamples: () => string[];
   listWebPageAliases: (webPageUrl: string) => string[];
-  assertWebPageUrl: AssertVendorUrl;
+  assertWebPageUrl: AssertSourceUrl;
 }

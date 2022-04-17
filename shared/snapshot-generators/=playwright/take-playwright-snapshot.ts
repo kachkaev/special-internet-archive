@@ -4,7 +4,7 @@ import { chromium, Page } from "playwright";
 import sleep from "sleep-promise";
 
 import { AbortError } from "../../errors";
-import { generateWebPageDirPath } from "../../web-page-vendors";
+import { generateWebPageDirPath } from "../../web-page-sources";
 import { TakeSnapshot } from "../types";
 
 const closeAuthModalIfPresent = async (page: Page): Promise<boolean> => {

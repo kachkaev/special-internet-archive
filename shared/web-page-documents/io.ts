@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { writeFormattedJson } from "../helpers-for-json";
 import { isUrl } from "../urls";
-import { generateWebPageDirPath } from "../web-page-vendors";
+import { generateWebPageDirPath } from "../web-page-sources";
 import { WebPageDocument } from "./types";
 
 export const generateWebPagePath = (webPageUrl: string): string => {
