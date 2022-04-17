@@ -549,7 +549,7 @@ Playwright умеет сохранять такие автоматизирова
     yarn exe scripts/web-pages/snapshots/extract-summary-combinations.script.ts
     ```
 
-    Этот скрипт прочитает файлы `⏳ [web-page-path]/snapshots/*.summary.json`, скомбинирует данные и сохранит результат файл `⏳ [web-page-path]/snapshot-summary-combination.json`.
+    Этот скрипт прочитает файлы `⏳ [web-page-path]/snapshots/*.summary.json`, скомбинирует данные и сохранит результат в файл `⏳ [web-page-path]/snapshot-summary-combination.json`.
 
 ### Аннотация веб-страниц
 
