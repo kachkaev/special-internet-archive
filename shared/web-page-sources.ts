@@ -3,6 +3,7 @@ import { vkWebPageSource } from "./web-page-sources/=vk";
 import {
   CalculateRelevantTimeMinForNewIncrementalSnapshot,
   CheckIfNewSnapshotIsDue,
+  ExtractSnapshotSummaryCombinationData,
   WebPageSource,
 } from "./web-page-sources/types";
 
@@ -53,6 +54,11 @@ export const checkIfNewSnapshotIsDue: CheckIfNewSnapshotIsDue = (payload) => {
     payload.webPageDocument.webPageUrl,
   ).checkIfNewSnapshotIsDue(payload);
 };
+
+export const extractSnapshotSummaryCombinationData: ExtractSnapshotSummaryCombinationData =
+  () => {
+    return { todo: true };
+  };
 
 const listWebPageUrlExamples = (): string[] => {
   return Object.values(webPageSourceLookup)

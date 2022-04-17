@@ -39,7 +39,7 @@ export type ExtractSnapshotSummaryData = (payload: {
   abortSignal?: AbortSignal;
   output?: WriteStream | undefined;
   snapshotFilePath: string;
-}) => Promise<void | SnapshotSummaryData>;
+}) => Promise<SnapshotSummaryData>;
 
 export type FinishCaptureSnapshotBatch = () => void | Promise<void>;
 export type FinishExtractSnapshotSummaryDataBatch = () => void | Promise<void>;

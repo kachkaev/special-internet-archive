@@ -1,54 +1,83 @@
 import fs from "fs-extra";
+import path from "node:path";
 
 import { writeFormattedJson } from "./helpers-for-json";
 
-export type SnapshotSummaryData = unknown;
+export type SnapshotSummaryData = Record<string, unknown>;
 export type SnapshotSummaryCombinationData = SnapshotSummaryData;
 
 export const snapshotSummaryStaleTime = "2022-01-01T00:00:00Z";
+export const snapshotSummaryCombinationStaleTime = "2022-01-01T00:00:00Z";
 
-export interface SnapshotSummaryDocument {
+export interface SnapshotSummaryDocument extends SnapshotSummaryData {
   documentType: "snapshotSummary";
   webPageUrl: string;
   aliasUrl?: string;
   capturedAt: string;
   extractedAt: string;
-  data: SnapshotSummaryData;
 }
 
-export interface SnapshotSummaryCombinationDocument {
+export interface SnapshotSummaryCombinationDocument
+  extends SnapshotSummaryCombinationData {
   documentType: "snapshotSummaryCombination";
   webPageUrl: string;
   combinedAt: string;
-  data: SnapshotSummaryData;
 }
 
-const generateSnapshotSummaryDocumentPath = (snapshotFilePath: string) => {
-  return `${snapshotFilePath}.summary.json`;
+const generateSnapshotSummaryDocumentPath = (
+  snapshotOrSnapshotSummaryFilePath: string,
+) => {
+  return snapshotOrSnapshotSummaryFilePath.endsWith(".summary.json")
+    ? snapshotOrSnapshotSummaryFilePath
+    : `${snapshotOrSnapshotSummaryFilePath}.summary.json`;
 };
 
 export const checkIfSnapshotSummaryDocumentExists = async (
-  snapshotFilePath: string,
+  snapshotOrSnapshotSummaryFilePath: string,
 ): Promise<boolean> => {
   return await fs.pathExists(
-    generateSnapshotSummaryDocumentPath(snapshotFilePath),
+    generateSnapshotSummaryDocumentPath(snapshotOrSnapshotSummaryFilePath),
   );
 };
 
 export const readSnapshotSummaryDocument = async (
-  snapshotFilePath: string,
+  snapshotOrSnapshotSummaryFilePath: string,
 ): Promise<SnapshotSummaryDocument> => {
   return (await fs.readJson(
-    generateSnapshotSummaryDocumentPath(snapshotFilePath),
+    generateSnapshotSummaryDocumentPath(snapshotOrSnapshotSummaryFilePath),
   )) as unknown as SnapshotSummaryDocument;
 };
 
 export const writeSnapshotSummaryDocument = async (
-  snapshotFilePath: string,
+  snapshotOrSnapshotSummaryFilePath: string,
   snapshotSummaryDocument: SnapshotSummaryDocument,
 ): Promise<void> => {
   await writeFormattedJson(
-    generateSnapshotSummaryDocumentPath(snapshotFilePath),
+    generateSnapshotSummaryDocumentPath(snapshotOrSnapshotSummaryFilePath),
     snapshotSummaryDocument,
+  );
+};
+
+const generateSnapshotSummaryCombinationDocumentPath = (
+  webPageDirPath: string,
+) => {
+  return path.resolve(webPageDirPath, "snapshot-summary-combination.json");
+};
+
+export const readSnapshotSummaryCombinationDocument = async (
+  webPageDirPath: string,
+): Promise<SnapshotSummaryCombinationDocument> => {
+  return (await fs.readJson(
+    generateSnapshotSummaryCombinationDocumentPath(webPageDirPath),
+  )) as unknown as SnapshotSummaryCombinationDocument;
+};
+
+export const writeSnapshotSummaryCombinationDocument = async (
+  webPageDirPath: string,
+  snapshotSummaryCombinationDocument: SnapshotSummaryCombinationDocument,
+): Promise<void> => {
+  await writeFormattedJson(
+    generateSnapshotSummaryCombinationDocumentPath(webPageDirPath),
+    snapshotSummaryCombinationDocument,
   );
 };

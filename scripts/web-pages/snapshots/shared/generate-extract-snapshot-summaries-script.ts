@@ -81,7 +81,7 @@ export const extractSnapshotSummariesScript =
             existingSnapshotSummary?.extractedAt &&
             existingSnapshotSummary.extractedAt > snapshotSummaryStaleTime
           ) {
-            output.write("snapshot summary is up to date");
+            output.write(chalk.gray("snapshot summary is up to date"));
             continue;
           }
 
@@ -121,7 +121,7 @@ export const extractSnapshotSummariesScript =
               webPageUrl: webPageDocument.webPageUrl,
               ...snapshotInventoryItem,
               extractedAt: serializeTime(),
-              data: snapshotSummaryData,
+              ...snapshotSummaryData,
             });
 
             output.write(chalk.magenta("done"));
