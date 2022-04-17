@@ -1,17 +1,20 @@
 import chalk from "chalk";
 import _ from "lodash";
 
-import { readUrlInboxRows } from "../../shared/collection";
+import { getUrlInboxFilePath, readUrlInboxRows } from "../../shared/collection";
 import { registerWebPage } from "../../shared/web-page-documents";
 import { generateUrlExamplesMessage } from "../../shared/web-page-sources";
-import { outputRegisterWebPageOperationResult } from "../shared/output-register-web-page-operation-result";
 
 const output = process.stdout;
 
 const script = async () => {
   output.write(chalk.bold("Registering web pages from URL inbox\n"));
 
-  const parsedRows = await readUrlInboxRows(output);
+  output.write(
+    `${chalk.green("URL inbox file location:")} ${getUrlInboxFilePath()}\n`,
+  );
+
+  const parsedRows = await readUrlInboxRows();
   if (!parsedRows) {
     output.write(chalk.yellow("File is empty.\n"));
 
@@ -37,7 +40,21 @@ const script = async () => {
       "script:register-from-url-inbox",
     );
 
-    outputRegisterWebPageOperationResult({ output, operationResult });
+    switch (operationResult.status) {
+      case "failed": {
+        output.write(chalk.red(operationResult.message ?? "unknown error"));
+        break;
+      }
+      case "processed": {
+        output.write(chalk.magenta("registered"));
+        break;
+      }
+
+      case "skipped": {
+        output.write(chalk.gray("already registered"));
+        break;
+      }
+    }
 
     if (operationResult.status === "failed") {
       numberOfErrors += 1;

@@ -1,10 +1,10 @@
 import chalk from "chalk";
-import fs from "fs-extra";
 
 import {
   getUrlInboxFilePath,
   ParsedUrlInboxRow,
   readUrlInboxRows,
+  writeUrlInbox,
 } from "../../shared/collection";
 import { checkIfWebPageDocumentExists } from "../../shared/web-page-documents";
 
@@ -13,7 +13,11 @@ const output = process.stdout;
 const script = async () => {
   output.write(chalk.bold("Cleaning up URL inbox\n"));
 
-  const parsedRows = await readUrlInboxRows(output);
+  output.write(
+    `${chalk.green("URL inbox file location:")} ${getUrlInboxFilePath()}\n`,
+  );
+
+  const parsedRows = await readUrlInboxRows();
   if (!parsedRows) {
     output.write(chalk.yellow("File is empty.\n"));
 
@@ -44,10 +48,7 @@ const script = async () => {
     return;
   }
 
-  const newFileContents = parsedRowsToKeep
-    .map((parsedRow) => parsedRow.text)
-    .join("\n");
-  await fs.writeFile(getUrlInboxFilePath(), newFileContents);
+  await writeUrlInbox(parsedRowsToKeep.map((parsedRow) => parsedRow.text));
 
   for (const parsedRow of parsedRows) {
     if (parsedRowsToRemove.includes(parsedRow)) {

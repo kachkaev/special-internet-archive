@@ -1,8 +1,6 @@
-import chalk from "chalk";
 import * as envalid from "envalid";
 import fs from "fs-extra";
 import path from "node:path";
-import { WriteStream } from "node:tty";
 
 import { cleanEnv } from "./clean-env";
 import { UserFriendlyError } from "./errors";
@@ -31,11 +29,10 @@ export type ParsedUrlInboxRow =
   | { type: "url"; text: string; url: string }
   | { type: "other"; text: string };
 
-export const readUrlInboxRows = async (
-  output: WriteStream,
-): Promise<ParsedUrlInboxRow[] | undefined> => {
+export const readUrlInboxRows = async (): Promise<
+  ParsedUrlInboxRow[] | undefined
+> => {
   const filePath = getUrlInboxFilePath();
-  output.write(`${chalk.green("File location:")} ${filePath}\n`);
 
   try {
     const fileContents = await fs.readFile(filePath, "utf8");
@@ -57,4 +54,12 @@ export const readUrlInboxRows = async (
       "Unable tor read URL inbox file. Try running `yarn exe scripts/web-pages/ensure-url-inbox.script.ts` first.",
     );
   }
+};
+
+export const writeUrlInbox = async (lines: string[]) => {
+  await fs.writeFile(
+    getUrlInboxFilePath(),
+    lines.join("\n") + // add trailing newline if needed
+      (lines.at(-1) === "" ? "\n" : ""),
+  );
 };
