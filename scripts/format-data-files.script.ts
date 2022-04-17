@@ -18,13 +18,13 @@ const script = async () => {
   });
 
   await processFiles({
-    fileSearchPattern: "**/*.(json|geojson)",
+    fileSearchPattern: ["**/*.json", "!**/snapshots/*/**/*"],
     fileSearchDirPath: customPath
       ? path.resolve(getCollectionDirPath(), customPath)
       : getCollectionDirPath(),
     filesNicknameToLog: "files to format",
     output,
-    statusReportFrequency: 500,
+    statusReportFrequency: 0,
     processFile: async (filePath) => {
       const originalJson = await fs.readFile(filePath, "utf8");
       const jsonData = JSON.parse(originalJson) as unknown;

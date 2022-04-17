@@ -1,17 +1,18 @@
-import { DateTime, DurationLike, Interval } from "luxon";
+import { DateTime, DateTimeOptions, DurationLike, Interval } from "luxon";
 
 export const serializeTime = (time?: string | DateTime): string => {
   let dateTime: DateTime | undefined =
     time instanceof DateTime ? time : undefined;
 
   if (typeof time === "string") {
+    const options: DateTimeOptions = { setZone: true, zone: "utc" };
     // YYYYMMDDHHMMSS
     if (time.length === 14) {
-      dateTime = DateTime.fromFormat(time, "yyyyMMddHHmmss").setZone("utc");
+      dateTime = DateTime.fromFormat(time, "yyyyMMddHHmmss", options);
     } else {
-      dateTime = DateTime.fromRFC2822(time).setZone("utc");
+      dateTime = DateTime.fromRFC2822(time, options);
       if (!dateTime.isValid) {
-        dateTime = DateTime.fromISO(time, { setZone: true }).setZone("utc");
+        dateTime = DateTime.fromISO(time, options);
       }
     }
   }

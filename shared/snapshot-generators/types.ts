@@ -1,5 +1,9 @@
 import { WriteStream } from "node:tty";
 
+import { OperationResult } from "../operations";
+import { SnapshotSummaryData } from "../snapshot-summaries";
+import { SnapshotInventoryItem, WebPageDocument } from "../web-page-documents";
+
 export type ObtainSnapshotTimes = (payload: {
   webPageUrl: string;
   webPageDirPath: string;
@@ -18,23 +22,38 @@ export type CaptureSnapshot = (payload: {
   webPageUrl: string;
 }) => Promise<void | string>;
 
-export type ParseSnapshot = (payload: {
+export type DownloadSnapshot = (
+  payload: {
+    webPageDirPath: string;
+    webPageDocument: WebPageDocument;
+  } & SnapshotInventoryItem,
+) => Promise<OperationResult>;
+
+export type GenerateSnapshotFilePath = (
+  payload: {
+    webPageDirPath: string;
+  } & SnapshotInventoryItem,
+) => string;
+
+export type ExtractSnapshotSummaryData = (payload: {
   abortSignal?: AbortSignal;
   output?: WriteStream | undefined;
   snapshotFilePath: string;
-}) => Promise<void | string>;
+}) => Promise<void | SnapshotSummaryData>;
 
 export type FinishCaptureSnapshotBatch = () => void | Promise<void>;
-export type FinishParseSnapshotBatch = () => void | Promise<void>;
+export type FinishExtractSnapshotSummaryDataBatch = () => void | Promise<void>;
 
 export interface SnapshotGenerator {
   aliasesSupported: boolean;
   captureSnapshot: CaptureSnapshot;
+  downloadSnapshot?: DownloadSnapshot;
+  extractSnapshotSummaryData?: ExtractSnapshotSummaryData;
   finishCaptureSnapshotBatch?: FinishCaptureSnapshotBatch;
-  finishParseSnapshotBatch?: FinishParseSnapshotBatch;
+  finishExtractSnapshotSummaryDataBatch?: FinishExtractSnapshotSummaryDataBatch;
+  generateSnapshotFilePath?: GenerateSnapshotFilePath;
   name: string;
   obtainSnapshotTimes: ObtainSnapshotTimes;
-  parseSnapshot?: ParseSnapshot;
   role: "external" | "internal";
   snapshotAttemptTimeoutInSeconds: number;
 }

@@ -1,10 +1,10 @@
-import { DateTime } from "luxon";
-import path from "node:path";
 import { chromium, Page } from "playwright";
 import sleep from "sleep-promise";
 
 import { AbortError } from "../../errors";
+import { serializeTime } from "../../time";
 import { CaptureSnapshot } from "../types";
+import { generatePlaywrightSnapshotFilePath } from "./generate-playwright-snapshot-file-path";
 
 const closeAuthModalIfPresent = async (page: Page): Promise<boolean> => {
   const button = page.locator(".UnauthActionBox__close").nth(0);
@@ -27,7 +27,7 @@ const loadAllLazyImages = async (page: Page) => {
   await page.waitForLoadState("networkidle");
 };
 
-export const takePlaywrightSnapshot: CaptureSnapshot = async ({
+export const capturePlaywrightSnapshot: CaptureSnapshot = async ({
   abortSignal,
   webPageDirPath,
   webPageUrl,
@@ -42,7 +42,7 @@ export const takePlaywrightSnapshot: CaptureSnapshot = async ({
   const page = await context.newPage();
   await page.goto(webPageUrl);
 
-  const snapshotDateTime = DateTime.utc();
+  const capturedAt = serializeTime();
 
   let scrollingMakesSense = true;
   let authModalAlreadyClosed = false;
@@ -88,11 +88,10 @@ export const takePlaywrightSnapshot: CaptureSnapshot = async ({
   }
 
   await context.tracing.stop({
-    path: path.resolve(
+    path: generatePlaywrightSnapshotFilePath({
       webPageDirPath,
-      "snapshots",
-      `${snapshotDateTime.toFormat("yyyy-MM-dd-HHmmss")}z-playwright.zip`,
-    ),
+      capturedAt,
+    }),
   });
 
   await browser.close();

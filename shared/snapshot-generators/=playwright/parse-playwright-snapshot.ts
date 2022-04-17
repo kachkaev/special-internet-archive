@@ -1,7 +1,7 @@
-import { ParseSnapshot } from "../types";
+import { ExtractSnapshotSummaryData } from "../types";
 import { evaluateSnapshot, gotoLastAction, openTrace } from "./traces";
 
-export const parsePlaywrightSnapshot: ParseSnapshot = async ({
+export const parsePlaywrightSnapshot: ExtractSnapshotSummaryData = async ({
   snapshotFilePath,
 }) => {
   const tracePage = await openTrace(snapshotFilePath);
@@ -23,6 +23,8 @@ export const parsePlaywrightSnapshot: ParseSnapshot = async ({
   });
 
   await tracePage.close();
-  // eslint-disable-next-line no-console
-  console.log(rawPosts);
+
+  return {
+    rawPosts,
+  };
 };

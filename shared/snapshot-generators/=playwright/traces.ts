@@ -4,19 +4,21 @@ import path from "node:path";
 import { BrowserContext, chromium, Page } from "playwright";
 import sleep from "sleep-promise";
 
+// Context: https://github.com/microsoft/playwright/issues/9883
+
 const traceViewerServerPort = 42_424;
-// Context:
-// https://github.com/microsoft/playwright/issues/9883
 
 let traceViewerStarted = false;
 let traceViewerContext: BrowserContext | undefined;
 let traceContext: BrowserContext | undefined;
 
-const ensureTraceViewerServer = async (): Promise<void> => {
+const ensureTraceViewerServerIsRunning = async (): Promise<void> => {
   if (traceViewerStarted) {
     while (!traceContext) {
       await sleep(100);
     }
+
+    return;
   }
   traceViewerStarted = true;
 
@@ -40,7 +42,7 @@ const ensureTraceViewerServer = async (): Promise<void> => {
   traceContext = await traceBrowser.newContext();
 };
 
-export const ensureTraceViewerServerStopped = () => {
+export const ensureTraceViewerServerIsStopped = () => {
   void traceContext?.close();
   void traceViewerContext?.close();
 
@@ -50,7 +52,7 @@ export const ensureTraceViewerServerStopped = () => {
 };
 
 export const openTrace = async (traceFilePath: string): Promise<Page> => {
-  await ensureTraceViewerServer();
+  await ensureTraceViewerServerIsRunning();
   const page = await traceContext!.newPage();
   page.setDefaultTimeout(60_000);
   page.setDefaultNavigationTimeout(60_000);

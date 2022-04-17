@@ -1,12 +1,21 @@
 import chalk from "chalk";
+import fs from "fs-extra";
 import { WriteStream } from "node:tty";
-import sleep from "sleep-promise";
 
-import { UserFriendlyError } from "../../../../shared/errors";
+import { getErrorMessage, UserFriendlyError } from "../../../../shared/errors";
 import {
   getSnapshotGenerator,
   SnapshotGeneratorId,
 } from "../../../../shared/snapshot-generators";
+import {
+  checkIfSnapshotSummaryDocumentExists,
+  readSnapshotSummaryDocument,
+  SnapshotSummaryDocument,
+  snapshotSummaryStaleTime,
+  writeSnapshotSummaryDocument,
+} from "../../../../shared/snapshot-summaries";
+import { serializeTime } from "../../../../shared/time";
+import { processWebPages } from "../../../../shared/web-page-documents";
 
 export const extractSnapshotSummariesScript =
   ({
@@ -17,12 +26,111 @@ export const extractSnapshotSummariesScript =
     snapshotGeneratorId: SnapshotGeneratorId;
   }) =>
   async () => {
-    const snapshotGenerator = getSnapshotGenerator(snapshotGeneratorId);
+    const {
+      downloadSnapshot,
+      extractSnapshotSummaryData,
+      generateSnapshotFilePath,
+      name: snapshotGeneratorName,
+      role: snapshotGeneratorRole,
+      finishExtractSnapshotSummaryDataBatch,
+    } = getSnapshotGenerator(snapshotGeneratorId);
+
     output.write(
-      chalk.bold(`Extracting ${snapshotGenerator.name} snapshot summaries\n`),
+      chalk.bold(`Extracting ${snapshotGeneratorName} snapshot summaries\n`),
     );
 
-    await sleep(100);
+    if (!generateSnapshotFilePath || !extractSnapshotSummaryData) {
+      throw new UserFriendlyError(
+        `Summary extraction for ${snapshotGeneratorName} snapshots is not implemented yet`,
+      );
+    }
 
-    throw new UserFriendlyError("Not implemented yet");
+    await processWebPages({
+      output,
+      processWebPage: async ({ webPageDirPath, webPageDocument }) => {
+        const snapshotInventoryItems =
+          webPageDocument.snapshotInventoryLookup[snapshotGeneratorId]?.items ??
+          [];
+
+        output.write(`snapshot count: ${snapshotInventoryItems.length}`);
+
+        for (const snapshotInventoryItem of snapshotInventoryItems) {
+          const snapshotFilePath = generateSnapshotFilePath({
+            webPageDirPath,
+            ...snapshotInventoryItem,
+          });
+
+          output.write(`\n  ${chalk.green(snapshotInventoryItem.capturedAt)} `);
+          if (snapshotInventoryItem.aliasUrl) {
+            output.write(
+              chalk.green(`alias ${snapshotInventoryItem.aliasUrl} `),
+            );
+          }
+
+          let existingSnapshotSummary: SnapshotSummaryDocument | undefined;
+
+          try {
+            existingSnapshotSummary = await readSnapshotSummaryDocument(
+              snapshotFilePath,
+            );
+          } catch {
+            // noop: summary does not exist
+          }
+
+          if (
+            existingSnapshotSummary?.extractedAt &&
+            existingSnapshotSummary.extractedAt > snapshotSummaryStaleTime
+          ) {
+            output.write("snapshot summary is up to date");
+            continue;
+          }
+
+          try {
+            if (!(await fs.pathExists(snapshotFilePath))) {
+              if (snapshotGeneratorRole === "internal") {
+                throw new Error(
+                  `Snapshot file is unexpectedly missing. Please update snapshot inventory.`,
+                );
+              } else {
+                if (!downloadSnapshot) {
+                  throw new Error(
+                    `Unable to download ${snapshotGeneratorName} snapshot because this is not implemented yet`,
+                  );
+                }
+
+                await downloadSnapshot({
+                  webPageDirPath,
+                  webPageDocument,
+                  ...snapshotInventoryItem,
+                });
+              }
+            }
+
+            if (await checkIfSnapshotSummaryDocumentExists(snapshotFilePath)) {
+              output.write("snapshot summary is being updated... ");
+            } else {
+              output.write("snapshot summary is being created... ");
+            }
+
+            const snapshotSummaryData = await extractSnapshotSummaryData({
+              snapshotFilePath,
+            });
+
+            await writeSnapshotSummaryDocument(snapshotFilePath, {
+              documentType: "snapshotSummary",
+              webPageUrl: webPageDocument.webPageUrl,
+              ...snapshotInventoryItem,
+              extractedAt: serializeTime(),
+              data: snapshotSummaryData,
+            });
+
+            output.write(chalk.magenta("done"));
+          } catch (error) {
+            output.write(chalk.red(getErrorMessage(error)));
+          }
+        }
+      },
+    });
+
+    await finishExtractSnapshotSummaryDataBatch?.();
   };
