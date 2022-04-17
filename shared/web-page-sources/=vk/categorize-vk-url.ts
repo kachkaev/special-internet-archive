@@ -25,7 +25,7 @@ export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
     }
 
     // @todo Improve slug check via https://vk.com/faq18038
-    if (!/^(album|photo)-?\d/.test(slug)) {
+    if (!/^(album|photo|video|event)-?\d/.test(slug)) {
       return { vkPageType: "account", accountId: slug };
     }
   }
