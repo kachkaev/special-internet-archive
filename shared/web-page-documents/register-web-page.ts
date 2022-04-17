@@ -1,19 +1,16 @@
 import { getErrorMessage } from "../errors";
 import { OperationResult } from "../operations";
 import { serializeTime } from "../time";
-import {
-  checkIfWebPageDocumentExists,
-  generateWebPagePath,
-  writeWebPageDocument,
-} from "./io";
+import { generateWebPageDirPath } from "../web-page-sources";
+import { checkIfWebPageDocumentExists, writeWebPageDocument } from "./io";
 
 export const registerWebPage = async (
   webPageUrl: string,
   via: string,
 ): Promise<OperationResult> => {
-  let webPageDocumentPath: string;
+  let webPageDirPath: string;
   try {
-    webPageDocumentPath = generateWebPagePath(webPageUrl);
+    webPageDirPath = generateWebPageDirPath(webPageUrl);
   } catch (error) {
     return {
       status: "failed",
@@ -21,11 +18,11 @@ export const registerWebPage = async (
     };
   }
 
-  if (await checkIfWebPageDocumentExists(webPageDocumentPath)) {
+  if (await checkIfWebPageDocumentExists(webPageDirPath)) {
     return { status: "skipped" };
   }
 
-  await writeWebPageDocument({
+  await writeWebPageDocument(webPageDirPath, {
     documentType: "webPage",
     webPageUrl,
     registeredAt: serializeTime(),

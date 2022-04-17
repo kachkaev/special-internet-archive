@@ -104,13 +104,13 @@ export const generateComposeQueueScript =
 
     await processWebPages({
       output,
-      handleSkippedWebPage: (webPageDocument) => {
+      handleSkippedWebPage: ({ webPageDocument }) => {
         const existingQueueItems = allExistingQueueItems.filter(
           (item) => item.webPageUrl === webPageDocument.webPageUrl,
         );
         allNewQueueItems.push(...existingQueueItems);
       },
-      processWebPage: async (webPageDocument) => {
+      processWebPage: async ({ webPageDocument }) => {
         const existingQueueItems = allExistingQueueItems.filter(
           (item) => item.webPageUrl === webPageDocument.webPageUrl,
         );

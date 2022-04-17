@@ -98,7 +98,7 @@ export const generateUpdateInventoryScript =
 
     await processWebPages({
       output,
-      processWebPage: async (webPageDocument) => {
+      processWebPage: async ({ webPageDirPath, webPageDocument }) => {
         const updatedWebPageDocument = _.cloneDeep(webPageDocument);
         const aliasUrls = snapshotGenerator.aliasesSupported
           ? listWebPageAliases(webPageDocument.webPageUrl)
@@ -188,7 +188,7 @@ export const generateUpdateInventoryScript =
           updatedWebPageDocument.snapshotInventoryLookup,
         );
 
-        await writeWebPageDocument(updatedWebPageDocument);
+        await writeWebPageDocument(webPageDirPath, updatedWebPageDocument);
       },
     });
   };

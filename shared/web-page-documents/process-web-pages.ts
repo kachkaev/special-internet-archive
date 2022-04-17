@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import * as envalid from "envalid";
-import fs from "fs-extra";
+import path from "node:path";
 import { WriteStream } from "node:tty";
 import RegexParser from "regex-parser";
 
@@ -9,6 +9,14 @@ import { getWebPagesDirPath } from "../collection";
 import { getErrorMessage } from "../errors";
 import { listFilePaths } from "../list-file-paths";
 import { WebPageDocument } from "../web-page-documents";
+import { readWebPageDocument } from "./io";
+
+export type ProcessWebPage = (payload: {
+  webPageDirPath: string;
+  webPageDocument: WebPageDocument;
+}) => void | Promise<void>;
+
+export type HandleSkippedWebPage = ProcessWebPage;
 
 export const processWebPages = async ({
   output,
@@ -16,10 +24,8 @@ export const processWebPages = async ({
   processWebPage,
 }: {
   output?: WriteStream | undefined;
-  handleSkippedWebPage?: (
-    webPageDocument: WebPageDocument,
-  ) => void | Promise<void>;
-  processWebPage: (webPageDocument: WebPageDocument) => void | Promise<void>;
+  handleSkippedWebPage?: ProcessWebPage;
+  processWebPage: ProcessWebPage;
 }) => {
   const env = cleanEnv({
     FILTER_URL: envalid.str({
@@ -42,23 +48,43 @@ export const processWebPages = async ({
 
   output?.write(chalk.green("Processing web pages..."));
 
+  const webPageUrlLookup: Record<string, true> = {};
+
   for (const webPageDocumentPath of webPageDocumentPaths) {
-    const webPageDocument = (await fs.readJson(
-      webPageDocumentPath,
-    )) as WebPageDocument;
+    const webPageDirPath = path.dirname(webPageDocumentPath);
+
+    const webPageDocument = await readWebPageDocument(webPageDirPath);
 
     output?.write(`\n${chalk.underline(webPageDocument.webPageUrl)} `);
+
+    if (webPageUrlLookup[webPageDocument.webPageUrl]) {
+      output?.write(chalk.red("skipping as duplicate web page document"));
+      numberOfErrors += 1;
+      continue;
+    }
+
+    // @todo check nesting (which is not allowed):
+    // path/to/web-page/web-page.json
+    // path/to/web-page/oops/web-page.json
+
+    webPageUrlLookup[webPageDocument.webPageUrl] = true;
 
     if (!filterUrlRegex.test(webPageDocument.webPageUrl)) {
       numberOfSkipped += 1;
       output?.write(chalk.gray(`does not match FILTER_URL`));
-      await handleSkippedWebPage?.(webPageDocument);
+      await handleSkippedWebPage?.({
+        webPageDirPath,
+        webPageDocument,
+      });
 
       continue;
     }
 
     try {
-      await processWebPage(webPageDocument);
+      await processWebPage({
+        webPageDirPath,
+        webPageDocument,
+      });
       numberOfDone += 1;
     } catch (error) {
       numberOfErrors += 1;
