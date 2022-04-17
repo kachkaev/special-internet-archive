@@ -136,24 +136,24 @@ export const generateComposeQueueScript =
         const snapshotTimesInInventory =
           snapshotInventory?.items.map((item) => item.capturedAt) ?? [];
 
-        const queueItemsCompletedAfterInventoryUpdate =
+        const queueItemsSucceededAfterInventoryUpdate =
           existingQueueItems.filter((item) => {
-            const completedAttemptTime = item.attempts?.find(
-              (attempt) => attempt.status === "completed",
+            const succeededAttemptTime = item.attempts?.find(
+              (attempt) => attempt.status === "succeeded",
             )?.startedAt;
 
             return (
-              completedAttemptTime &&
+              succeededAttemptTime &&
               (!snapshotInventoryUpdatedAt ||
-                completedAttemptTime > snapshotInventoryUpdatedAt)
+                succeededAttemptTime > snapshotInventoryUpdatedAt)
             );
           });
 
-        allNewQueueItems.push(...queueItemsCompletedAfterInventoryUpdate);
+        allNewQueueItems.push(...queueItemsSucceededAfterInventoryUpdate);
 
-        const snapshotTimesInCompletedQueueItems = existingQueueItems
+        const snapshotTimesInSucceededQueueItems = existingQueueItems
           .filter((item) =>
-            item.attempts?.find((attempt) => attempt.status === "completed"),
+            item.attempts?.find((attempt) => attempt.status === "succeeded"),
           )
           .flatMap(
             (item) => item.attempts?.map((attempt) => attempt.startedAt) ?? [],
@@ -161,7 +161,7 @@ export const generateComposeQueueScript =
 
         const knownSnapshotTimesInAscOrder = _.orderBy([
           ...snapshotTimesInInventory,
-          ...snapshotTimesInCompletedQueueItems,
+          ...snapshotTimesInSucceededQueueItems,
         ]);
 
         const newSnapshotIsDue =

@@ -1,10 +1,10 @@
 import { SnapshotContext, SnapshotGeneratorId } from "../snapshot-generators";
 
 export type SnapshotAttemptStatus =
-  | "completed"
-  | "failed"
   | "aborted"
+  | "failed"
   | "started"
+  | "succeeded"
   | "timedOut";
 
 export interface SnapshotAttempt {

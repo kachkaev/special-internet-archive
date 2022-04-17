@@ -70,7 +70,7 @@ export const generateProcessQueueScript =
     const itemsToProcess = snapshotQueueDocument.items.filter(
       (item) =>
         item.webPageUrl.match(filterUrlRegex) &&
-        !item.attempts?.some((attempt) => attempt.status === "completed"),
+        !item.attempts?.some((attempt) => attempt.status === "succeeded"),
     );
 
     output.write(
@@ -83,7 +83,7 @@ export const generateProcessQueueScript =
     );
 
     let numberOfAttempts = 0;
-    let numberOfCompletedAttempts = 0;
+    let numberOfSucceededAttempts = 0;
     let numberOfFailedAttempts = 0;
 
     const abortController = new AbortController();
@@ -156,12 +156,12 @@ export const generateProcessQueueScript =
         await reportSnapshotQueueAttempt({
           attemptMessage: message,
           attemptStartedAt,
-          attemptStatus: "completed",
+          attemptStatus: "succeeded",
           snapshotGeneratorId,
           snapshotQueueItemId: item.id,
         });
 
-        numberOfCompletedAttempts += 1;
+        numberOfSucceededAttempts += 1;
       } catch (error) {
         abortController.signal.removeEventListener("abort", abortHandler);
         if (abortController.signal.aborted) {
@@ -188,7 +188,7 @@ export const generateProcessQueueScript =
         output.write("\n");
       }
       output.write(
-        `\nDone. Attempts: ${numberOfAttempts} (${numberOfCompletedAttempts} completed, ${numberOfFailedAttempts} failed)\n`,
+        `\nDone. Attempts: ${numberOfAttempts} (${numberOfSucceededAttempts} succeeded, ${numberOfFailedAttempts} failed)\n`,
       );
     }
   };
