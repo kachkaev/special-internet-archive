@@ -3,6 +3,7 @@ import { vkWebPageSource } from "./web-page-sources/=vk";
 import {
   CalculateRelevantTimeMinForNewIncrementalSnapshot,
   CheckIfNewSnapshotIsDue,
+  ExtractRelevantWebPageUrls,
   ExtractSnapshotSummaryCombinationData,
   UpdateWebPageAnnotation,
   WebPageSource,
@@ -67,6 +68,11 @@ export const updateWebPageAnnotation: UpdateWebPageAnnotation = ({
 }) => {
   // @todo Implement
   return webPageDocument.annotation;
+};
+
+export const extractRelevantWebPageUrls: ExtractRelevantWebPageUrls = () => {
+  // @todo Implement
+  return [];
 };
 
 const listWebPageUrlExamples = (): string[] => {

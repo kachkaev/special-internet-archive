@@ -35,7 +35,7 @@ export const processWebPages = async ({
   });
   const filterUrlRegex = RegexParser(env.FILTER_URL);
 
-  let numberOfDone = 0;
+  let numberOfProcessed = 0;
   let numberOfErrors = 0;
   let numberOfSkipped = 0;
 
@@ -85,7 +85,7 @@ export const processWebPages = async ({
         webPageDirPath,
         webPageDocument,
       });
-      numberOfDone += 1;
+      numberOfProcessed += 1;
     } catch (error) {
       numberOfErrors += 1;
       output?.write(chalk.red(`Unexpected error ${getErrorMessage(error)}`));
@@ -94,7 +94,7 @@ export const processWebPages = async ({
 
   output?.write(
     `\n\nWeb pages in collection: ${
-      numberOfDone + numberOfErrors + numberOfSkipped
-    } (processed: ${numberOfDone}, errors: ${numberOfErrors}, filtered out: ${numberOfSkipped}).\n`,
+      numberOfProcessed + numberOfErrors + numberOfSkipped
+    } (processed: ${numberOfProcessed}, errors: ${numberOfErrors}, filtered out: ${numberOfSkipped}).\n`,
   );
 };

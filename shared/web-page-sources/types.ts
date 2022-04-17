@@ -29,6 +29,11 @@ export type UpdateWebPageAnnotation = (payload: {
   webPageDocument: WebPageDocument;
 }) => WebPageAnnotation;
 
+export type ExtractRelevantWebPageUrls = (payload: {
+  webPageDirPath: string;
+  webPageDocument: WebPageDocument;
+}) => string[];
+
 export interface WebPageSource {
   calculateRelevantTimeMinForNewIncrementalSnapshot?: CalculateRelevantTimeMinForNewIncrementalSnapshot;
   checkIfNewSnapshotIsDue: CheckIfNewSnapshotIsDue;

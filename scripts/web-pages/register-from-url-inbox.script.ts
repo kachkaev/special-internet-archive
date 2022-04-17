@@ -4,6 +4,7 @@ import _ from "lodash";
 import { readUrlInboxRows } from "../../shared/collection";
 import { registerWebPage } from "../../shared/web-page-documents";
 import { generateUrlExamplesMessage } from "../../shared/web-page-sources";
+import { outputRegisterWebPageOperationResult } from "../shared/output-register-web-page-operation-result";
 
 const output = process.stdout;
 
@@ -36,21 +37,10 @@ const script = async () => {
       "script:register-from-url-inbox",
     );
 
-    switch (operationResult.status) {
-      case "failed": {
-        numberOfErrors += 1;
-        output.write(chalk.red(operationResult.message ?? "unknown error"));
-        break;
-      }
-      case "processed": {
-        output.write(chalk.magenta("registered"));
-        break;
-      }
+    outputRegisterWebPageOperationResult({ output, operationResult });
 
-      case "skipped": {
-        output.write(chalk.gray("already registered"));
-        break;
-      }
+    if (operationResult.status === "failed") {
+      numberOfErrors += 1;
     }
   }
 
