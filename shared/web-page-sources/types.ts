@@ -1,8 +1,9 @@
 import {
   SnapshotSummaryCombinationData,
+  SnapshotSummaryCombinationDocument,
   SnapshotSummaryDocument,
 } from "../snapshot-summaries";
-import { WebPageDocument } from "../web-page-documents";
+import { WebPageAnnotation, WebPageDocument } from "../web-page-documents";
 
 export type GenerateWebPageDirPath = (webPageUrl: string) => string;
 export type AssertSourceUrl = (webPageUrl: string) => void;
@@ -22,6 +23,11 @@ export type CheckIfNewSnapshotIsDue = (payload: {
 export type ExtractSnapshotSummaryCombinationData = (payload: {
   snapshotSummaryDocuments: SnapshotSummaryDocument[];
 }) => SnapshotSummaryCombinationData;
+
+export type UpdateWebPageAnnotation = (payload: {
+  snapshotSummaryCombinationDocument: SnapshotSummaryCombinationDocument;
+  webPageDocument: WebPageDocument;
+}) => WebPageAnnotation;
 
 export interface WebPageSource {
   calculateRelevantTimeMinForNewIncrementalSnapshot?: CalculateRelevantTimeMinForNewIncrementalSnapshot;

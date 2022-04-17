@@ -4,6 +4,7 @@ import {
   CalculateRelevantTimeMinForNewIncrementalSnapshot,
   CheckIfNewSnapshotIsDue,
   ExtractSnapshotSummaryCombinationData,
+  UpdateWebPageAnnotation,
   WebPageSource,
 } from "./web-page-sources/types";
 
@@ -57,8 +58,16 @@ export const checkIfNewSnapshotIsDue: CheckIfNewSnapshotIsDue = (payload) => {
 
 export const extractSnapshotSummaryCombinationData: ExtractSnapshotSummaryCombinationData =
   () => {
+    // @todo Implement
     return { todo: true };
   };
+
+export const updateWebPageAnnotation: UpdateWebPageAnnotation = ({
+  webPageDocument,
+}) => {
+  // @todo Implement
+  return webPageDocument.annotation;
+};
 
 const listWebPageUrlExamples = (): string[] => {
   return Object.values(webPageSourceLookup)

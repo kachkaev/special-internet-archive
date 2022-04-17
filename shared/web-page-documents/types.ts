@@ -8,11 +8,14 @@ export interface SnapshotInventory {
   items: SnapshotInventoryItem[];
 }
 
+// @todo Specify
+export type WebPageAnnotation = Record<string, unknown>;
+
 export interface WebPageDocument {
   documentType: "webPage";
   webPageUrl: string;
   registeredAt: string;
   registeredVia: string;
-  annotation: unknown; // @todo specify
+  annotation: WebPageAnnotation;
   snapshotInventoryLookup: Record<string, SnapshotInventory>;
 }

@@ -104,7 +104,7 @@ const script = async () => {
   if (pagesWithoutSnapshotSummariesFound as boolean) {
     output.write(
       chalk.yellow(
-        "\nTo avoid missing snapshot summaries, make sure you generate snapshots and extract their summaries before running this script.\n",
+        "To avoid missing snapshot summaries, make sure you generate snapshots and extract their summaries before running this script.\n",
       ),
     );
   }

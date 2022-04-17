@@ -146,7 +146,7 @@ export const extractSnapshotSummariesScript =
     if (pagesWithoutSnapshotsFound as boolean) {
       output.write(
         chalk.yellow(
-          "\nTo avoid missing snapshots, make sure you generate snapshots before running this script.\n",
+          "To avoid missing snapshots, make sure you generate snapshots before running this script.\n",
         ),
       );
     }

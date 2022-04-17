@@ -63,7 +63,7 @@ export const processWebPages = async ({
       continue;
     }
 
-    // @todo check nesting (which is not allowed):
+    // @todo Check nesting (which is not allowed):
     // path/to/web-page/web-page.json
     // path/to/web-page/oops/web-page.json
 
