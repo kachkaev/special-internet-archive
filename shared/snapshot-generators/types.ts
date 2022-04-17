@@ -29,11 +29,12 @@ export type FinishParseSnapshotBatch = () => void | Promise<void>;
 
 export interface SnapshotGenerator {
   aliasesSupported: boolean;
+  captureSnapshot: CaptureSnapshot;
+  finishCaptureSnapshotBatch?: FinishCaptureSnapshotBatch;
+  finishParseSnapshotBatch?: FinishParseSnapshotBatch;
   name: string;
   obtainSnapshotTimes: ObtainSnapshotTimes;
   parseSnapshot?: ParseSnapshot;
+  role: "external" | "internal";
   snapshotAttemptTimeoutInSeconds: number;
-  finishParseSnapshotBatch?: FinishParseSnapshotBatch;
-  finishCaptureSnapshotBatch?: FinishCaptureSnapshotBatch;
-  captureSnapshot: CaptureSnapshot;
 }

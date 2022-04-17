@@ -57,11 +57,9 @@ const reportUpdateInSnapshots = (
 
 export const generateUpdateInventoryScript =
   ({
-    defaultInventoryUpdateIntervalInMinutes,
     output,
     snapshotGeneratorId,
   }: {
-    defaultInventoryUpdateIntervalInMinutes: number;
     output: WriteStream;
     snapshotGeneratorId: SnapshotGeneratorId;
   }) =>
@@ -77,23 +75,27 @@ export const generateUpdateInventoryScript =
       ),
     );
 
-    const env = cleanEnv({
-      INVENTORY_UPDATE_INTERVAL_IN_MINUTES: envalid.num({
-        default: defaultInventoryUpdateIntervalInMinutes,
-      }),
-    });
+    let inventoryUpdateIntervalInMinutes = 0;
 
-    const inventoryUpdateIntervalInMinutes =
-      env.INVENTORY_UPDATE_INTERVAL_IN_MINUTES;
+    if (snapshotGenerator.role === "external") {
+      const env = cleanEnv({
+        INVENTORY_UPDATE_INTERVAL_IN_MINUTES: envalid.num({
+          default: 5,
+        }),
+      });
 
-    if (
-      inventoryUpdateIntervalInMinutes < 0 ||
-      Math.round(inventoryUpdateIntervalInMinutes) !==
-        inventoryUpdateIntervalInMinutes
-    ) {
-      throw new UserFriendlyError(
-        "Expected INVENTORY_UPDATE_INTERVAL_IN_MINUTES to be a non-negative integer number",
-      );
+      inventoryUpdateIntervalInMinutes =
+        env.INVENTORY_UPDATE_INTERVAL_IN_MINUTES;
+
+      if (
+        inventoryUpdateIntervalInMinutes < 0 ||
+        Math.round(inventoryUpdateIntervalInMinutes) !==
+          inventoryUpdateIntervalInMinutes
+      ) {
+        throw new UserFriendlyError(
+          "Expected INVENTORY_UPDATE_INTERVAL_IN_MINUTES to be a non-negative integer number",
+        );
+      }
     }
 
     await processWebPages({
@@ -181,16 +183,33 @@ export const generateUpdateInventoryScript =
           );
         }
 
-        updatedWebPageDocument.snapshotInventoryLookup[snapshotGeneratorId] = {
-          updatedAt: serializeTime(),
-          items: _.orderBy(snapshotInventoryItems, (item) => item.capturedAt),
-        };
+        const orderedItems = _.orderBy(
+          snapshotInventoryItems,
+          (item) => item.capturedAt,
+        );
+
+        if (
+          snapshotGenerator.role === "external" ||
+          !_.isEqual(
+            orderedItems,
+            updatedWebPageDocument.snapshotInventoryLookup[snapshotGeneratorId]
+              ?.items,
+          )
+        ) {
+          updatedWebPageDocument.snapshotInventoryLookup[snapshotGeneratorId] =
+            {
+              updatedAt: serializeTime(),
+              items: orderedItems,
+            };
+        }
 
         updatedWebPageDocument.snapshotInventoryLookup = sortKeys(
           updatedWebPageDocument.snapshotInventoryLookup,
         );
 
-        await writeWebPageDocument(webPageDirPath, updatedWebPageDocument);
+        if (!_.isEqual(webPageDocument, updatedWebPageDocument)) {
+          await writeWebPageDocument(webPageDirPath, updatedWebPageDocument);
+        }
       },
     });
   };

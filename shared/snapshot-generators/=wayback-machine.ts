@@ -4,8 +4,9 @@ import { SnapshotGenerator } from "./types";
 
 export const waybackMachineSnapshotGenerator: SnapshotGenerator = {
   aliasesSupported: true,
+  captureSnapshot: takeWaybackMachineSnapshot,
   name: "Wayback Machine",
   obtainSnapshotTimes: obtainWaybackMachineSnapshotTimes,
+  role: "internal",
   snapshotAttemptTimeoutInSeconds: 30,
-  captureSnapshot: takeWaybackMachineSnapshot,
 };

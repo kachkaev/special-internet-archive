@@ -6,10 +6,11 @@ import { SnapshotGenerator } from "./types";
 
 export const playwrightSnapshotGenerator: SnapshotGenerator = {
   aliasesSupported: false,
+  captureSnapshot: takePlaywrightSnapshot,
+  finishParseSnapshotBatch: ensureTraceViewerServerStopped,
   name: "Playwright",
   obtainSnapshotTimes: obtainPlaywrightSnapshotTimes,
   parseSnapshot: parsePlaywrightSnapshot,
+  role: "internal",
   snapshotAttemptTimeoutInSeconds: 120,
-  finishParseSnapshotBatch: ensureTraceViewerServerStopped,
-  captureSnapshot: takePlaywrightSnapshot,
 };
