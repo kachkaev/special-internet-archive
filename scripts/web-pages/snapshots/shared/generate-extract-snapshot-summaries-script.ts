@@ -45,12 +45,21 @@ export const extractSnapshotSummariesScript =
       );
     }
 
+    let pagesWithoutSnapshotsFound = false;
+
     await processWebPages({
       output,
       processWebPage: async ({ webPageDirPath, webPageDocument }) => {
         const snapshotInventoryItems =
           webPageDocument.snapshotInventoryLookup[snapshotGeneratorId]?.items ??
           [];
+
+        if (snapshotInventoryItems.length === 0) {
+          output.write(chalk.yellow(`no snapshots found`));
+          pagesWithoutSnapshotsFound = true;
+
+          return;
+        }
 
         output.write(`snapshot count: ${snapshotInventoryItems.length}`);
 
@@ -133,4 +142,12 @@ export const extractSnapshotSummariesScript =
     });
 
     await finishExtractSnapshotSummaryDataBatch?.();
+
+    if (pagesWithoutSnapshotsFound as boolean) {
+      output.write(
+        chalk.yellow(
+          "\nTo avoid missing snapshots, make sure you generate snapshots before running this script.\n",
+        ),
+      );
+    }
   };
