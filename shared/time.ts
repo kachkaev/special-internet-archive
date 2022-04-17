@@ -30,6 +30,6 @@ export const isTimeOlderThan = (
 
 export const calculateDaysSince = (time: string | DateTime): number =>
   Interval.fromDateTimes(
-    DateTime.now(),
     DateTime.fromISO(serializeTime(time), { setZone: true }),
+    DateTime.utc(),
   ).length("days");

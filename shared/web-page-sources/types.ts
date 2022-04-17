@@ -1,13 +1,17 @@
+import { WebPageDocument } from "../web-page-documents";
+
 export type GenerateWebPageDirPath = (webPageUrl: string) => string;
 export type AssertSourceUrl = (webPageUrl: string) => void;
 
 export type CalculateRelevantTimeMinForNewIncrementalSnapshot = (payload: {
-  webPageUrl: string;
+  webPageDirPath: string;
+  webPageDocument: WebPageDocument;
   mostRecentSnapshotTime: string;
 }) => string | undefined | Promise<string | undefined>;
 
 export type CheckIfNewSnapshotIsDue = (payload: {
-  webPageUrl: string;
+  webPageDirPath: string;
+  webPageDocument: WebPageDocument;
   knownSnapshotTimesInAscOrder: string[];
 }) => boolean | Promise<boolean>;
 

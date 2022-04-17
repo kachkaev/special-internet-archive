@@ -4,7 +4,6 @@ import { chromium, Page } from "playwright";
 import sleep from "sleep-promise";
 
 import { AbortError } from "../../errors";
-import { generateWebPageDirPath } from "../../web-page-sources";
 import { TakeSnapshot } from "../types";
 
 const closeAuthModalIfPresent = async (page: Page): Promise<boolean> => {
@@ -29,9 +28,9 @@ const loadAllLazyImages = async (page: Page) => {
 };
 
 export const takePlaywrightSnapshot: TakeSnapshot = async ({
-  webPageUrl,
-  // snapshotContext,
   abortSignal,
+  webPageDirPath,
+  webPageUrl,
 }) => {
   const timezoneId = "Europe/Moscow";
   const browser = await chromium.launch({ headless: false });
@@ -90,7 +89,7 @@ export const takePlaywrightSnapshot: TakeSnapshot = async ({
 
   await context.tracing.stop({
     path: path.resolve(
-      generateWebPageDirPath(webPageUrl),
+      webPageDirPath,
       "snapshots",
       `${snapshotDateTime.toFormat("yyyy-MM-dd-HHmmss")}z-playwright.zip`,
     ),

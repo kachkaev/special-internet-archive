@@ -110,7 +110,7 @@ export const generateComposeQueueScript =
         );
         allNewQueueItems.push(...existingQueueItems);
       },
-      processWebPage: async ({ webPageDocument }) => {
+      processWebPage: async ({ webPageDirPath, webPageDocument }) => {
         const existingQueueItems = allExistingQueueItems.filter(
           (item) => item.webPageUrl === webPageDocument.webPageUrl,
         );
@@ -167,7 +167,8 @@ export const generateComposeQueueScript =
         const newSnapshotIsDue =
           force ||
           checkIfNewSnapshotIsDue({
-            webPageUrl: webPageDocument.webPageUrl,
+            webPageDirPath,
+            webPageDocument,
             knownSnapshotTimesInAscOrder,
           });
 
@@ -183,7 +184,8 @@ export const generateComposeQueueScript =
             force || !mostRecentSnapshotTime
               ? undefined
               : await calculateRelevantTimeMinForNewIncrementalSnapshot({
-                  webPageUrl: webPageDocument.webPageUrl,
+                  webPageDirPath,
+                  webPageDocument,
                   mostRecentSnapshotTime,
                 });
 

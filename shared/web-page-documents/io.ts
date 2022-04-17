@@ -2,15 +2,10 @@ import fs from "fs-extra";
 import path from "node:path";
 
 import { writeFormattedJson } from "../helpers-for-json";
-import { generateWebPageDirPath } from "../web-page-sources";
 import { WebPageDocument } from "./types";
 
 export const generateWebPageDocumentPath = (webPageDirPath: string): string => {
   return path.resolve(webPageDirPath, "web-page.json");
-};
-
-export const generateWebPagePath = (webPageUrl: string): string => {
-  return path.resolve(generateWebPageDirPath(webPageUrl), "web-page.json");
 };
 
 export const checkIfWebPageDocumentExists = async (

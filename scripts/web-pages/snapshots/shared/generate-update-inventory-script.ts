@@ -141,9 +141,10 @@ export const generateUpdateInventoryScript =
           }
         }
 
-        const snapshotTimes = await snapshotGenerator.obtainSnapshotTimes(
-          webPageDocument.webPageUrl,
-        );
+        const snapshotTimes = await snapshotGenerator.obtainSnapshotTimes({
+          webPageDirPath,
+          webPageUrl: webPageDocument.webPageUrl,
+        });
 
         for (const snapshotTime of snapshotTimes) {
           snapshotInventoryItems.push({ capturedAt: snapshotTime });
@@ -159,10 +160,11 @@ export const generateUpdateInventoryScript =
           output.write(`\n  alias ${chalk.underline(aliasUrl)} `);
 
           const aliasSnapshotTimes =
-            await snapshotGenerator.obtainSnapshotTimes(
-              webPageDocument.webPageUrl,
+            await snapshotGenerator.obtainSnapshotTimes({
+              webPageDirPath,
+              webPageUrl: webPageDocument.webPageUrl,
               aliasUrl,
-            );
+            });
 
           for (const aliasSnapshotTime of aliasSnapshotTimes) {
             snapshotInventoryItems.push({

@@ -2,19 +2,18 @@ import { globby } from "globby";
 import path from "node:path";
 
 import { serializeTime } from "../../time";
-import { generateWebPageDirPath } from "../../web-page-sources";
 import { ObtainSnapshotTimes } from "../types";
 
-export const obtainPlaywrightSnapshotTimes: ObtainSnapshotTimes = async (
-  webPageUrl,
+export const obtainPlaywrightSnapshotTimes: ObtainSnapshotTimes = async ({
+  webPageDirPath,
   aliasUrl,
-) => {
+}) => {
   if (aliasUrl) {
     throw new Error(`Did not expect aliasUrl to be defined (${aliasUrl})`);
   }
 
   const snapshotFilePaths = await globby("snapshots/*-playwright.zip", {
-    cwd: generateWebPageDirPath(webPageUrl),
+    cwd: webPageDirPath,
     absolute: true,
     onlyFiles: true,
   });

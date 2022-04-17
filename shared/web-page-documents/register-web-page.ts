@@ -2,7 +2,11 @@ import { getErrorMessage } from "../errors";
 import { OperationResult } from "../operations";
 import { serializeTime } from "../time";
 import { generateWebPageDirPath } from "../web-page-sources";
-import { checkIfWebPageDocumentExists, writeWebPageDocument } from "./io";
+import {
+  checkIfWebPageDocumentExists,
+  generateWebPageDocumentPath,
+  writeWebPageDocument,
+} from "./io";
 
 export const registerWebPage = async (
   webPageUrl: string,
@@ -19,7 +23,10 @@ export const registerWebPage = async (
   }
 
   if (await checkIfWebPageDocumentExists(webPageDirPath)) {
-    return { status: "skipped" };
+    return {
+      status: "skipped",
+      message: generateWebPageDocumentPath(webPageDirPath),
+    };
   }
 
   await writeWebPageDocument(webPageDirPath, {
@@ -31,5 +38,8 @@ export const registerWebPage = async (
     snapshotInventoryLookup: {},
   });
 
-  return { status: "processed" };
+  return {
+    status: "processed",
+    message: generateWebPageDocumentPath(webPageDirPath),
+  };
 };

@@ -4,10 +4,10 @@ import { assertVkUrl } from "./assert-vk-url";
 import { categorizeVkUrl } from "./categorize-vk-url";
 
 export const checkIfNewVkSnapshotIsDue: CheckIfNewSnapshotIsDue = ({
-  webPageUrl,
+  webPageDocument,
   knownSnapshotTimesInAscOrder,
 }) => {
-  assertVkUrl(webPageUrl);
+  assertVkUrl(webPageDocument.webPageUrl);
 
   const oldestSnapshotTime = knownSnapshotTimesInAscOrder.at(0);
   const newestSnapshotTime = knownSnapshotTimesInAscOrder.at(-1);
@@ -18,7 +18,7 @@ export const checkIfNewVkSnapshotIsDue: CheckIfNewSnapshotIsDue = ({
   const daysSinceNewestSnapshot = calculateDaysSince(newestSnapshotTime);
   const daysSinceOldestSnapshot = calculateDaysSince(oldestSnapshotTime);
 
-  const categorizedVkUrl = categorizeVkUrl(webPageUrl);
+  const categorizedVkUrl = categorizeVkUrl(webPageDocument.webPageUrl);
   switch (categorizedVkUrl.vkPageType) {
     case "account":
       return daysSinceNewestSnapshot > 2;

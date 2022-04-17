@@ -16,6 +16,21 @@ import {
   reportSnapshotQueueAttempt,
 } from "../../../../shared/snapshot-queues";
 import { serializeTime } from "../../../../shared/time";
+import { processWebPages } from "../../../../shared/web-page-documents";
+
+const generateWebPageDirPathByUrl = async (): Promise<
+  Record<string, string>
+> => {
+  const result: Record<string, string> = {};
+
+  await processWebPages({
+    processWebPage: ({ webPageDirPath, webPageDocument }) => {
+      result[webPageDocument.webPageUrl] = webPageDirPath;
+    },
+  });
+
+  return result;
+};
 
 export const generateProcessQueueScript =
   ({
@@ -26,6 +41,11 @@ export const generateProcessQueueScript =
     snapshotGeneratorId: SnapshotGeneratorId;
   }) =>
   async () => {
+    const snapshotGenerator = getSnapshotGenerator(snapshotGeneratorId);
+    output.write(
+      chalk.bold(`Processing ${snapshotGenerator.name} snapshot queue\n`),
+    );
+
     const env = cleanEnv({
       FILTER_URL: envalid.str({
         desc: "Regex to use when filtering URLs",
@@ -34,10 +54,8 @@ export const generateProcessQueueScript =
     });
     const filterUrlRegex = RegexParser(env.FILTER_URL);
 
-    const snapshotGenerator = getSnapshotGenerator(snapshotGeneratorId);
-    output.write(
-      chalk.bold(`Processing ${snapshotGenerator.name} snapshot queue\n`),
-    );
+    const webPageDirPathByUrl: Record<string, string> =
+      await generateWebPageDirPathByUrl();
 
     output.write(
       `${chalk.green(`Queue file:`)} ${generateSnapshotQueueDocumentPath(
@@ -113,10 +131,21 @@ export const generateProcessQueueScript =
       };
       abortController.signal.addEventListener("abort", abortHandler);
 
+      const webPageDirPath = webPageDirPathByUrl[item.webPageUrl];
+      if (!webPageDirPath) {
+        output.write(
+          chalk.yellow(
+            `\n  unable locate ${item.webPageUrl} in your collection. Did you delete a previously registered page? Skipping.`,
+          ),
+        );
+        continue;
+      }
+
       try {
         const message = (await snapshotGenerator.takeSnapshot({
           abortSignal: abortController.signal,
           snapshotContext: item.context,
+          webPageDirPath,
           webPageUrl: item.webPageUrl,
         })) as string | undefined;
 

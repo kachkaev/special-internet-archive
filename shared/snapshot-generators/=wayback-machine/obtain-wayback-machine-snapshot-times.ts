@@ -21,10 +21,10 @@ const expectedColumnsInCdxApiResponse: CdxApiResponse[number] = [
 
 const axiosInstance = createAxiosInstanceForWaybackMachine();
 
-export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async (
+export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
   webPageUrl,
   aliasUrl,
-) => {
+}) => {
   const url = aliasUrl ?? webPageUrl;
   const result: string[] = [];
   // E.g. http://web.archive.org/cdx/search/cdx?url=https://vk.com/penza_live&output=json

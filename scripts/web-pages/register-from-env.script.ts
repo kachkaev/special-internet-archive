@@ -3,10 +3,7 @@ import * as envalid from "envalid";
 
 import { cleanEnv } from "../../shared/clean-env";
 import { EarlyExitError } from "../../shared/errors";
-import {
-  generateWebPagePath,
-  registerWebPage,
-} from "../../shared/web-page-documents";
+import { registerWebPage } from "../../shared/web-page-documents";
 import { generateUrlExamplesMessage } from "../../shared/web-page-sources";
 
 const output = process.stdout;
@@ -34,17 +31,13 @@ const script = async () => {
     output.write(
       `Web page ${chalk.underline(
         urlToRegister,
-      )} was registered: ${chalk.magenta(
-        generateWebPagePath(urlToRegister),
-      )}\n`,
+      )} was registered: ${chalk.magenta(operationResult.message)}\n`,
     );
   } else {
     output.write(
       `Web page ${chalk.underline(
         urlToRegister,
-      )} is already registered: ${chalk.gray(
-        generateWebPagePath(urlToRegister),
-      )}\n`,
+      )} is already registered: ${chalk.gray(operationResult.message)}\n`,
     );
   }
 };

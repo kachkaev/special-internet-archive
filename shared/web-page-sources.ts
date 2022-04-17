@@ -44,12 +44,14 @@ export const listWebPageAliases = (webPageUrl: string): string[] => {
 export const calculateRelevantTimeMinForNewIncrementalSnapshot: CalculateRelevantTimeMinForNewIncrementalSnapshot =
   (payload) => {
     return getWebPageSource(
-      payload.webPageUrl,
+      payload.webPageDocument.webPageUrl,
     ).calculateRelevantTimeMinForNewIncrementalSnapshot?.(payload);
   };
 
 export const checkIfNewSnapshotIsDue: CheckIfNewSnapshotIsDue = (payload) => {
-  return getWebPageSource(payload.webPageUrl).checkIfNewSnapshotIsDue(payload);
+  return getWebPageSource(
+    payload.webPageDocument.webPageUrl,
+  ).checkIfNewSnapshotIsDue(payload);
 };
 
 const listWebPageUrlExamples = (): string[] => {
