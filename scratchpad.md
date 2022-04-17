@@ -36,106 +36,22 @@ steps
 
 mvp
 
-`web-page.json`
+`web-page.json` → `annotation`
 
 ```json
 {
-  "documentType": "webPage",
-  "webPageUrl": "https://vk.com/penza_live",
-  "registeredAt": "2022-04-06T00:00:00Z",
-  "registeredVia": "??",
-  "annotation": {
-    "webPageType": "vkUser",
-    "labels": ["hello|world"],
-    "vkWall": {
-      "allRelevant": true,
-      "allRelevantVia": "ui",
-      "postLookup": {
-        "/wall-12345-12345": {
-          "relevant": true,
-          "relevantVia": "ui"
-        }
+  "webPageType": "vkUser",
+  "labels": ["hello|world"],
+  "vkWall": {
+    "allRelevant": true,
+    "allRelevantVia": "ui",
+    "postLookup": {
+      "/wall-12345-12345": {
+        "relevant": true,
+        "relevantVia": "ui"
       }
     }
-  },
-  "snapshotInventoryLookup": {
-    "playwright": {
-      "updatedAt": "2022-04-06T00:00:00Z",
-      "items": [
-        {
-          "capturedAt": "2022-04-06T00:00:00Z"
-        },
-        {
-          "capturedAt": "2022-04-06T00:00:00Z"
-        },
-        {
-          "capturedAt": "2022-04-06T00:00:00Z"
-        }
-      ]
-    },
-    "waybackMachine": {
-      "updatedAt": "2022-04-06T00:00:00Z",
-      "items": [
-        {
-          "capturedAt": "2022-04-06T00:00:00Z"
-        },
-        {
-          "aliasUrl": "https://vk.com/penza_live",
-          "capturedAt": "2022-04-06T00:00:00Z"
-        },
-        {
-          "capturedAt": "2022-04-06T00:00:00Z"
-        }
-      ]
-    }
   }
-}
-```
-
-`snapshot-queues/playwright.json`
-
-```json
-{
-  "documentType": "snapshotQueue",
-  "snapshotGeneratorId": "playwright",
-  "items": [
-    {
-      "id": "...",
-      "webPageUrl": "https://vk.com/penza_live",
-      "addedAt": "2022-04-06T00:00:00Z",
-      "context": {
-        "relevantTimeMin": "2022-04-06T00:00:00Z"
-      },
-      "attempts": [
-        {
-          "startedAt": "2022-04-06T00:00:00Z",
-          "status": "started",
-          "message": "..."
-        }
-      ]
-    }
-  ]
-}
-```
-
-`2022-03-10-011223z-playwright.zip.summary.json`
-
-```json
-{
-  "documentType": "snapshotSummary",
-  "webPageUrl": "https://vk.com/penza_live",
-  "capturedAt": "2022-04-06T00:00:00Z",
-  "generatedAt": "2022-04-06T00:00:00Z"
-}
-```
-
-`snapshot-summary-combination.json`
-
-```json
-{
-  "documentType": "snapshotSummaryCombination",
-  "webPageUrl": "https://vk.com/penza_live",
-  "combinedAt": "2022-04-06T00:00:00Z"
 }
 ```
 
