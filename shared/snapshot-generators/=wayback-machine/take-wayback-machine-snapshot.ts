@@ -7,7 +7,7 @@ import path from "node:path";
 import sleep from "sleep-promise";
 
 import { getCollectionDirPath } from "../../collection";
-import { TakeSnapshot } from "../types";
+import { CaptureSnapshot } from "../types";
 import { createAxiosInstanceForWaybackMachine } from "./shared/create-axios-instance-for-wayback-machine";
 
 const axiosInstance = createAxiosInstanceForWaybackMachine();
@@ -17,7 +17,7 @@ const maxRetryCount = 10;
 /**
  * Inspired by https://github.com/tgbot-collection/archiver/blob/e5996b5944fa33244a75dce883b5c80e9e92d50e/archiveOrg.go#L30-L38
  */
-export const takeWaybackMachineSnapshot: TakeSnapshot = async ({
+export const takeWaybackMachineSnapshot: CaptureSnapshot = async ({
   webPageUrl,
   output,
 }) => {

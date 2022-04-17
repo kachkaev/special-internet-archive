@@ -4,7 +4,7 @@ import { chromium, Page } from "playwright";
 import sleep from "sleep-promise";
 
 import { AbortError } from "../../errors";
-import { TakeSnapshot } from "../types";
+import { CaptureSnapshot } from "../types";
 
 const closeAuthModalIfPresent = async (page: Page): Promise<boolean> => {
   const button = page.locator(".UnauthActionBox__close").nth(0);
@@ -27,7 +27,7 @@ const loadAllLazyImages = async (page: Page) => {
   await page.waitForLoadState("networkidle");
 };
 
-export const takePlaywrightSnapshot: TakeSnapshot = async ({
+export const takePlaywrightSnapshot: CaptureSnapshot = async ({
   abortSignal,
   webPageDirPath,
   webPageUrl,

@@ -10,6 +10,6 @@ export const playwrightSnapshotGenerator: SnapshotGenerator = {
   obtainSnapshotTimes: obtainPlaywrightSnapshotTimes,
   parseSnapshot: parsePlaywrightSnapshot,
   snapshotAttemptTimeoutInSeconds: 120,
-  stopParseSnapshotBatch: ensureTraceViewerServerStopped,
-  takeSnapshot: takePlaywrightSnapshot,
+  finishParseSnapshotBatch: ensureTraceViewerServerStopped,
+  captureSnapshot: takePlaywrightSnapshot,
 };

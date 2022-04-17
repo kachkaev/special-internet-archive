@@ -10,7 +10,7 @@ export interface SnapshotContext {
   relevantTimeMin?: string;
 }
 
-export type TakeSnapshot = (payload: {
+export type CaptureSnapshot = (payload: {
   abortSignal?: AbortSignal;
   output?: WriteStream | undefined;
   snapshotContext?: SnapshotContext | undefined;
@@ -24,8 +24,8 @@ export type ParseSnapshot = (payload: {
   snapshotFilePath: string;
 }) => Promise<void | string>;
 
-export type StopTakeSnapshotBatch = () => void | Promise<void>;
-export type StopParseSnapshotBatch = () => void | Promise<void>;
+export type FinishCaptureSnapshotBatch = () => void | Promise<void>;
+export type FinishParseSnapshotBatch = () => void | Promise<void>;
 
 export interface SnapshotGenerator {
   aliasesSupported: boolean;
@@ -33,7 +33,7 @@ export interface SnapshotGenerator {
   obtainSnapshotTimes: ObtainSnapshotTimes;
   parseSnapshot?: ParseSnapshot;
   snapshotAttemptTimeoutInSeconds: number;
-  stopParseSnapshotBatch?: StopParseSnapshotBatch;
-  stopTakeSnapshotBatch?: StopTakeSnapshotBatch;
-  takeSnapshot: TakeSnapshot;
+  finishParseSnapshotBatch?: FinishParseSnapshotBatch;
+  finishCaptureSnapshotBatch?: FinishCaptureSnapshotBatch;
+  captureSnapshot: CaptureSnapshot;
 }

@@ -142,7 +142,7 @@ export const generateProcessQueueScript =
       }
 
       try {
-        const message = (await snapshotGenerator.takeSnapshot({
+        const message = (await snapshotGenerator.captureSnapshot({
           abortSignal: abortController.signal,
           snapshotContext: item.context,
           webPageDirPath,

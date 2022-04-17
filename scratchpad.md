@@ -83,7 +83,6 @@ https://www.fotojet.com/apps/?entry=edit (old photo 3v)
 
 ## TODO
 
-- `shared/snapshot-generators/=playwright.ts` → `takeSnapshot`
 - extract snapshot summaries
 - extract snapshot summary combination
 - mark posts as relevant
