@@ -12,6 +12,7 @@ import {
 } from "../../shared/snapshot-generators";
 import {
   generateSnapshotQueueDocumentPath,
+  listSnapshotTimesInAscOrder,
   readSnapshotQueueDocument,
   SnapshotQueueItem,
   writeSnapshotQueueDocument,
@@ -133,9 +134,6 @@ export const generateComposeSnapshotQueueScript =
 
         const snapshotInventoryUpdatedAt = snapshotInventory?.updatedAt;
 
-        const snapshotTimesInInventory =
-          snapshotInventory?.items.map((item) => item.capturedAt) ?? [];
-
         const queueItemsSucceededAfterInventoryUpdate =
           existingQueueItems.filter((item) => {
             const succeededAttemptTime = item.attempts?.find(
@@ -151,18 +149,10 @@ export const generateComposeSnapshotQueueScript =
 
         allNewQueueItems.push(...queueItemsSucceededAfterInventoryUpdate);
 
-        const snapshotTimesInSucceededQueueItems = existingQueueItems
-          .filter((item) =>
-            item.attempts?.find((attempt) => attempt.status === "succeeded"),
-          )
-          .flatMap(
-            (item) => item.attempts?.map((attempt) => attempt.startedAt) ?? [],
-          );
-
-        const knownSnapshotTimesInAscOrder = _.orderBy([
-          ...snapshotTimesInInventory,
-          ...snapshotTimesInSucceededQueueItems,
-        ]);
+        const knownSnapshotTimesInAscOrder = listSnapshotTimesInAscOrder({
+          snapshotInventory,
+          snapshotQueue: existingSnapshotQueueDocument,
+        });
 
         const newSnapshotIsDue =
           force ||
