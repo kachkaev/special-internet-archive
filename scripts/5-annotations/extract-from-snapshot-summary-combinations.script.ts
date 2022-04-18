@@ -4,12 +4,12 @@ import _ from "lodash";
 import {
   checkIfSnapshotSummaryCombinationDocumentExists,
   readSnapshotSummaryCombinationDocument,
-} from "../../../shared/snapshot-summaries";
+} from "../../shared/snapshot-summaries";
 import {
   processWebPages,
   writeWebPageDocument,
-} from "../../../shared/web-page-documents";
-import { updateWebPageAnnotation } from "../../../shared/web-page-sources";
+} from "../../shared/web-page-documents";
+import { updateWebPageAnnotation } from "../../shared/web-page-sources";
 
 const output = process.stdout;
 
@@ -27,9 +27,7 @@ const script = async () => {
       if (
         !(await checkIfSnapshotSummaryCombinationDocumentExists(webPageDirPath))
       ) {
-        output.write(
-          chalk.yellow("snapshot summary combination does not exist"),
-        );
+        output.write(chalk.yellow("snapshot summary combination not found"));
         pagesWithoutSnapshotSummaryCombination = true;
 
         return;

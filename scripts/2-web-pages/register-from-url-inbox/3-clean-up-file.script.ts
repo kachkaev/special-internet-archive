@@ -5,13 +5,13 @@ import {
   ParsedUrlInboxRow,
   readUrlInboxRows,
   writeUrlInbox,
-} from "../../shared/collection";
-import { checkIfWebPageDocumentExists } from "../../shared/web-page-documents";
+} from "../../../shared/collection";
+import { checkIfWebPageDocumentExists } from "../../../shared/web-page-documents";
 
 const output = process.stdout;
 
 const script = async () => {
-  output.write(chalk.bold("Cleaning up URL inbox\n"));
+  output.write(chalk.bold("Cleaning up URL inbox file\n"));
 
   output.write(
     `${chalk.green("URL inbox file location:")} ${getUrlInboxFilePath()}\n`,

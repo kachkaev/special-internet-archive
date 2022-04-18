@@ -2,7 +2,7 @@ import chalk from "chalk";
 import _ from "lodash";
 import path from "node:path";
 
-import { listFilePaths } from "../../../shared/list-file-paths";
+import { listFilePaths } from "../../shared/list-file-paths";
 import {
   readSnapshotSummaryCombinationDocument,
   readSnapshotSummaryDocument,
@@ -11,10 +11,10 @@ import {
   snapshotSummaryCombinationStaleTime,
   SnapshotSummaryDocument,
   writeSnapshotSummaryCombinationDocument,
-} from "../../../shared/snapshot-summaries";
-import { serializeTime } from "../../../shared/time";
-import { processWebPages } from "../../../shared/web-page-documents";
-import { extractSnapshotSummaryCombinationData } from "../../../shared/web-page-sources";
+} from "../../shared/snapshot-summaries";
+import { serializeTime } from "../../shared/time";
+import { processWebPages } from "../../shared/web-page-documents";
+import { extractSnapshotSummaryCombinationData } from "../../shared/web-page-sources";
 
 const output = process.stdout;
 
@@ -32,7 +32,7 @@ const script = async () => {
       });
 
       if (snapshotSummaryFilePaths.length === 0) {
-        output.write(chalk.yellow(`no snapshot summaries found`));
+        output.write(chalk.yellow(`snapshot summaries not found`));
         pagesWithoutSnapshotSummariesFound = true;
 
         return;

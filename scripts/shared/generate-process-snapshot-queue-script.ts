@@ -4,19 +4,19 @@ import _ from "lodash";
 import { WriteStream } from "node:tty";
 import RegexParser from "regex-parser";
 
-import { cleanEnv } from "../../../../shared/clean-env";
-import { getErrorMessage } from "../../../../shared/errors";
+import { cleanEnv } from "../../shared/clean-env";
+import { getErrorMessage } from "../../shared/errors";
 import {
   getSnapshotGenerator,
   SnapshotGeneratorId,
-} from "../../../../shared/snapshot-generators";
+} from "../../shared/snapshot-generators";
 import {
   generateSnapshotQueueDocumentPath,
   readSnapshotQueueDocument,
   reportSnapshotQueueAttempt,
-} from "../../../../shared/snapshot-queues";
-import { serializeTime } from "../../../../shared/time";
-import { processWebPages } from "../../../../shared/web-page-documents";
+} from "../../shared/snapshot-queues";
+import { serializeTime } from "../../shared/time";
+import { processWebPages } from "../../shared/web-page-documents";
 
 const generateWebPageDirPathByUrl = async (): Promise<
   Record<string, string>
@@ -32,7 +32,7 @@ const generateWebPageDirPathByUrl = async (): Promise<
   return result;
 };
 
-export const generateProcessQueueScript =
+export const generateProcessSnapshotQueueScript =
   ({
     output,
     snapshotGeneratorId,

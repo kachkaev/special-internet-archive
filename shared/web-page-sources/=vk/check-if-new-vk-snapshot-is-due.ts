@@ -21,7 +21,7 @@ export const checkIfNewVkSnapshotIsDue: CheckIfNewSnapshotIsDue = ({
   const categorizedVkUrl = categorizeVkUrl(webPageDocument.webPageUrl);
   switch (categorizedVkUrl.vkPageType) {
     case "account":
-      return daysSinceNewestSnapshot > 2;
+      return daysSinceNewestSnapshot > 1;
     case "post": {
       if (daysSinceOldestSnapshot <= 5) {
         return daysSinceNewestSnapshot > 2;

@@ -3,15 +3,15 @@ import * as envalid from "envalid";
 import fs from "fs-extra";
 import path from "node:path";
 
-import { cleanEnv } from "../shared/clean-env";
-import { getCollectionDirPath } from "../shared/collection";
-import { formatJson } from "../shared/helpers-for-json";
-import { processFiles } from "../shared/process-files";
+import { cleanEnv } from "../../shared/clean-env";
+import { getCollectionDirPath } from "../../shared/collection";
+import { formatJson } from "../../shared/helpers-for-json";
+import { processFiles } from "../../shared/process-files";
 
 const output = process.stdout;
 
 const script = async () => {
-  output.write(chalk.bold("Formatting all data files\n"));
+  output.write(chalk.bold("Formatting data files in collection\n"));
 
   const { CUSTOM_PATH: customPath } = cleanEnv({
     CUSTOM_PATH: envalid.str({ default: "" }),

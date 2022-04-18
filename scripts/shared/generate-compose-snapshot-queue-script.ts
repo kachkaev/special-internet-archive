@@ -5,25 +5,25 @@ import { DateTime } from "luxon";
 import { randomUUID } from "node:crypto";
 import { WriteStream } from "node:tty";
 
-import { cleanEnv } from "../../../../shared/clean-env";
+import { cleanEnv } from "../../shared/clean-env";
 import {
   getSnapshotGenerator,
   SnapshotGeneratorId,
-} from "../../../../shared/snapshot-generators";
+} from "../../shared/snapshot-generators";
 import {
   generateSnapshotQueueDocumentPath,
   readSnapshotQueueDocument,
   SnapshotQueueItem,
   writeSnapshotQueueDocument,
-} from "../../../../shared/snapshot-queues";
-import { serializeTime } from "../../../../shared/time";
-import { processWebPages } from "../../../../shared/web-page-documents";
+} from "../../shared/snapshot-queues";
+import { serializeTime } from "../../shared/time";
+import { processWebPages } from "../../shared/web-page-documents";
 import {
   calculateRelevantTimeMinForNewIncrementalSnapshot,
   checkIfNewSnapshotIsDue,
-} from "../../../../shared/web-page-sources";
+} from "../../shared/web-page-sources";
 
-export const generateComposeQueueScript =
+export const generateComposeSnapshotQueueScript =
   ({
     output,
     snapshotGeneratorId,

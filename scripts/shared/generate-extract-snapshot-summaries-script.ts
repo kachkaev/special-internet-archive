@@ -2,22 +2,22 @@ import chalk from "chalk";
 import fs from "fs-extra";
 import { WriteStream } from "node:tty";
 
-import { getErrorMessage, UserFriendlyError } from "../../../../shared/errors";
+import { getErrorMessage, UserFriendlyError } from "../../shared/errors";
 import {
   getSnapshotGenerator,
   SnapshotGeneratorId,
-} from "../../../../shared/snapshot-generators";
+} from "../../shared/snapshot-generators";
 import {
   checkIfSnapshotSummaryDocumentExists,
   readSnapshotSummaryDocument,
   SnapshotSummaryDocument,
   snapshotSummaryStaleTime,
   writeSnapshotSummaryDocument,
-} from "../../../../shared/snapshot-summaries";
-import { serializeTime } from "../../../../shared/time";
-import { processWebPages } from "../../../../shared/web-page-documents";
+} from "../../shared/snapshot-summaries";
+import { serializeTime } from "../../shared/time";
+import { processWebPages } from "../../shared/web-page-documents";
 
-export const extractSnapshotSummariesScript =
+export const generateExtractSnapshotSummariesScript =
   ({
     output,
     snapshotGeneratorId,

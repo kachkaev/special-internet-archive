@@ -1,14 +1,17 @@
 import chalk from "chalk";
 import _ from "lodash";
 
-import { getUrlInboxFilePath, readUrlInboxRows } from "../../shared/collection";
-import { registerWebPage } from "../../shared/web-page-documents";
-import { generateUrlExamplesMessage } from "../../shared/web-page-sources";
+import {
+  getUrlInboxFilePath,
+  readUrlInboxRows,
+} from "../../../shared/collection";
+import { registerWebPage } from "../../../shared/web-page-documents";
+import { generateUrlExamplesMessage } from "../../../shared/web-page-sources";
 
 const output = process.stdout;
 
 const script = async () => {
-  output.write(chalk.bold("Registering web pages from URL inbox\n"));
+  output.write(chalk.bold("Registering web pages from URL inbox file\n"));
 
   output.write(
     `${chalk.green("URL inbox file location:")} ${getUrlInboxFilePath()}\n`,
@@ -61,6 +64,7 @@ const script = async () => {
     }
   }
 
+  output.write("\n");
   output.write("\n");
 
   if (numberOfErrors) {

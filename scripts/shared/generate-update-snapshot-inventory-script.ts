@@ -5,21 +5,21 @@ import { DateTime } from "luxon";
 import { WriteStream } from "node:tty";
 import sortKeys from "sort-keys";
 
-import { cleanEnv } from "../../../../shared/clean-env";
-import { relevantTimeMin } from "../../../../shared/collection";
-import { UserFriendlyError } from "../../../../shared/errors";
+import { cleanEnv } from "../../shared/clean-env";
+import { relevantTimeMin } from "../../shared/collection";
+import { UserFriendlyError } from "../../shared/errors";
 import {
   getSnapshotGenerator,
   SnapshotGeneratorId,
-} from "../../../../shared/snapshot-generators";
-import { serializeTime } from "../../../../shared/time";
+} from "../../shared/snapshot-generators";
+import { serializeTime } from "../../shared/time";
 import {
   processWebPages,
   SnapshotInventory,
   SnapshotInventoryItem,
   writeWebPageDocument,
-} from "../../../../shared/web-page-documents";
-import { listWebPageAliases } from "../../../../shared/web-page-sources";
+} from "../../shared/web-page-documents";
+import { listWebPageAliases } from "../../shared/web-page-sources";
 
 const calculateSnapshotCount = (
   snapshotInventoryItems: SnapshotInventoryItem[],
