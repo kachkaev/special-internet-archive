@@ -1,9 +1,9 @@
 import { calculateDaysSince } from "../../time";
-import { CheckIfNewSnapshotIsDue } from "../types";
+import { CheckIfSnapshotIsDue } from "../types";
 import { assertVkUrl } from "./assert-vk-url";
 import { categorizeVkUrl } from "./categorize-vk-url";
 
-export const checkIfNewVkSnapshotIsDue: CheckIfNewSnapshotIsDue = ({
+export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = ({
   webPageDocument,
   knownSnapshotTimesInAscOrder,
 }) => {

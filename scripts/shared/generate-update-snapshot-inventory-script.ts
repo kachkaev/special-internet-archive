@@ -12,6 +12,10 @@ import {
   getSnapshotGenerator,
   SnapshotGeneratorId,
 } from "../../shared/snapshot-generators";
+import {
+  listKnownSnapshotTimesInAscOrder,
+  readSnapshotQueueDocument,
+} from "../../shared/snapshot-queues";
 import { serializeTime } from "../../shared/time";
 import {
   processWebPages,
@@ -19,7 +23,10 @@ import {
   SnapshotInventoryItem,
   writeWebPageDocument,
 } from "../../shared/web-page-documents";
-import { listWebPageAliases } from "../../shared/web-page-sources";
+import {
+  checkIfSnapshotIsDue,
+  listWebPageAliases,
+} from "../../shared/web-page-sources";
 
 const calculateSnapshotCount = (
   snapshotInventoryItems: SnapshotInventoryItem[],
@@ -55,6 +62,39 @@ const reportUpdateInSnapshots = (
   }
 };
 
+const outputSkippedFetching = ({
+  aliasUrls,
+  existingSnapshotInventory,
+  output,
+  reason,
+}: {
+  aliasUrls: string[];
+  existingSnapshotInventory: SnapshotInventory;
+  output: WriteStream;
+  reason: string;
+}) => {
+  output.write(
+    chalk.gray(
+      `skipped (${reason}); snapshot count: ${calculateSnapshotCount(
+        existingSnapshotInventory.items,
+      )}`,
+    ),
+  );
+
+  for (const aliasUrl of aliasUrls) {
+    output.write(
+      chalk.gray(
+        `\n  alias ${chalk.underline(
+          aliasUrl,
+        )} snapshot count: ${calculateSnapshotCount(
+          existingSnapshotInventory.items,
+          aliasUrl,
+        )}`,
+      ),
+    );
+  }
+};
+
 export const generateUpdateInventoryScript =
   ({
     output,
@@ -75,28 +115,33 @@ export const generateUpdateInventoryScript =
       ),
     );
 
-    let inventoryUpdateIntervalInMinutes = 0;
+    let repeatIntervalInMinutes = 0;
+    let eager = true;
 
     if (snapshotGenerator.role === "external") {
       const env = cleanEnv({
-        INVENTORY_UPDATE_INTERVAL_IN_MINUTES: envalid.num({
+        EAGER: envalid.bool({
+          default: false,
+        }),
+        REPEAT_INTERVAL_IN_MINUTES: envalid.num({
           default: 5,
         }),
       });
 
-      inventoryUpdateIntervalInMinutes =
-        env.INVENTORY_UPDATE_INTERVAL_IN_MINUTES;
+      eager = env.EAGER;
+      repeatIntervalInMinutes = env.REPEAT_INTERVAL_IN_MINUTES;
 
-      if (
-        inventoryUpdateIntervalInMinutes < 0 ||
-        Math.round(inventoryUpdateIntervalInMinutes) !==
-          inventoryUpdateIntervalInMinutes
-      ) {
+      if (Math.round(repeatIntervalInMinutes) !== repeatIntervalInMinutes) {
         throw new UserFriendlyError(
-          "Expected INVENTORY_UPDATE_INTERVAL_IN_MINUTES to be a non-negative integer number",
+          "Expected REPEAT_INTERVAL_IN_MINUTES to be a non-negative integer number",
         );
       }
     }
+
+    const snapshotQueueDocument = await readSnapshotQueueDocument(
+      snapshotGeneratorId,
+    );
+    const existingSnapshotQueueItems = snapshotQueueDocument.items;
 
     await processWebPages({
       output,
@@ -113,31 +158,52 @@ export const generateUpdateInventoryScript =
 
         if (existingSnapshotInventory) {
           const minSerializedTimeToRefetch = serializeTime(
-            DateTime.utc().minus({ minutes: inventoryUpdateIntervalInMinutes }),
+            DateTime.utc().minus({ minutes: repeatIntervalInMinutes }),
           );
           if (
             existingSnapshotInventory.updatedAt > minSerializedTimeToRefetch
           ) {
-            output.write(
-              chalk.gray(
-                `fetching skipped; snapshot count: ${calculateSnapshotCount(
-                  existingSnapshotInventory.items,
-                )}`,
-              ),
-            );
+            outputSkippedFetching({
+              aliasUrls,
+              existingSnapshotInventory,
+              output,
+              reason: `updated less than ${repeatIntervalInMinutes} min ago`,
+            });
 
-            for (const aliasUrl of aliasUrls) {
-              output.write(
-                chalk.gray(
-                  `\n  alias ${chalk.underline(
-                    aliasUrl,
-                  )} snapshot count: ${calculateSnapshotCount(
-                    existingSnapshotInventory.items,
-                    aliasUrl,
-                  )}`,
-                ),
-              );
-            }
+            return;
+          }
+        }
+
+        if (!eager) {
+          const webPageSnapshotQueueItems = existingSnapshotQueueItems.filter(
+            (item) => item.webPageUrl === webPageDocument.webPageUrl,
+          );
+
+          const knownSnapshotTimesInAscOrder = listKnownSnapshotTimesInAscOrder(
+            {
+              webPageSnapshotInventory: existingSnapshotInventory,
+              webPageSnapshotQueueItems,
+            },
+          );
+
+          const mostRecentSnapshotTime = knownSnapshotTimesInAscOrder.at(-1);
+
+          if (
+            mostRecentSnapshotTime &&
+            existingSnapshotInventory &&
+            mostRecentSnapshotTime < existingSnapshotInventory.updatedAt &&
+            !(await checkIfSnapshotIsDue({
+              knownSnapshotTimesInAscOrder,
+              webPageDirPath,
+              webPageDocument,
+            }))
+          ) {
+            outputSkippedFetching({
+              aliasUrls,
+              existingSnapshotInventory,
+              output,
+              reason: `snapshot is not due`,
+            });
 
             return;
           }

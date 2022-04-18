@@ -7,7 +7,7 @@ import { checkIfNewVkSnapshotIsDue } from "./=vk/check-if-new-vk-snapshot-is-due
 import { WebPageSource } from "./types";
 
 export const vkWebPageSource: WebPageSource = {
-  checkIfNewSnapshotIsDue: checkIfNewVkSnapshotIsDue,
+  checkIfSnapshotIsDue: checkIfNewVkSnapshotIsDue,
 
   generateWebPageDirPath: (webPageUrl) => {
     assertVkUrl(webPageUrl);

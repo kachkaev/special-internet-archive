@@ -2,7 +2,7 @@ import { UserFriendlyError } from "./errors";
 import { vkWebPageSource } from "./web-page-sources/=vk";
 import {
   CalculateRelevantTimeMinForNewIncrementalSnapshot,
-  CheckIfNewSnapshotIsDue,
+  CheckIfSnapshotIsDue,
   ExtractRelevantWebPageUrls,
   ExtractSnapshotSummaryCombinationData,
   UpdateWebPageAnnotation,
@@ -51,10 +51,10 @@ export const calculateRelevantTimeMinForNewIncrementalSnapshot: CalculateRelevan
     ).calculateRelevantTimeMinForNewIncrementalSnapshot?.(payload);
   };
 
-export const checkIfNewSnapshotIsDue: CheckIfNewSnapshotIsDue = (payload) => {
+export const checkIfSnapshotIsDue: CheckIfSnapshotIsDue = (payload) => {
   return getWebPageSource(
     payload.webPageDocument.webPageUrl,
-  ).checkIfNewSnapshotIsDue(payload);
+  ).checkIfSnapshotIsDue(payload);
 };
 
 export const extractSnapshotSummaryCombinationData: ExtractSnapshotSummaryCombinationData =

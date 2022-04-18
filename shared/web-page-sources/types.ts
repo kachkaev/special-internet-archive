@@ -14,7 +14,7 @@ export type CalculateRelevantTimeMinForNewIncrementalSnapshot = (payload: {
   mostRecentSnapshotTime: string;
 }) => string | undefined | Promise<string | undefined>;
 
-export type CheckIfNewSnapshotIsDue = (payload: {
+export type CheckIfSnapshotIsDue = (payload: {
   webPageDirPath: string;
   webPageDocument: WebPageDocument;
   knownSnapshotTimesInAscOrder: string[];
@@ -36,7 +36,7 @@ export type ExtractRelevantWebPageUrls = (payload: {
 
 export interface WebPageSource {
   calculateRelevantTimeMinForNewIncrementalSnapshot?: CalculateRelevantTimeMinForNewIncrementalSnapshot;
-  checkIfNewSnapshotIsDue: CheckIfNewSnapshotIsDue;
+  checkIfSnapshotIsDue: CheckIfSnapshotIsDue;
   generateWebPageDirPath: GenerateWebPageDirPath;
   listUrlExamples: () => string[];
   listWebPageAliases: (webPageUrl: string) => string[];

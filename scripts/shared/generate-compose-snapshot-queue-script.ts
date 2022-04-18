@@ -12,7 +12,7 @@ import {
 } from "../../shared/snapshot-generators";
 import {
   generateSnapshotQueueDocumentPath,
-  listSnapshotTimesInAscOrder,
+  listKnownSnapshotTimesInAscOrder,
   readSnapshotQueueDocument,
   SnapshotQueueItem,
   writeSnapshotQueueDocument,
@@ -21,7 +21,7 @@ import { serializeTime } from "../../shared/time";
 import { processWebPages } from "../../shared/web-page-documents";
 import {
   calculateRelevantTimeMinForNewIncrementalSnapshot,
-  checkIfNewSnapshotIsDue,
+  checkIfSnapshotIsDue,
 } from "../../shared/web-page-sources";
 
 export const generateComposeSnapshotQueueScript =
@@ -149,17 +149,17 @@ export const generateComposeSnapshotQueueScript =
 
         allNewQueueItems.push(...queueItemsSucceededAfterInventoryUpdate);
 
-        const knownSnapshotTimesInAscOrder = listSnapshotTimesInAscOrder({
-          snapshotInventory,
-          snapshotQueue: existingSnapshotQueueDocument,
+        const knownSnapshotTimesInAscOrder = listKnownSnapshotTimesInAscOrder({
+          webPageSnapshotInventory: snapshotInventory,
+          webPageSnapshotQueueItems: existingQueueItems,
         });
 
         const newSnapshotIsDue =
           force ||
-          checkIfNewSnapshotIsDue({
+          checkIfSnapshotIsDue({
+            knownSnapshotTimesInAscOrder,
             webPageDirPath,
             webPageDocument,
-            knownSnapshotTimesInAscOrder,
           });
 
         if (newSnapshotIsDue) {
