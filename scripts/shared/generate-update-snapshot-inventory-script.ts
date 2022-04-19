@@ -60,7 +60,7 @@ const reportUpdateInSnapshots = (
   }
 };
 
-const outputSkippedFetching = ({
+const reportSkippedFetching = ({
   aliasUrls,
   existingSnapshotInventory,
   output,
@@ -161,7 +161,7 @@ export const generateUpdateInventoryScript =
           if (
             existingSnapshotInventory.updatedAt > minSerializedTimeToRefetch
           ) {
-            outputSkippedFetching({
+            reportSkippedFetching({
               aliasUrls,
               existingSnapshotInventory,
               output,
@@ -192,11 +192,12 @@ export const generateUpdateInventoryScript =
             mostRecentSnapshotTime < existingSnapshotInventory.updatedAt &&
             !(await checkIfSnapshotIsDue({
               knownSnapshotTimesInAscOrder,
+              snapshotGeneratorId,
               webPageDirPath,
               webPageDocument,
             }))
           ) {
-            outputSkippedFetching({
+            reportSkippedFetching({
               aliasUrls,
               existingSnapshotInventory,
               output,

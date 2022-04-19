@@ -143,7 +143,7 @@ export const generateProcessSnapshotQueueScript =
       try {
         const message = (await snapshotGenerator.captureSnapshot({
           abortSignal: abortController.signal,
-          snapshotContext: _.defaults({ relevantTimeMin }, item.context),
+          snapshotContext: _.defaults({}, item.context, { relevantTimeMin }),
           webPageDirPath,
           webPageUrl: item.webPageUrl,
         })) as string | undefined;

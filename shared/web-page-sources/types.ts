@@ -1,5 +1,6 @@
 import { Page } from "playwright";
 
+import { SnapshotGeneratorId } from "../snapshot-generator-id";
 import { SnapshotContext } from "../snapshot-generators";
 import {
   SnapshotSummaryCombinationData,
@@ -12,15 +13,17 @@ export type GenerateWebPageDirPath = (webPageUrl: string) => string;
 export type AssertSourceUrl = (webPageUrl: string) => void;
 
 export type CalculateRelevantTimeMinForNewIncrementalSnapshot = (payload: {
+  mostRecentSnapshotTime: string;
+  snapshotGeneratorId: SnapshotGeneratorId;
   webPageDirPath: string;
   webPageDocument: WebPageDocument;
-  mostRecentSnapshotTime: string;
 }) => string | undefined | Promise<string | undefined>;
 
 export type CheckIfSnapshotIsDue = (payload: {
+  knownSnapshotTimesInAscOrder: string[];
+  snapshotGeneratorId: SnapshotGeneratorId;
   webPageDirPath: string;
   webPageDocument: WebPageDocument;
-  knownSnapshotTimesInAscOrder: string[];
 }) => boolean | Promise<boolean>;
 
 export interface PlaywrightPageInteractionPayload {

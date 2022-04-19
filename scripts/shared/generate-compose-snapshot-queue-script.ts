@@ -152,15 +152,16 @@ export const generateComposeSnapshotQueueScript =
           webPageSnapshotQueueItems: existingQueueItems,
         });
 
-        const newSnapshotIsDue =
+        const snapshotIsDue =
           force ||
           checkIfSnapshotIsDue({
             knownSnapshotTimesInAscOrder,
+            snapshotGeneratorId,
             webPageDirPath,
             webPageDocument,
           });
 
-        if (newSnapshotIsDue) {
+        if (snapshotIsDue) {
           const newQueueItem: SnapshotQueueItem = {
             id: randomUUID(),
             webPageUrl: webPageDocument.webPageUrl,
@@ -172,9 +173,10 @@ export const generateComposeSnapshotQueueScript =
             force || !mostRecentSnapshotTime
               ? undefined
               : await calculateRelevantTimeMinForNewIncrementalSnapshot({
+                  mostRecentSnapshotTime,
                   webPageDirPath,
                   webPageDocument,
-                  mostRecentSnapshotTime,
+                  snapshotGeneratorId,
                 });
 
           if (relevantTimeMin) {
