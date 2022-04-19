@@ -11,13 +11,13 @@ export type ObtainSnapshotTimes = (payload: {
 }) => Promise<string[]>;
 
 export interface SnapshotContext {
-  relevantTimeMin?: string;
+  relevantTimeMin: string;
 }
 
 export type CaptureSnapshot = (payload: {
   abortSignal?: AbortSignal;
   output?: WriteStream | undefined;
-  snapshotContext?: SnapshotContext | undefined;
+  snapshotContext: SnapshotContext;
   webPageDirPath: string;
   webPageUrl: string;
 }) => Promise<void | string>;

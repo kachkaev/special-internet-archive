@@ -4,6 +4,7 @@ import { getWebPagesDirPath } from "../collection";
 import { assertVkUrl } from "./=vk/assert-vk-url";
 import { categorizeVkUrl } from "./=vk/categorize-vk-url";
 import { checkIfNewVkSnapshotIsDue } from "./=vk/check-if-new-vk-snapshot-is-due";
+import { interactWithVkPlaywrightPage } from "./=vk/interact-with-vk-playwright-page";
 import { WebPageSource } from "./types";
 
 export const vkWebPageSource: WebPageSource = {
@@ -30,6 +31,8 @@ export const vkWebPageSource: WebPageSource = {
 
     return path.resolve(getWebPagesDirPath(), "vk", ...pathSegments);
   },
+
+  interactWithPlaywrightPage: interactWithVkPlaywrightPage,
 
   listUrlExamples: () => [
     "https://vk.com/group123",

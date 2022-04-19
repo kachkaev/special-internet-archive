@@ -5,6 +5,7 @@ import { WriteStream } from "node:tty";
 import RegexParser from "regex-parser";
 
 import { cleanEnv } from "../../shared/clean-env";
+import { relevantTimeMin } from "../../shared/collection";
 import { getErrorMessage } from "../../shared/errors";
 import {
   getSnapshotGenerator,
@@ -144,7 +145,7 @@ export const generateProcessSnapshotQueueScript =
       try {
         const message = (await snapshotGenerator.captureSnapshot({
           abortSignal: abortController.signal,
-          snapshotContext: item.context,
+          snapshotContext: _.defaults({ relevantTimeMin }, item.context),
           webPageDirPath,
           webPageUrl: item.webPageUrl,
         })) as string | undefined;
@@ -182,6 +183,8 @@ export const generateProcessSnapshotQueueScript =
         numberOfFailedAttempts += 1;
       }
     }
+
+    await snapshotGenerator.finishCaptureSnapshotBatch?.();
 
     if (!abortController.signal.aborted) {
       if (itemsToProcess.length > 0) {

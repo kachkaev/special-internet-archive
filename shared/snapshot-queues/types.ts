@@ -17,7 +17,7 @@ export interface SnapshotQueueItem {
   id: string;
   webPageUrl: string;
   addedAt: string;
-  context?: SnapshotContext;
+  context?: Partial<SnapshotContext>;
   attempts?: SnapshotAttempt[];
 }
 

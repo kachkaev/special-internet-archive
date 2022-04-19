@@ -5,6 +5,7 @@ import {
   CheckIfSnapshotIsDue,
   ExtractRelevantWebPageUrls,
   ExtractSnapshotSummaryCombinationData,
+  InteractWithPlaywrightPage,
   UpdateWebPageAnnotation,
   WebPageSource,
 } from "./web-page-sources/types";
@@ -55,6 +56,14 @@ export const checkIfSnapshotIsDue: CheckIfSnapshotIsDue = (payload) => {
   return getWebPageSource(
     payload.webPageDocument.webPageUrl,
   ).checkIfSnapshotIsDue(payload);
+};
+
+export const interactWithPlaywrightPage: InteractWithPlaywrightPage = async (
+  payload,
+) => {
+  await getWebPageSource(
+    payload.playwrightPage.url(),
+  ).interactWithPlaywrightPage?.(payload);
 };
 
 export const extractSnapshotSummaryCombinationData: ExtractSnapshotSummaryCombinationData =

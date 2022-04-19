@@ -1,3 +1,6 @@
+import { Page } from "playwright";
+
+import { SnapshotContext } from "../snapshot-generators";
 import {
   SnapshotSummaryCombinationData,
   SnapshotSummaryCombinationDocument,
@@ -20,6 +23,17 @@ export type CheckIfSnapshotIsDue = (payload: {
   knownSnapshotTimesInAscOrder: string[];
 }) => boolean | Promise<boolean>;
 
+export interface PlaywrightPageInteractionPayload {
+  abortSignal?: AbortSignal | undefined;
+  log?: (message: string) => void;
+  playwrightPage: Page;
+  snapshotContext: SnapshotContext;
+}
+
+export type InteractWithPlaywrightPage = (
+  payload: PlaywrightPageInteractionPayload,
+) => void | Promise<void>;
+
 export type ExtractSnapshotSummaryCombinationData = (payload: {
   snapshotSummaryDocuments: SnapshotSummaryDocument[];
 }) => SnapshotSummaryCombinationData;
@@ -35,10 +49,11 @@ export type ExtractRelevantWebPageUrls = (payload: {
 }) => string[];
 
 export interface WebPageSource {
+  assertWebPageUrl: AssertSourceUrl;
   calculateRelevantTimeMinForNewIncrementalSnapshot?: CalculateRelevantTimeMinForNewIncrementalSnapshot;
   checkIfSnapshotIsDue: CheckIfSnapshotIsDue;
   generateWebPageDirPath: GenerateWebPageDirPath;
+  interactWithPlaywrightPage?: InteractWithPlaywrightPage;
   listUrlExamples: () => string[];
   listWebPageAliases: (webPageUrl: string) => string[];
-  assertWebPageUrl: AssertSourceUrl;
 }

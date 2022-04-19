@@ -1,3 +1,4 @@
+import { closePlaywrightBrowser } from "./=playwright/browser";
 import { capturePlaywrightSnapshot } from "./=playwright/capture-playwright-snapshot";
 import { generatePlaywrightSnapshotFilePath } from "./=playwright/generate-playwright-snapshot-file-path";
 import { obtainPlaywrightSnapshotTimes } from "./=playwright/obtain-playwright-snapshot-times";
@@ -9,6 +10,7 @@ export const playwrightSnapshotGenerator: SnapshotGenerator = {
   aliasesSupported: false,
   captureSnapshot: capturePlaywrightSnapshot,
   finishExtractSnapshotSummaryDataBatch: ensureTraceViewerServerIsStopped,
+  finishCaptureSnapshotBatch: closePlaywrightBrowser,
   generateSnapshotFilePath: generatePlaywrightSnapshotFilePath,
   name: "Playwright",
   obtainSnapshotTimes: obtainPlaywrightSnapshotTimes,
