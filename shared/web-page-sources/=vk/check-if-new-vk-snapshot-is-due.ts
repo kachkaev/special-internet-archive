@@ -47,8 +47,9 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = ({
       }
     }
     case "account":
-      // @todo
-
-      return daysSinceNewestSnapshot > 0.05;
+      // @todo Look into posts time stamps in the snapshot summary combination.
+      // If there are time gaps, return true for Playwright because previous
+      // snapshots could fail half-way.
+      return daysSinceNewestSnapshot > 1;
   }
 };

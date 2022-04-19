@@ -8,8 +8,11 @@ export interface SnapshotInventory {
   items: SnapshotInventoryItem[];
 }
 
-// @todo Specify
-export type WebPageAnnotation = Record<string, unknown>;
+// @todo Specify real annotation structure
+export type WebPageAnnotation = {
+  tempRelevantLinks?: string[];
+  [key: string]: unknown;
+};
 
 export interface WebPageDocument {
   documentType: "webPage";

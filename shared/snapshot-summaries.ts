@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { writeFormattedJson } from "./helpers-for-json";
 
-export type SnapshotSummaryData = Record<string, unknown>;
+export type SnapshotSummaryData = { tempRawVkPosts?: TempRawVkPost[] };
 export type SnapshotSummaryCombinationData = SnapshotSummaryData;
 
 export const snapshotSummaryStaleTime = "2022-01-01T00:00:00Z";
@@ -89,3 +89,9 @@ export const writeSnapshotSummaryCombinationDocument = async (
     snapshotSummaryCombinationDocument,
   );
 };
+
+export interface TempRawVkPost {
+  url: string;
+  date: string;
+  text: string;
+}
