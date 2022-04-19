@@ -1,4 +1,5 @@
-import { SnapshotContext, SnapshotGeneratorId } from "../snapshot-generators";
+import { SnapshotGeneratorId } from "../snapshot-generator-id";
+import { SnapshotContext } from "../snapshot-generators";
 
 export type SnapshotAttemptStatus =
   | "aborted"

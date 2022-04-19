@@ -7,10 +7,8 @@ import RegexParser from "regex-parser";
 import { cleanEnv } from "../../shared/clean-env";
 import { relevantTimeMin } from "../../shared/collection";
 import { getErrorMessage } from "../../shared/errors";
-import {
-  getSnapshotGenerator,
-  SnapshotGeneratorId,
-} from "../../shared/snapshot-generators";
+import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
+import { getSnapshotGenerator } from "../../shared/snapshot-generators";
 import {
   generateSnapshotQueueDocumentPath,
   readSnapshotQueueDocument,

@@ -3,10 +3,8 @@ import fs from "fs-extra";
 import { WriteStream } from "node:tty";
 
 import { getErrorMessage, UserFriendlyError } from "../../shared/errors";
-import {
-  getSnapshotGenerator,
-  SnapshotGeneratorId,
-} from "../../shared/snapshot-generators";
+import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
+import { getSnapshotGenerator } from "../../shared/snapshot-generators";
 import {
   checkIfSnapshotSummaryDocumentExists,
   readSnapshotSummaryDocument,

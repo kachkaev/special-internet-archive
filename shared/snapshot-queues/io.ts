@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { getCollectionDirPath } from "../collection";
 import { writeFormattedJson } from "../helpers-for-json";
-import { SnapshotGeneratorId } from "../snapshot-generators";
+import { SnapshotGeneratorId } from "../snapshot-generator-id";
 import {
   SnapshotAttempt,
   SnapshotAttemptStatus,

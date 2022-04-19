@@ -8,10 +8,8 @@ import sortKeys from "sort-keys";
 import { cleanEnv } from "../../shared/clean-env";
 import { relevantTimeMin } from "../../shared/collection";
 import { UserFriendlyError } from "../../shared/errors";
-import {
-  getSnapshotGenerator,
-  SnapshotGeneratorId,
-} from "../../shared/snapshot-generators";
+import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
+import { getSnapshotGenerator } from "../../shared/snapshot-generators";
 import {
   listKnownSnapshotTimesInAscOrder,
   readSnapshotQueueDocument,

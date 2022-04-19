@@ -6,10 +6,8 @@ import { randomUUID } from "node:crypto";
 import { WriteStream } from "node:tty";
 
 import { cleanEnv } from "../../shared/clean-env";
-import {
-  getSnapshotGenerator,
-  SnapshotGeneratorId,
-} from "../../shared/snapshot-generators";
+import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
+import { getSnapshotGenerator } from "../../shared/snapshot-generators";
 import {
   generateSnapshotQueueDocumentPath,
   listKnownSnapshotTimesInAscOrder,
