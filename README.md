@@ -281,7 +281,13 @@
 1.  Создайте локальную папку `[project-path]/data/collections`.
 
 1.  Клонируйте созданную для вас ветку в папку `🗃 [project-path]/data/collections/[collection-id]`.
-
+    
+    ```sh
+    git clone https://[github-username]:[personal-access-token]@github.com/kachkaev/special-internet-archive-data.git
+    ```
+    `[github-username]` - это ваш ник на гитхабе.
+    `[personal-access-token]` - это ваш персональный токен аутентификации для доступа к приватному репозиторию.
+     [Инструкция](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) по созданию персонального токена.  
     `[collection-id]` — это название коллекции (например, `region-ru-pnz` или `topic-xyz`).
     Название папки соответствует названию ветки репозитория с данными (`collections/[collection-id]`).
 
