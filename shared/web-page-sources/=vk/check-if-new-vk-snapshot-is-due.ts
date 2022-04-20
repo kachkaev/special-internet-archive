@@ -30,21 +30,22 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = ({
   }
 
   const daysSinceNewestSnapshot = calculateDaysSince(newestSnapshotTime);
-  const daysSinceOldestSnapshot = calculateDaysSince(oldestSnapshotTime);
+  // const daysSinceOldestSnapshot = calculateDaysSince(oldestSnapshotTime);
 
   switch (categorizedVkUrl.vkPageType) {
     case "post": {
-      if (daysSinceOldestSnapshot <= 5) {
-        return daysSinceNewestSnapshot > 2;
-      } else if (daysSinceOldestSnapshot <= 14) {
-        return daysSinceNewestSnapshot > 7;
-      } else if (daysSinceOldestSnapshot <= 30) {
-        return daysSinceNewestSnapshot > 14;
-      } else if (daysSinceOldestSnapshot <= 90) {
-        return daysSinceNewestSnapshot > 30;
-      } else {
-        return daysSinceNewestSnapshot > 90;
-      }
+      return knownSnapshotTimesInAscOrder.length === 0;
+      // if (daysSinceOldestSnapshot <= 5) {
+      //   return daysSinceNewestSnapshot > 2;
+      // } else if (daysSinceOldestSnapshot <= 14) {
+      //   return daysSinceNewestSnapshot > 7;
+      // } else if (daysSinceOldestSnapshot <= 30) {
+      //   return daysSinceNewestSnapshot > 14;
+      // } else if (daysSinceOldestSnapshot <= 90) {
+      //   return daysSinceNewestSnapshot > 30;
+      // } else {
+      //   return daysSinceNewestSnapshot > 90;
+      // }
     }
     case "account":
       // @todo Look into posts time stamps in the snapshot summary combination.
