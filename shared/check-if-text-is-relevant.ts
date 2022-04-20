@@ -67,7 +67,9 @@ const relevantTerms = [
  * @todo Improve language matching and make configurable
  */
 export const checkIfTextIsRelevant = (text: string): boolean => {
-  const textWithoutLinks = text.replace(/https?:\/\/\S+/g, "");
+  const textWithoutLinks = text
+    .replace(/https?:\/\/\S+/g, "") // URLs
+    .replace(/@\w+/g, ""); // @mentions
 
   for (const relevantTerm of relevantTerms) {
     if (textWithoutLinks.includes(relevantTerm)) {
