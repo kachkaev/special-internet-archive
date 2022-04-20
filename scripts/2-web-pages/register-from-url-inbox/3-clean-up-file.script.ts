@@ -6,7 +6,7 @@ import {
   readUrlInboxRows,
   writeUrlInbox,
 } from "../../../shared/collection";
-import { checkIfWebPageDocumentExists } from "../../../shared/web-page-documents";
+import { processWebPages } from "../../../shared/web-page-documents";
 
 const output = process.stdout;
 
@@ -27,11 +27,15 @@ const script = async () => {
   const parsedRowsToKeep: ParsedUrlInboxRow[] = [];
   const parsedRowsToRemove: ParsedUrlInboxRow[] = [];
 
+  const webPageUrlLookup: Record<string, true> = {};
+  await processWebPages({
+    processWebPage: ({ webPageDocument }) => {
+      webPageUrlLookup[webPageDocument.webPageUrl] = true;
+    },
+  });
+
   for (const parsedRow of parsedRows) {
-    if (
-      parsedRow.type === "url" &&
-      (await checkIfWebPageDocumentExists(parsedRow.url))
-    ) {
+    if (parsedRow.type === "url" && webPageUrlLookup[parsedRow.url]) {
       parsedRowsToRemove.push(parsedRow);
     } else {
       parsedRowsToKeep.push(parsedRow);
