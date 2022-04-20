@@ -146,7 +146,9 @@ export const interactWithVkPlaywrightPage: InteractWithPlaywrightPage = async (
   payload,
 ) => {
   // Account page (contains posts in a wall)
-  if (await payload.playwrightPage.locator("#public_wall").isVisible()) {
+  if (
+    await payload.playwrightPage.locator("#public_wall,#group_wall").isVisible()
+  ) {
     await scrollPosts(payload);
 
     return;
