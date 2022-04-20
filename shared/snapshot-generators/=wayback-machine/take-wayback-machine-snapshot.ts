@@ -7,6 +7,7 @@ import path from "node:path";
 import sleep from "sleep-promise";
 
 import { getCollectionDirPath } from "../../collection";
+import { AbortError } from "../../errors";
 import { CaptureSnapshot } from "../types";
 import { createAxiosInstanceForWaybackMachine } from "./shared/create-axios-instance-for-wayback-machine";
 
@@ -14,10 +15,25 @@ const axiosInstance = createAxiosInstanceForWaybackMachine();
 
 const maxRetryCount = 10;
 
+const abortableSleep = async (
+  timeout: number,
+  abortSignal: AbortSignal | undefined,
+) => {
+  const tick = Math.min(timeout, 100);
+
+  for (let ttl = timeout; ttl > 0; ttl -= tick) {
+    if (abortSignal?.aborted) {
+      throw new AbortError();
+    }
+    await sleep(tick);
+  }
+};
+
 /**
  * Inspired by https://github.com/tgbot-collection/archiver/blob/e5996b5944fa33244a75dce883b5c80e9e92d50e/archiveOrg.go#L30-L38
  */
 export const takeWaybackMachineSnapshot: CaptureSnapshot = async ({
+  abortSignal,
   webPageUrl,
   output,
 }) => {
@@ -32,7 +48,7 @@ export const takeWaybackMachineSnapshot: CaptureSnapshot = async ({
       throw new Error(`${maxRetryCount} retries exhausted`);
     }
 
-    await sleep(axiosRetry.exponentialDelay(retryCount));
+    await abortableSleep(axiosRetry.exponentialDelay(retryCount), abortSignal);
 
     try {
       const res = await axiosInstance.post<string>(

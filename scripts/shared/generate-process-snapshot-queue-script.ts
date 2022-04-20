@@ -128,7 +128,6 @@ export const generateProcessSnapshotQueueScript =
           snapshotQueueItemId: item.id,
         });
       };
-      abortController.signal.addEventListener("abort", abortHandler);
 
       const webPageDirPath = webPageDirPathByUrl[item.webPageUrl];
       if (!webPageDirPath) {
@@ -139,6 +138,8 @@ export const generateProcessSnapshotQueueScript =
         );
         continue;
       }
+
+      abortController.signal.addEventListener("abort", abortHandler);
 
       try {
         const message = (await snapshotGenerator.captureSnapshot({
