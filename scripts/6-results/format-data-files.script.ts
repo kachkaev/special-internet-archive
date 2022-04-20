@@ -5,7 +5,7 @@ import path from "node:path";
 
 import { cleanEnv } from "../../shared/clean-env";
 import { getCollectionDirPath } from "../../shared/collection";
-import { formatJson } from "../../shared/helpers-for-json";
+import { formatJson } from "../../shared/json-formatting";
 import { processFiles } from "../../shared/process-files";
 
 const output = process.stdout;
@@ -28,9 +28,7 @@ const script = async () => {
     processFile: async (filePath) => {
       const originalJson = await fs.readFile(filePath, "utf8");
       const jsonData = JSON.parse(originalJson) as unknown;
-      const formattedJson = formatJson(jsonData, {
-        checkIntegrity: true,
-      });
+      const formattedJson = formatJson(jsonData);
       if (originalJson !== formattedJson) {
         await fs.writeFile(filePath, formattedJson, "utf8");
       }

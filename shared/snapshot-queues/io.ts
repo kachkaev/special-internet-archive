@@ -3,7 +3,7 @@ import _ from "lodash";
 import path from "node:path";
 
 import { getCollectionDirPath } from "../collection";
-import { writeFormattedJson } from "../helpers-for-json";
+import { writeFormattedJson } from "../json-formatting";
 import { SnapshotGeneratorId } from "../snapshot-generator-id";
 import {
   SnapshotAttempt,

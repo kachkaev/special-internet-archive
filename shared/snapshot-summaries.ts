@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "node:path";
 
-import { writeFormattedJson } from "./helpers-for-json";
+import { writeFormattedJson } from "./json-formatting";
 
 export type SnapshotSummaryData = { tempRawVkPosts?: TempRawVkPost[] };
 export type SnapshotSummaryCombinationData = SnapshotSummaryData;
