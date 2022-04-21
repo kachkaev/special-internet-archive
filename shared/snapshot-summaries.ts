@@ -6,8 +6,8 @@ import { writeFormattedJson } from "./json-formatting";
 export type SnapshotSummaryData = { tempRawVkPosts?: TempRawVkPost[] };
 export type SnapshotSummaryCombinationData = SnapshotSummaryData;
 
-export const snapshotSummaryStaleTime = "2022-01-01T00:00:00Z";
-export const snapshotSummaryCombinationStaleTime = "2022-01-01T00:00:00Z";
+export const snapshotSummaryStaleTime = "2022-04-21T00:00:00Z";
+export const snapshotSummaryCombinationStaleTime = "2022-04-21T00:00:00Z";
 
 export interface SnapshotSummaryDocument extends SnapshotSummaryData {
   documentType: "snapshotSummary";

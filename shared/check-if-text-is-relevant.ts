@@ -36,6 +36,7 @@ const relevantTerms = [
   "мызaмир",
   "налог",
   "наци",
+  "объясняем.рф",
   "памят",
   "пандеми",
   "побед",
@@ -68,8 +69,18 @@ const relevantTerms = [
  */
 export const checkIfTextIsRelevant = (text: string): boolean => {
   const textWithoutLinks = text
-    .replace(/https?:\/\/\S+/g, "") // URLs
-    .replace(/@\w+/g, ""); // @mentions
+    .replace(
+      /[\w#%+.:=@~-]{1,256}\.[\d()a-z]{1,6}\b([\w\p{L}#%&()+./:=?@~-]*)/giu, // URLs https://stackoverflow.com/a/3809435/1818285 + \p{L}
+      "",
+    )
+    .replace(
+      /([\w+.-]+@[\w.-]+\.[\w-]+)/gi, // emails https://stackoverflow.com/a/54340560/1818285
+      "",
+    )
+    .replace(
+      /@\w+/g, // @mentions
+      "",
+    );
 
   for (const relevantTerm of relevantTerms) {
     if (textWithoutLinks.includes(relevantTerm)) {
