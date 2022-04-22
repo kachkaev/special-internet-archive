@@ -47,7 +47,11 @@ export const generateExtractSnapshotSummariesScript =
 
     await processWebPages({
       output,
-      processWebPage: async ({ webPageDirPath, webPageDocument }) => {
+      processWebPage: async ({
+        progressPrefix,
+        webPageDirPath,
+        webPageDocument,
+      }) => {
         const snapshotInventoryItems =
           webPageDocument.snapshotInventoryLookup[snapshotGeneratorId]?.items ??
           [];
@@ -67,7 +71,11 @@ export const generateExtractSnapshotSummariesScript =
             ...snapshotInventoryItem,
           });
 
-          output.write(`\n  ${chalk.green(snapshotInventoryItem.capturedAt)} `);
+          output.write(
+            `\n${progressPrefix}${chalk.green(
+              snapshotInventoryItem.capturedAt,
+            )} `,
+          );
           if (snapshotInventoryItem.aliasUrl) {
             output.write(
               chalk.green(`alias ${snapshotInventoryItem.aliasUrl} `),

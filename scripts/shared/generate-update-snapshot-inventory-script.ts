@@ -64,11 +64,13 @@ const reportSkippedFetching = ({
   aliasUrls,
   existingSnapshotInventory,
   output,
+  progressPrefix,
   reason,
 }: {
   aliasUrls: string[];
   existingSnapshotInventory: SnapshotInventory;
   output: WriteStream;
+  progressPrefix: string;
   reason: string;
 }) => {
   output.write(
@@ -82,7 +84,7 @@ const reportSkippedFetching = ({
   for (const aliasUrl of aliasUrls) {
     output.write(
       chalk.gray(
-        `\n  alias ${chalk.underline(
+        `\n${progressPrefix}alias ${chalk.underline(
           aliasUrl,
         )} snapshot count: ${calculateSnapshotCount(
           existingSnapshotInventory.items,
@@ -143,7 +145,11 @@ export const generateUpdateInventoryScript =
 
     await processWebPages({
       output,
-      processWebPage: async ({ webPageDirPath, webPageDocument }) => {
+      processWebPage: async ({
+        progressPrefix,
+        webPageDirPath,
+        webPageDocument,
+      }) => {
         const updatedWebPageDocument = _.cloneDeep(webPageDocument);
         const aliasUrls = snapshotGenerator.aliasesSupported
           ? listWebPageAliases(webPageDocument.webPageUrl)
@@ -165,6 +171,7 @@ export const generateUpdateInventoryScript =
               aliasUrls,
               existingSnapshotInventory,
               output,
+              progressPrefix,
               reason: `updated less than ${repeatIntervalInMinutes} min ago`,
             });
 
@@ -201,6 +208,7 @@ export const generateUpdateInventoryScript =
               aliasUrls,
               existingSnapshotInventory,
               output,
+              progressPrefix,
               reason: `snapshot is not due`,
             });
 
@@ -224,7 +232,9 @@ export const generateUpdateInventoryScript =
         );
 
         for (const aliasUrl of aliasUrls) {
-          output.write(`\n  alias ${chalk.underline(aliasUrl)} `);
+          output.write(
+            `\n${progressPrefix}alias ${chalk.underline(aliasUrl)} `,
+          );
 
           const aliasSnapshotTimes =
             await snapshotGenerator.obtainSnapshotTimes({

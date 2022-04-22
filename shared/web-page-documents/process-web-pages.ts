@@ -7,11 +7,13 @@ import RegexParser from "regex-parser";
 import { cleanEnv } from "../clean-env";
 import { getWebPagesDirPath } from "../collection";
 import { getErrorMessage } from "../errors";
+import { generateProgress } from "../generate-progress";
 import { listFilePaths } from "../list-file-paths";
 import { WebPageDocument } from "../web-page-documents";
 import { readWebPageDocument } from "./io";
 
 export type ProcessWebPage = (payload: {
+  progressPrefix: string;
   webPageDirPath: string;
   webPageDocument: WebPageDocument;
 }) => void | Promise<void>;
@@ -50,12 +52,19 @@ export const processWebPages = async ({
 
   const webPageUrlLookup: Record<string, true> = {};
 
-  for (const webPageDocumentPath of webPageDocumentPaths) {
+  for (const [index, webPageDocumentPath] of webPageDocumentPaths.entries()) {
     const webPageDirPath = path.dirname(webPageDocumentPath);
 
     const webPageDocument = await readWebPageDocument(webPageDirPath);
 
-    output?.write(`\n${chalk.underline(webPageDocument.webPageUrl)} `);
+    const { progress, progressPrefix } = generateProgress(
+      index,
+      webPageDocumentPaths.length,
+    );
+
+    output?.write(
+      `\n${progress}${chalk.underline(webPageDocument.webPageUrl)} `,
+    );
 
     if (webPageUrlLookup[webPageDocument.webPageUrl]) {
       output?.write(chalk.red("skipping as duplicate web page document"));
@@ -73,6 +82,7 @@ export const processWebPages = async ({
       numberOfSkipped += 1;
       output?.write(chalk.gray(`does not match FILTER_URL`));
       await handleSkippedWebPage?.({
+        progressPrefix,
         webPageDirPath,
         webPageDocument,
       });
@@ -82,6 +92,7 @@ export const processWebPages = async ({
 
     try {
       await processWebPage({
+        progressPrefix,
         webPageDirPath,
         webPageDocument,
       });

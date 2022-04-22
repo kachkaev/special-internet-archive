@@ -18,7 +18,7 @@ export const processFiles = async ({
   output?: WriteStream | undefined;
   processFile: (
     filePath: string,
-    prefixLength: number,
+    progressPrefix: string,
     reportingStatus: boolean,
   ) => void | Promise<void>;
   statusReportFrequency?: number;
@@ -39,7 +39,7 @@ export const processFiles = async ({
 
   for (let index = 0; index < numberOfFiles; index += 1) {
     const filePath = filePaths[index]!;
-    const progress = generateProgress(index, numberOfFiles);
+    const { progress, progressPrefix } = generateProgress(index, numberOfFiles);
 
     const reportingStatus =
       statusReportFrequency !== 0 &&
@@ -48,11 +48,11 @@ export const processFiles = async ({
         index === numberOfFiles - 1);
 
     if (reportingStatus) {
-      output?.write(`${progress} ${chalk.green(filePath)}\n`);
+      output?.write(`${progress}${chalk.green(filePath)}\n`);
     }
 
     try {
-      await processFile(filePath, progress.length, reportingStatus);
+      await processFile(filePath, progressPrefix, reportingStatus);
     } catch (error) {
       output?.write(
         chalk.red(`Unexpected error while processing file ${filePath}`),

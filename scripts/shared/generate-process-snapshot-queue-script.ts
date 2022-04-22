@@ -7,6 +7,7 @@ import RegexParser from "regex-parser";
 import { cleanEnv } from "../../shared/clean-env";
 import { relevantTimeMin } from "../../shared/collection";
 import { getErrorMessage } from "../../shared/errors";
+import { generateProgress } from "../../shared/generate-progress";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
 import { getSnapshotGenerator } from "../../shared/snapshot-generators";
 import {
@@ -93,20 +94,27 @@ export const generateProcessSnapshotQueueScript =
       abortController.abort();
     });
 
-    for (const item of orderedItemsToProcess) {
+    for (const [itemIndex, item] of orderedItemsToProcess.entries()) {
       if (abortController.signal.aborted as unknown as boolean) {
         break;
       }
 
-      output.write(`\n${chalk.underline(item.webPageUrl)}`);
+      const { progress, progressPrefix } = generateProgress(
+        itemIndex,
+        orderedItemsToProcess.length,
+      );
+
+      output.write(`\n${progress}${chalk.underline(item.webPageUrl)}`);
 
       output.write(
-        chalk.green(`\n  added to queue at: ${chalk.blue(item.addedAt)}`),
+        chalk.green(
+          `\n${progressPrefix}added to queue at: ${chalk.blue(item.addedAt)}`,
+        ),
       );
 
       if (item.attempts?.length) {
         output.write(
-          chalk.yellow(`  previous attempts: ${item.attempts.length}`),
+          chalk.yellow(`   previous attempts: ${item.attempts.length}`),
         );
       }
 
@@ -133,7 +141,7 @@ export const generateProcessSnapshotQueueScript =
       if (!webPageDirPath) {
         output.write(
           chalk.yellow(
-            `\n  unable locate ${item.webPageUrl} in your collection. Did you delete a previously registered page? Skipping.`,
+            `\n${progressPrefix}unable locate ${item.webPageUrl} in your collection. Did you delete a previously registered page? Skipping.`,
           ),
         );
         continue;
@@ -163,13 +171,14 @@ export const generateProcessSnapshotQueueScript =
 
         numberOfSucceededAttempts += 1;
       } catch (error) {
-        abortController.signal.removeEventListener("abort", abortHandler);
         if (abortController.signal.aborted) {
           return;
         }
 
         const attemptMessage = getErrorMessage(error);
-        output.write(chalk.red(`\n  attempt failed: ${attemptMessage}`));
+        output.write(
+          chalk.red(`\n${progressPrefix}attempt failed: ${attemptMessage}`),
+        );
 
         await reportSnapshotQueueAttempt({
           attemptMessage,
@@ -180,6 +189,8 @@ export const generateProcessSnapshotQueueScript =
         });
 
         numberOfFailedAttempts += 1;
+      } finally {
+        abortController.signal.removeEventListener("abort", abortHandler);
       }
     }
 
