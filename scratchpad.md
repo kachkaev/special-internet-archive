@@ -1,24 +1,5 @@
 # Special Internet Archive – scratchpad
 
-Shared between collections
-
-```yaml
-labels:
-  - z
-  - v
-  - география|Пенза
-  - тема|погибшие
-  - тема|фейки
-  - тип|местное сообщество
-  - тип|государственный орган
-  - тип|университет
-  - тип|школа
-```
-
-steps
-
-mvp
-
 `web-page.json` → `annotation`
 
 ```json
@@ -66,7 +47,6 @@ https://www.fotojet.com/apps/?entry=edit (old photo 3v)
 
 ## TODO
 
-- extract snapshot summaries
-- extract snapshot summary combination
-- mark posts as relevant
 - proxy for web.archive.org
+
+- research https://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/
