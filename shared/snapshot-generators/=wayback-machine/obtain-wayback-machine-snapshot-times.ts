@@ -1,3 +1,4 @@
+import * as envalid from "envalid";
 import _ from "lodash";
 
 import { relevantTimeMin } from "../../collection";
@@ -18,6 +19,11 @@ const expectedColumnsInCdxApiResponse: CdxApiResponse[number] = [
   "digest",
   "length",
 ];
+type AjaxApiResponse = {
+  items?: Array<
+    [encodedDate: number, statusCode: number, somethingUnknown: number]
+  >;
+};
 
 const axiosInstance = createAxiosInstanceForWaybackMachine();
 
@@ -27,44 +33,78 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
 }) => {
   const url = aliasUrl ?? webPageUrl;
   const result: string[] = [];
-  // E.g. http://web.archive.org/cdx/search/cdx?url=https://vk.com/penza_live&output=json
-  const { data: rawCdxApiResponse } = await axiosInstance.get<CdxApiResponse>(
-    "https://web.archive.org/cdx/search/cdx",
-    {
-      responseType: "json",
-      transitional: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention -- external API
-        silentJSONParsing: false, // Disables Object to string conversion if parsing fails
+
+  const env = envalid.cleanEnv(process.env, {
+    WAYBACK_MACHINE_SNAPSHOT_INVENTORY_API: envalid.str({
+      choices: ["ajax", "cdx"],
+      default: "ajax",
+    }),
+  });
+
+  const useCdxApi = env.WAYBACK_MACHINE_SNAPSHOT_INVENTORY_API === "cdx";
+
+  // CDX API is likely to provide outdated data (by a few days)
+  if (useCdxApi) {
+    // E.g. http://web.archive.org/cdx/search/cdx?url=https://vk.com/penza_live&output=json
+    const { data: rawCdxApiResponse } = await axiosInstance.get<CdxApiResponse>(
+      "https://web.archive.org/cdx/search/cdx",
+      {
+        responseType: "json",
+        transitional: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention -- external API
+          silentJSONParsing: false, // Disables Object to string conversion if parsing fails
+        },
+        params: { url, output: "json" },
       },
-      params: { url, output: "json" },
-    },
-  );
-
-  const [csvHeaderCells, ...csvRows] = rawCdxApiResponse;
-
-  if (
-    csvRows.length > 0 &&
-    !_.isEqual(expectedColumnsInCdxApiResponse, csvHeaderCells)
-  ) {
-    throw new Error(
-      "Unexpected columns in CDX API response. API signature must have changed, scripts need updating.",
     );
-  }
 
-  for (const cells of csvRows) {
-    const statusCode = cells[4];
+    const [csvHeaderCells, ...csvRows] = rawCdxApiResponse;
 
-    if (statusCode !== "200" && statusCode !== "404") {
-      continue;
+    if (
+      csvRows.length > 0 &&
+      !_.isEqual(expectedColumnsInCdxApiResponse, csvHeaderCells)
+    ) {
+      throw new Error(
+        "Unexpected columns in CDX API response. API signature must have changed, scripts need updating.",
+      );
     }
 
-    const timestamp = cells[1];
-    const serializedTime = serializeTime(timestamp);
-    if (serializedTime < relevantTimeMin) {
-      continue;
-    }
+    for (const cells of csvRows) {
+      const statusCode = cells[4];
 
-    result.push(serializedTime);
+      if (statusCode !== "200" && statusCode !== "404") {
+        continue;
+      }
+
+      const timestamp = cells[1];
+      const serializedTime = serializeTime(timestamp);
+      if (serializedTime < relevantTimeMin) {
+        continue;
+      }
+
+      result.push(serializedTime);
+    }
+  } else {
+    const { data: ajaxApiResponse } = await axiosInstance.get<AjaxApiResponse>(
+      "https://web.archive.org/__wb/calendarcaptures/2",
+      {
+        responseType: "json",
+        transitional: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention -- external API
+          silentJSONParsing: false, // Disables Object to string conversion if parsing fails
+        },
+        params: { url, date: "2022" },
+      },
+    );
+
+    for (const [encodedDate, statusCode] of ajaxApiResponse.items ?? []) {
+      if (statusCode !== 200) {
+        continue;
+      }
+
+      // @todo Implement date handling properly (support multiple years as well as Oct, Nov, Dec)
+      result.push(serializeTime(`20220${encodedDate}`));
+    }
   }
 
   // Wayback Machine sometimes reports duplicate timestamps
