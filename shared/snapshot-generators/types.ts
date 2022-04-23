@@ -5,9 +5,10 @@ import { SnapshotSummaryData } from "../snapshot-summaries";
 import { SnapshotInventoryItem, WebPageDocument } from "../web-page-documents";
 
 export type ObtainSnapshotTimes = (payload: {
-  webPageUrl: string;
-  webPageDirPath: string;
+  abortSignal?: AbortSignal;
   aliasUrl?: string | undefined;
+  webPageDirPath: string;
+  webPageUrl: string;
 }) => Promise<string[]>;
 
 export interface SnapshotContext {

@@ -32,7 +32,7 @@ const abortableSleep = async (
 /**
  * Inspired by https://github.com/tgbot-collection/archiver/blob/e5996b5944fa33244a75dce883b5c80e9e92d50e/archiveOrg.go#L30-L38
  */
-export const takeWaybackMachineSnapshot: CaptureSnapshot = async ({
+export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
   abortSignal,
   webPageUrl,
   output,
@@ -54,7 +54,11 @@ export const takeWaybackMachineSnapshot: CaptureSnapshot = async ({
       const res = await axiosInstance.post<string>(
         `https://web.archive.org/save/`,
         formData,
-        { responseType: "text" },
+        {
+          responseType: "text",
+          timeout: 10_000,
+          ...(abortSignal ? { signal: abortSignal } : {}),
+        },
       );
 
       const html = res.data;

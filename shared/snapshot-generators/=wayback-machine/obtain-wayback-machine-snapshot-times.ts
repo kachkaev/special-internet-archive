@@ -1,5 +1,6 @@
 import * as envalid from "envalid";
 import _ from "lodash";
+import { DateTime } from "luxon";
 
 import { relevantTimeMin } from "../../collection";
 import { serializeTime } from "../../time";
@@ -21,13 +22,18 @@ const expectedColumnsInCdxApiResponse: CdxApiResponse[number] = [
 ];
 type AjaxApiResponse = {
   items?: Array<
-    [encodedDate: number, statusCode: number, somethingUnknown: number]
+    [
+      encodedCaptureDate: number,
+      captureStatusCode: number,
+      somethingUnknown: number,
+    ]
   >;
 };
 
 const axiosInstance = createAxiosInstanceForWaybackMachine();
 
 export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
+  abortSignal,
   webPageUrl,
   aliasUrl,
 }) => {
@@ -55,6 +61,8 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
           silentJSONParsing: false, // Disables Object to string conversion if parsing fails
         },
         params: { url, output: "json" },
+        timeout: 5000,
+        ...(abortSignal ? { signal: abortSignal } : {}),
       },
     );
 
@@ -85,25 +93,42 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
       result.push(serializedTime);
     }
   } else {
-    const { data: ajaxApiResponse } = await axiosInstance.get<AjaxApiResponse>(
-      "https://web.archive.org/__wb/calendarcaptures/2",
-      {
-        responseType: "json",
-        transitional: {
-          // eslint-disable-next-line @typescript-eslint/naming-convention -- external API
-          silentJSONParsing: false, // Disables Object to string conversion if parsing fails
-        },
-        params: { url, date: "2022" },
-      },
-    );
+    const yearMin = DateTime.fromISO(relevantTimeMin, { setZone: true }).year;
+    const yearMax = DateTime.utc().year;
 
-    for (const [encodedDate, statusCode] of ajaxApiResponse.items ?? []) {
-      if (statusCode !== 200) {
-        continue;
+    for (let year = yearMin; year <= yearMax; year += 1) {
+      const { data: ajaxApiResponse } =
+        await axiosInstance.get<AjaxApiResponse>(
+          "https://web.archive.org/__wb/calendarcaptures/2",
+          {
+            responseType: "json",
+            transitional: {
+              // eslint-disable-next-line @typescript-eslint/naming-convention -- external API
+              silentJSONParsing: false, // Disables Object to string conversion if parsing fails
+            },
+            params: { url, date: `${year}` },
+            timeout: 5000,
+            ...(abortSignal ? { signal: abortSignal } : {}),
+          },
+        );
+
+      for (const [
+        encodedCaptureDate,
+        captureStatusCode,
+      ] of ajaxApiResponse.items ?? []) {
+        if (captureStatusCode !== 200) {
+          continue;
+        }
+
+        result.push(
+          serializeTime(
+            `${year}${`${encodedCaptureDate}`.padStart(
+              "MMDDHHMMSS".length,
+              "0",
+            )}`,
+          ),
+        );
       }
-
-      // @todo Implement date handling properly (support multiple years as well as Oct, Nov, Dec)
-      result.push(serializeTime(`20220${encodedDate}`));
     }
   }
 

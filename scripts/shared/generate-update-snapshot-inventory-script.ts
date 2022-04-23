@@ -117,6 +117,9 @@ export const generateUpdateInventoryScript =
 
     let repeatIntervalInMinutes = 0;
     let eager = true;
+    let updateAliases = true;
+
+    let thereWasAtLeastOneAlias = false;
 
     if (snapshotGenerator.role === "external") {
       const env = cleanEnv({
@@ -126,10 +129,14 @@ export const generateUpdateInventoryScript =
         REPEAT_INTERVAL_IN_MINUTES: envalid.num({
           default: 5,
         }),
+        UPDATE_ALIASES: envalid.bool({
+          default: false,
+        }),
       });
 
       eager = env.EAGER;
       repeatIntervalInMinutes = env.REPEAT_INTERVAL_IN_MINUTES;
+      updateAliases = env.UPDATE_ALIASES;
 
       if (Math.round(repeatIntervalInMinutes) !== repeatIntervalInMinutes) {
         throw new UserFriendlyError(
@@ -155,7 +162,9 @@ export const generateUpdateInventoryScript =
           ? listWebPageAliases(webPageDocument.webPageUrl)
           : [];
 
-        const snapshotInventoryItems: SnapshotInventoryItem[] = [];
+        if (aliasUrls.length > 0 && !thereWasAtLeastOneAlias) {
+          thereWasAtLeastOneAlias = true;
+        }
 
         const existingSnapshotInventory =
           updatedWebPageDocument.snapshotInventoryLookup[snapshotGeneratorId];
@@ -216,6 +225,8 @@ export const generateUpdateInventoryScript =
           }
         }
 
+        const snapshotInventoryItems: SnapshotInventoryItem[] = [];
+
         const snapshotTimes = await snapshotGenerator.obtainSnapshotTimes({
           webPageDirPath,
           webPageUrl: webPageDocument.webPageUrl,
@@ -232,30 +243,50 @@ export const generateUpdateInventoryScript =
         );
 
         for (const aliasUrl of aliasUrls) {
-          output.write(
-            `\n${progressPrefix}alias ${chalk.underline(aliasUrl)} `,
-          );
+          if (!updateAliases) {
+            const snapshotInventoryItemsForAlias =
+              existingSnapshotInventory?.items.filter(
+                (item) => item.aliasUrl === aliasUrl,
+              );
 
-          const aliasSnapshotTimes =
-            await snapshotGenerator.obtainSnapshotTimes({
-              webPageDirPath,
-              webPageUrl: webPageDocument.webPageUrl,
-              aliasUrl,
-            });
+            if (snapshotInventoryItemsForAlias?.length) {
+              snapshotInventoryItems.push(...snapshotInventoryItemsForAlias);
+            }
+            output.write(
+              chalk.gray(
+                `\n${progressPrefix}alias ${chalk.underline(
+                  aliasUrl,
+                )} skipped; snapshot count: ${
+                  snapshotInventoryItemsForAlias?.length ?? 0
+                }`,
+              ),
+            );
+          } else {
+            output.write(
+              `\n${progressPrefix}alias ${chalk.underline(aliasUrl)} `,
+            );
 
-          for (const aliasSnapshotTime of aliasSnapshotTimes) {
-            snapshotInventoryItems.push({
-              capturedAt: aliasSnapshotTime,
+            const aliasSnapshotTimes =
+              await snapshotGenerator.obtainSnapshotTimes({
+                webPageDirPath,
+                webPageUrl: webPageDocument.webPageUrl,
+                aliasUrl,
+              });
+
+            for (const aliasSnapshotTime of aliasSnapshotTimes) {
+              snapshotInventoryItems.push({
+                capturedAt: aliasSnapshotTime,
+                aliasUrl,
+              });
+            }
+
+            reportUpdateInSnapshots(
+              output,
+              existingSnapshotInventory,
+              snapshotInventoryItems,
               aliasUrl,
-            });
+            );
           }
-
-          reportUpdateInSnapshots(
-            output,
-            existingSnapshotInventory,
-            snapshotInventoryItems,
-            aliasUrl,
-          );
         }
 
         const orderedItems = _.orderBy(
@@ -287,4 +318,12 @@ export const generateUpdateInventoryScript =
         }
       },
     });
+
+    if (!updateAliases && (thereWasAtLeastOneAlias as boolean)) {
+      output.write(
+        chalk.blue(
+          "\nUpdating web pages aliases is skipped by default to speed up the process. Use UPDATE_ALIASES=true to override that. You may also want to set EAGER=true to include web pages for which snapshots are not due yet.",
+        ),
+      );
+    }
   };
