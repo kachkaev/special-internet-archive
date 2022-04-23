@@ -87,12 +87,15 @@ export const generateProcessSnapshotQueueScript =
     let numberOfFailedAttempts = 0;
 
     const abortController = new AbortController();
-    process.on("SIGINT", () => {
+
+    const handleSigint = () => {
       output.write(
         chalk.yellow("\n\nQueue processing was aborted with SIGINT\n"),
       );
       abortController.abort();
-    });
+      process.off("SIGINT", handleSigint);
+    };
+    process.on("SIGINT", handleSigint);
 
     try {
       for (const [itemIndex, item] of orderedItemsToProcess.entries()) {
@@ -164,12 +167,18 @@ export const generateProcessSnapshotQueueScript =
 
         if (operationResult.status === "processed") {
           numberOfSucceededAttempts += 1;
-          output.write(chalk.magenta(` Processed`));
+          output.write(
+            chalk.magenta(
+              `\n${progressPrefix}Snapshot processed${
+                operationResult.message ? `. ${operationResult.message}` : ""
+              }`,
+            ),
+          );
         } else {
           output.write(
             chalk.red(
-              `\n${progressPrefix}${
-                operationResult.message ?? "Attempt failed"
+              `\n${progressPrefix}Snapshot failed${
+                operationResult.message ? `. ${operationResult.message}` : ""
               }`,
             ),
           );
