@@ -120,14 +120,18 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
           continue;
         }
 
-        result.push(
-          serializeTime(
-            `${year}${`${encodedCaptureDate}`.padStart(
-              "MMDDHHMMSS".length,
-              "0",
-            )}`,
-          ),
+        const serializedTime = serializeTime(
+          `${year}${`${encodedCaptureDate}`.padStart(
+            "MMDDHHMMSS".length,
+            "0",
+          )}`,
         );
+
+        if (serializedTime < relevantTimeMin) {
+          continue;
+        }
+
+        result.push(serializedTime);
       }
     }
   }
