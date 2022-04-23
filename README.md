@@ -635,5 +635,49 @@ yarn exe scripts/5-annotations/extract-from-snapshot-summary-combinations.script
     Новые ссылки в файле `⏳ [collection-path]/url-inbox.txt` надо добавить в коллекцию, потом собрать снимки и так далее.
 
     Чтобы держать коллекцию в обновлённом состоянии, весь процесс рекомендуется повторять раз в несколько дней.
+    Самый лёгкий способ актуализировать коллекцию описан ниже.
+
+### Актуализация коллекции
+
+Запуск скриптов по одному помогает архиваторам разобраться в процессе сбора данных, а разработчикам — улучшать код.
+
+Чтобы держать архив в актуальном состоянии, нам надо перезапускать скрипты раз в несколько дней для каждой коллекции.
+Это может быть утомительно.
+
+Если вы хотите запустить _весь_ цикл сбора и обработки данных, запустите:
+
+```sh
+## ⛔️ пока не работает
+yarn exe scripts/1-chores/run-the-whole-cycle.script.ts
+```
+
+Это равносильно запуску:
+
+```sh
+yarn exe scripts/2-web-pages/register-from-url-inbox/1-ensure-file-exists.script.ts
+yarn exe scripts/2-web-pages/register-from-url-inbox/2-register-from-file.script.ts
+yarn exe scripts/2-web-pages/register-from-url-inbox/3-clean-up-file.script.ts
+
+yarn exe scripts/3-snapshots/wayback-machine/1-update-inventory.script.ts
+yarn exe scripts/3-snapshots/wayback-machine/2-compose-queue.script.ts
+yarn exe scripts/3-snapshots/wayback-machine/3-process-queue.script.ts
+
+yarn exe scripts/3-snapshots/playwright/1-update-inventory.script.ts
+yarn exe scripts/3-snapshots/playwright/2-compose-queue.script.ts
+yarn exe scripts/3-snapshots/playwright/3-process-queue.script.ts
+
+## ⛔️ пока не работает
+# yarn exe scripts/4-snapshot-summaries/wayback-machine/1-update-inventory.script.ts
+# yarn exe scripts/4-snapshot-summaries/wayback-machine/2-extract-summaries.script.ts
+
+yarn exe scripts/4-snapshot-summaries/playwright/1-update-inventory.script.ts
+yarn exe scripts/4-snapshot-summaries/playwright/2-extract-summaries.script.ts
+
+yarn exe scripts/4-snapshot-summaries/extract-summary-combinations.script.ts
+
+yarn exe scripts/5-annotations/extract-from-snapshot-summary-combinations.script.ts
+
+yarn exe scripts/6-results/auto-populate-url-inbox.script.ts
+```
 
 [опционально]: https://img.shields.io/badge/-опционально-white.svg
