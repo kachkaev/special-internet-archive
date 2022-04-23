@@ -6,7 +6,7 @@ import RegexParser from "regex-parser";
 
 import { cleanEnv } from "../../shared/clean-env";
 import { relevantTimeMin } from "../../shared/collection";
-import { getErrorMessage } from "../../shared/errors";
+import { AbortError } from "../../shared/errors";
 import { generateProgress } from "../../shared/generate-progress";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
 import { getSnapshotGenerator } from "../../shared/snapshot-generators";
@@ -94,103 +94,101 @@ export const generateProcessSnapshotQueueScript =
       abortController.abort();
     });
 
-    for (const [itemIndex, item] of orderedItemsToProcess.entries()) {
-      if (abortController.signal.aborted as unknown as boolean) {
-        break;
-      }
-
-      const { progress, progressPrefix } = generateProgress(
-        itemIndex,
-        orderedItemsToProcess.length,
-      );
-
-      output.write(`\n${progress}${chalk.underline(item.webPageUrl)}`);
-
-      output.write(
-        chalk.green(
-          `\n${progressPrefix}added to queue at: ${chalk.blue(item.addedAt)}`,
-        ),
-      );
-
-      if (item.attempts?.length) {
-        output.write(
-          chalk.yellow(`   previous attempts: ${item.attempts.length}`),
+    try {
+      for (const [itemIndex, item] of orderedItemsToProcess.entries()) {
+        const { progress, progressPrefix } = generateProgress(
+          itemIndex,
+          orderedItemsToProcess.length,
         );
-      }
 
-      numberOfAttempts += 1;
-      const attemptStartedAt = serializeTime();
+        output.write(`\n${progress}${chalk.underline(item.webPageUrl)}`);
 
-      await reportSnapshotQueueAttempt({
-        attemptStartedAt,
-        attemptStatus: "started",
-        snapshotGeneratorId,
-        snapshotQueueItemId: item.id,
-      });
+        output.write(
+          chalk.green(
+            `\n${progressPrefix}added to queue at: ${chalk.blue(item.addedAt)}`,
+          ),
+        );
 
-      const abortHandler = () => {
-        void reportSnapshotQueueAttempt({
+        if (item.attempts?.length) {
+          output.write(
+            chalk.yellow(`   previous attempts: ${item.attempts.length}`),
+          );
+        }
+
+        numberOfAttempts += 1;
+        const attemptStartedAt = serializeTime();
+
+        await reportSnapshotQueueAttempt({
           attemptStartedAt,
-          attemptStatus: "aborted",
+          attemptStatus: "started",
           snapshotGeneratorId,
           snapshotQueueItemId: item.id,
         });
-      };
 
-      const webPageDirPath = webPageDirPathByUrl[item.webPageUrl];
-      if (!webPageDirPath) {
-        output.write(
-          chalk.yellow(
-            `\n${progressPrefix}unable locate ${item.webPageUrl} in your collection. Did you delete a previously registered page? Skipping.`,
-          ),
-        );
-        continue;
-      }
+        const abortHandler = () => {
+          void reportSnapshotQueueAttempt({
+            attemptStartedAt,
+            attemptStatus: "aborted",
+            snapshotGeneratorId,
+            snapshotQueueItemId: item.id,
+          });
+        };
 
-      abortController.signal.addEventListener("abort", abortHandler);
+        const webPageDirPath = webPageDirPathByUrl[item.webPageUrl];
+        if (!webPageDirPath) {
+          output.write(
+            chalk.yellow(
+              `\n${progressPrefix}unable locate ${item.webPageUrl} in your collection. Did you delete a previously registered page? Skipping.`,
+            ),
+          );
+          continue;
+        }
 
-      try {
-        const message = (await snapshotGenerator.captureSnapshot({
+        abortController.signal.addEventListener("abort", abortHandler);
+
+        const operationResult = await snapshotGenerator.captureSnapshot({
           abortSignal: abortController.signal,
           snapshotContext: _.defaults({}, item.context, { relevantTimeMin }),
           webPageDirPath,
+          reportIssue: (message) =>
+            output.write(chalk.yellow(`\n${progressPrefix}${message}`)),
           webPageUrl: item.webPageUrl,
-        })) as string | undefined;
+        });
 
         if (abortController.signal.aborted) {
           return;
         }
 
         await reportSnapshotQueueAttempt({
-          attemptMessage: message,
+          attemptMessage: operationResult.message,
           attemptStartedAt,
-          attemptStatus: "succeeded",
+          attemptStatus:
+            operationResult.status === "processed" ? "succeeded" : "failed",
           snapshotGeneratorId,
           snapshotQueueItemId: item.id,
         });
 
-        numberOfSucceededAttempts += 1;
-      } catch (error) {
-        if (abortController.signal.aborted) {
-          return;
+        if (operationResult.status === "processed") {
+          numberOfSucceededAttempts += 1;
+          output.write(chalk.magenta(`   processed`));
+        } else {
+          output.write(
+            chalk.red(
+              `\n${progressPrefix}failed${
+                operationResult.message ? `: ${operationResult.message}` : ""
+              }`,
+            ),
+          );
+          numberOfFailedAttempts += 1;
         }
 
-        const attemptMessage = getErrorMessage(error);
-        output.write(
-          chalk.red(`\n${progressPrefix}attempt failed: ${attemptMessage}`),
-        );
-
-        await reportSnapshotQueueAttempt({
-          attemptMessage,
-          attemptStartedAt,
-          attemptStatus: "failed",
-          snapshotGeneratorId,
-          snapshotQueueItemId: item.id,
-        });
-
-        numberOfFailedAttempts += 1;
-      } finally {
         abortController.signal.removeEventListener("abort", abortHandler);
+      }
+    } catch (error) {
+      if (error instanceof AbortError && abortController.signal.aborted) {
+        // noop
+      } else {
+        throw error;
       }
     }
 

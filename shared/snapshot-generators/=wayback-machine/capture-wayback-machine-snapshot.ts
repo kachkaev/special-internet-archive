@@ -1,13 +1,10 @@
-import axios from "axios";
-import axiosRetry from "axios-retry";
-import chalk from "chalk";
 import fs from "fs-extra";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
 import sleep from "sleep-promise";
 
 import { getCollectionDirPath } from "../../collection";
-import { AbortError } from "../../errors";
+import { AbortError, getErrorMessage } from "../../errors";
 import { CaptureSnapshot } from "../types";
 import { createAxiosInstanceForWaybackMachine } from "./shared/create-axios-instance-for-wayback-machine";
 
@@ -19,14 +16,29 @@ const abortableSleep = async (
   timeout: number,
   abortSignal: AbortSignal | undefined,
 ) => {
-  const tick = Math.min(timeout, 100);
-
+  const tick = 100;
   for (let ttl = timeout; ttl > 0; ttl -= tick) {
     if (abortSignal?.aborted) {
       throw new AbortError();
     }
-    await sleep(tick);
+    await sleep(Math.min(ttl, tick));
   }
+};
+
+const mapRetryCountToDelay = (retryCount: number): number => {
+  return (
+    {
+      /* eslint-disable @typescript-eslint/naming-convention */
+      0: 0,
+      1: 2000,
+      2: 5000,
+      3: 10_000,
+      4: 10_000,
+      5: 20_000,
+      6: 20_000,
+      /* eslint-enable @typescript-eslint/naming-convention */
+    }[retryCount] ?? 30_000
+  );
 };
 
 /**
@@ -35,7 +47,7 @@ const abortableSleep = async (
 export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
   abortSignal,
   webPageUrl,
-  output,
+  reportIssue,
 }) => {
   const formData = new URLSearchParams({
     url: webPageUrl,
@@ -43,12 +55,12 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
     capture_all: "on",
   }).toString();
 
-  for (let retryCount = 0; retryCount <= maxRetryCount; retryCount += 1) {
-    if (retryCount === maxRetryCount) {
-      throw new Error(`${maxRetryCount} retries exhausted`);
+  for (let retryCount = 0; retryCount < maxRetryCount; retryCount += 1) {
+    const retryDelay = mapRetryCountToDelay(retryCount);
+    if (retryDelay > 0) {
+      reportIssue?.(`Trying again in ${Math.floor(retryDelay / 1000)}s...`);
+      await abortableSleep(retryDelay, abortSignal);
     }
-
-    await abortableSleep(axiosRetry.exponentialDelay(retryCount), abortSignal);
 
     try {
       const res = await axiosInstance.post<string>(
@@ -56,12 +68,29 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
         formData,
         {
           responseType: "text",
-          timeout: 10_000,
+          timeout: 20_000,
           ...(abortSignal ? { signal: abortSignal } : {}),
         },
       );
 
       const html = res.data;
+
+      if (html.includes("The server encountered an internal error")) {
+        reportIssue?.("Wayback Machine server encountered an internal error.");
+        continue;
+      }
+
+      // The host has been already captured 500 times today by this
+      //  user account. Please email as at "info@archive.org" if you
+      // would like to discuss this more.
+      if (html.includes("by this user account")) {
+        return {
+          status: "failed",
+          message:
+            "API limits reached. Try using another internet connection or continue tomorrow.",
+        };
+      }
+
       const watchJobId = html.match(/spn\.watchJob\("([\w-]+)"/)?.[1];
 
       if (!watchJobId) {
@@ -80,21 +109,21 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
         );
       }
 
-      return `Status: https://web.archive.org/save/status/${watchJobId}`;
+      return {
+        status: "processed",
+        message: `Status: https://web.archive.org/save/status/${watchJobId}`,
+      };
     } catch (error) {
-      if (
-        axios.isAxiosError(error) &&
-        `${error.response?.data as string}`.includes(
-          "The server encountered an internal error",
-        )
-      ) {
-        output?.write(
-          chalk.yellow(
-            "\n  The server encountered an internal error, retrying...",
-          ),
-        );
-        continue;
+      if (abortSignal?.aborted) {
+        throw new AbortError();
       }
+
+      reportIssue?.(getErrorMessage(error));
     }
   }
+
+  return {
+    status: "failed",
+    message: `${maxRetryCount} retries exhausted`,
+  };
 };

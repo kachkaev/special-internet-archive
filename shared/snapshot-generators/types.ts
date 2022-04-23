@@ -1,5 +1,6 @@
 import { WriteStream } from "node:tty";
 
+import { ReportIssue } from "../issues";
 import { OperationResult } from "../operations";
 import { SnapshotSummaryData } from "../snapshot-summaries";
 import { SnapshotInventoryItem, WebPageDocument } from "../web-page-documents";
@@ -15,13 +16,18 @@ export interface SnapshotContext {
   relevantTimeMin: string;
 }
 
+/**
+ * @returns OperationResult with error if this particular snapshot failed,
+ *    but can continue.
+ * @throws if unable to continue (e.g. if reached API limits)
+ */
 export type CaptureSnapshot = (payload: {
   abortSignal?: AbortSignal;
-  output?: WriteStream | undefined;
+  reportIssue?: ReportIssue;
   snapshotContext: SnapshotContext;
   webPageDirPath: string;
   webPageUrl: string;
-}) => Promise<void | string>;
+}) => Promise<OperationResult>;
 
 export type DownloadSnapshot = (
   payload: {

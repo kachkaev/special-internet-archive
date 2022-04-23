@@ -21,10 +21,10 @@ const tryLoadingAllImages = async (playwrightPage: Page) => {
 
 export const capturePlaywrightSnapshot: CaptureSnapshot = async ({
   abortSignal,
+  reportIssue,
+  snapshotContext,
   webPageDirPath,
   webPageUrl,
-  output,
-  snapshotContext,
 }) => {
   const browser = await getPlaywrightBrowser();
   const timezoneId = "Europe/Moscow";
@@ -41,10 +41,16 @@ export const capturePlaywrightSnapshot: CaptureSnapshot = async ({
 
   await interactWithPlaywrightPage({
     abortSignal,
-    log: (message) => output?.write(`  playwright: ${message}\n`),
+    log: (message) => {
+      reportIssue?.(`Playwright: ${message}`);
+    },
     playwrightPage,
     snapshotContext,
   });
+
+  if (abortSignal?.aborted) {
+    throw new AbortError();
+  }
 
   await tryLoadingAllImages(playwrightPage);
 
@@ -60,4 +66,6 @@ export const capturePlaywrightSnapshot: CaptureSnapshot = async ({
   });
 
   await playwrightContext.close();
+
+  return { status: "processed" };
 };
