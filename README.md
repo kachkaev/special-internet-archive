@@ -647,7 +647,6 @@ yarn exe scripts/5-annotations/extract-from-snapshot-summary-combinations.script
 Для запуска всего цикла сбора и обработки данных существует скомбинированный скрипт:
 
 ```sh
-## ⛔️ пока не работает
 yarn exe scripts/1-chores/run-the-whole-cycle.script.ts
 ```
 
