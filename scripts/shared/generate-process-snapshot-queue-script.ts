@@ -195,6 +195,8 @@ export const generateProcessSnapshotQueueScript =
       }
     }
 
+    process.off("SIGINT", handleSigint);
+
     await snapshotGenerator.finishCaptureSnapshotBatch?.();
 
     if (!abortController.signal.aborted) {

@@ -4,6 +4,8 @@ import { DateTime } from "luxon";
 import path from "node:path";
 import { WriteStream } from "node:tty";
 
+import { AbortError } from "./errors";
+
 export interface ScriptSequenceItem {
   scriptFilePath: string;
 }
@@ -33,6 +35,13 @@ export const runScriptSequence = async ({
 
   output.write("\n");
 
+  const abortController = new AbortController();
+
+  const handleSigint = () => {
+    abortController.abort();
+  };
+  process.on("SIGINT", handleSigint);
+
   for (const item of items) {
     outputLocalTime();
 
@@ -50,7 +59,13 @@ export const runScriptSequence = async ({
         ),
       ),
     );
+
+    if (abortController.signal.aborted) {
+      throw new AbortError();
+    }
   }
+
+  process.off("SIGINT", handleSigint);
 
   output.write(
     chalk.blue(
