@@ -1,5 +1,28 @@
 # Special Internet Archive 📜 Спецархив
 
+This project was created in response to a [“special military operation”](https://en.wikipedia.org/wiki/2022_Russian_invasion_of_Ukraine), which Russian army started in Ukraine in February 2022.
+“Special Internet Archive” aims to automate the preservation of related online content, thus providing future researchers with data to analyse.
+
+Twentieth-century wars left physical artefacts like newspapers, letters, diaries and films.
+Some of these objects were studied only decades later and became crucial for shedding some light on the tragic past.
+When a war takes place in a digital-first era, people are surrounded by vast streams of content, but they rarely think about how fragile this information is.
+A website is only available while a server is running and a social media post is ‘everywhere’ only until it is deleted by the author or a moderator.
+Thus, if we don’t proactively preserve the present, our descendants won’t be able to study the past.
+
+The tooling in this repository orchestrates snapshot capturing and produces structured archive collections.
+The shape of the data is compatible with git repositories or cloud storage like S3.
+The architecture supports various web page sources (websites) as well as multiple snapshot generators (both local and third-party).
+The current version of the tooling only works with public VK communities.
+It relies on [web.archive.org](https://web.archive.org) as a third-party snapshot tool and supplements it with local [Playwright](https://playwright.dev) snapshots.
+Although local snapshots are less accessible to others, they may contain details that third-party tools are unable to collect.
+
+“Special Internet Archive” does not aim to “capture the whole internet”, but its data can still be useful for the researches of the future.
+
+Because most volunteering archivists speak Russian, the instructions below are in Russian.
+Script output is in English, so they can be used globally to archive any web pages.
+
+👀 [English version via Google Translate](https://translate.google.com/translate?sl=ru&tl=en&u=https://github.com/kachkaev/special-internet-archive/blob/main/README.md)
+
 ## Об архиве
 
 ### Основные принципы
