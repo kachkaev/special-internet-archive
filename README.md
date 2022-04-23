@@ -286,10 +286,10 @@
 
 1.  Клонируйте созданную для вас ветку в папку `🗃 [project-dir-path]/data/collections/[collection-id]`.
 
-    Чтобы клонировать, в консоли введите команду:
+    Чтобы клонировать, в консоли введите команду из папки `[project-dir-path]/data/collections`:
 
     ```sh
-    git clone https://[github-username]:[personal-access-token]@github.com/kachkaev/special-internet-archive-data.git
+    git clone https://[github-username]:[personal-access-token]@github.com/kachkaev/special-internet-archive-data.git --branch=collections/[collection-id] --single-branch collections/[collection-id]
     ```
 
     `[github-username]` - это ваш ник на гитхабе.
