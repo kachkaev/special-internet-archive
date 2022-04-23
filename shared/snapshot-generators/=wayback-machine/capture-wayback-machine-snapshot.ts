@@ -76,7 +76,7 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
       const html = res.data;
 
       if (html.includes("The server encountered an internal error")) {
-        reportIssue?.("Wayback Machine server encountered an internal error.");
+        reportIssue?.("Wayback Machine server encountered an internal error");
         continue;
       }
 
@@ -87,7 +87,7 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
         return {
           status: "failed",
           message:
-            "API limits reached. Try using another internet connection or continue tomorrow.",
+            "API limits reached. Try using another internet connection or continue tomorrow",
         };
       }
 

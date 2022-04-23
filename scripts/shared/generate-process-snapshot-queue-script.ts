@@ -89,7 +89,7 @@ export const generateProcessSnapshotQueueScript =
     const abortController = new AbortController();
     process.on("SIGINT", () => {
       output.write(
-        chalk.yellow("\n\nQueue processing was aborted with SIGINT.\n"),
+        chalk.yellow("\n\nQueue processing was aborted with SIGINT\n"),
       );
       abortController.abort();
     });
@@ -103,15 +103,9 @@ export const generateProcessSnapshotQueueScript =
 
         output.write(`\n${progress}${chalk.underline(item.webPageUrl)}`);
 
-        output.write(
-          chalk.green(
-            `\n${progressPrefix}added to queue at: ${chalk.blue(item.addedAt)}`,
-          ),
-        );
-
         if (item.attempts?.length) {
           output.write(
-            chalk.yellow(`   previous attempts: ${item.attempts.length}`),
+            chalk.yellow(` Previous attempts: ${item.attempts.length}`),
           );
         }
 
@@ -138,7 +132,7 @@ export const generateProcessSnapshotQueueScript =
         if (!webPageDirPath) {
           output.write(
             chalk.yellow(
-              `\n${progressPrefix}unable locate ${item.webPageUrl} in your collection. Did you delete a previously registered page? Skipping.`,
+              `\n${progressPrefix}unable locate ${item.webPageUrl} in your collection. Did you delete a previously registered page? Skipping`,
             ),
           );
           continue;
@@ -170,12 +164,12 @@ export const generateProcessSnapshotQueueScript =
 
         if (operationResult.status === "processed") {
           numberOfSucceededAttempts += 1;
-          output.write(chalk.magenta(`   processed`));
+          output.write(chalk.magenta(` Processed`));
         } else {
           output.write(
             chalk.red(
-              `\n${progressPrefix}failed${
-                operationResult.message ? `: ${operationResult.message}` : ""
+              `\n${progressPrefix}${
+                operationResult.message ?? "Attempt failed"
               }`,
             ),
           );
