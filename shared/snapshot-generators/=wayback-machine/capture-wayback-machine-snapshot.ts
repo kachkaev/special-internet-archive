@@ -30,14 +30,14 @@ const mapRetryCountToDelay = (retryCount: number): number => {
     {
       /* eslint-disable @typescript-eslint/naming-convention */
       0: 0,
-      1: 2000,
-      2: 5000,
-      3: 10_000,
-      4: 10_000,
-      5: 20_000,
-      6: 20_000,
+      1: 5000,
+      2: 35_000,
+      3: 5000,
+      4: 5000,
+      5: 5000,
+      6: 5000,
       /* eslint-enable @typescript-eslint/naming-convention */
-    }[retryCount] ?? 30_000
+    }[retryCount] ?? 60_000
   );
 };
 
@@ -76,7 +76,9 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
       const html = res.data;
 
       if (html.includes("The server encountered an internal error")) {
-        reportIssue?.("Wayback Machine server encountered an internal error");
+        reportIssue?.(
+          "Wayback Machine server encountered an error (possible API rate limiting)",
+        );
         continue;
       }
 
