@@ -256,7 +256,7 @@ The code can be re-used to create structured archive collections with web pages 
     cd "[project-dir-path]"
     
     ## пример:
-    #  cd "/Users/bob/projects/special-internet-archive"
+    ## cd "/Users/bob/projects/special-internet-archive"
     ```
 
     Название этой папки должно появиться слева от места ввода команды.
@@ -278,7 +278,7 @@ The code can be re-used to create structured archive collections with web pages 
     cd "[project-dir-path]/tooling"
     
     ## пример:
-    #  cd "/Users/bob/projects/special-internet-archive/tooling"
+    ## cd "/Users/bob/projects/special-internet-archive/tooling"
     ```
 
 1.  Будучи в папке `[project-dir-path]/tooling`, установите зависимые библиотеки:
@@ -316,7 +316,7 @@ The code can be re-used to create structured archive collections with web pages 
     git clone https://[github-username]:[personal-access-token]@github.com/[repository].git --branch=collections/[collection-id] --single-branch collections/[collection-id]
     
     ## пример:
-    #  git clone https://bob:ghp_llNyHjFzdKimHctg0JDPOGLsPgIvmTPevAKs@github.com/example/repo.git --branch=collections/my-collection --single-branch collections/my-collection
+    ## git clone https://bob:ghp_llNyHjFzdKimHctg0JDPOGLsPgIvmTPevAKs@github.com/example/repo.git --branch=collections/my-collection --single-branch collections/my-collection
     ```
 
     - `[github-username]` — это ваш ник на гитхабе.
@@ -332,7 +332,7 @@ The code can be re-used to create structured archive collections with web pages 
     COLLECTION_DIR_PATH=[project-dir-path]/data/collections/[collection-id]
     
     ## пример:
-    #  COLLECTION_DIR_PATH=/Users/bob/projects/special-internet-archive/data/collections/my-collection
+    ## COLLECTION_DIR_PATH=/Users/bob/projects/special-internet-archive/data/collections/my-collection
     ```
 
 ### Регистрация веб-страниц
