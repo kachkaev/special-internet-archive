@@ -97,8 +97,8 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
         continue;
       }
 
-      // The host has been already captured 500 times today by this
-      //  user account. Please email as at "info@archive.org" if you
+      // This host has been already captured 500 times today by this
+      // user account. Please email us at "info@archive.org" if you
       // would like to discuss this more.
       if (html.includes("by this user account")) {
         return {
