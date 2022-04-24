@@ -30,12 +30,11 @@ const mapRetryCountToDelay = (retryCount: number): number => {
     {
       /* eslint-disable @typescript-eslint/naming-convention */
       0: 0,
-      1: 5000,
-      2: 35_000,
+      1: 40_000,
+      2: 5000,
       3: 5000,
       4: 5000,
       5: 5000,
-      6: 5000,
       /* eslint-enable @typescript-eslint/naming-convention */
     }[retryCount] ?? 60_000
   );
