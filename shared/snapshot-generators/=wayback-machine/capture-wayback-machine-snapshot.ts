@@ -41,6 +41,9 @@ const mapRetryCountToDelay = (retryCount: number): number => {
   );
 };
 
+const apiLimitsReachedMessage =
+  "API limits reached. Try using another internet connection or continue tomorrow";
+
 /**
  * Inspired by https://github.com/tgbot-collection/archiver/blob/e5996b5944fa33244a75dce883b5c80e9e92d50e/archiveOrg.go#L30-L38
  */
@@ -48,7 +51,20 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
   abortSignal,
   webPageUrl,
   reportIssue,
+  previousFailuresInSnapshotQueue,
 }) => {
+  const webPageUrlObject = new URL(webPageUrl);
+
+  if (
+    previousFailuresInSnapshotQueue.some(
+      (failure) =>
+        failure.message === apiLimitsReachedMessage &&
+        webPageUrlObject.hostname === new URL(failure.webPageUrl).hostname,
+    )
+  ) {
+    return { status: "skipped", message: apiLimitsReachedMessage };
+  }
+
   const formData = new URLSearchParams({
     url: webPageUrl,
     // eslint-disable-next-line @typescript-eslint/naming-convention -- third-party API
@@ -88,8 +104,7 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
       if (html.includes("by this user account")) {
         return {
           status: "failed",
-          message:
-            "API limits reached. Try using another internet connection or continue tomorrow",
+          message: apiLimitsReachedMessage,
         };
       }
 

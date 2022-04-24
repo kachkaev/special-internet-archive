@@ -16,6 +16,11 @@ export interface SnapshotContext {
   relevantTimeMin: string;
 }
 
+export interface PreviousFailuresInSnapshotQueue {
+  message: string | undefined;
+  webPageUrl: string;
+}
+
 /**
  * @returns OperationResult with error if this particular snapshot failed,
  *    but can continue.
@@ -27,6 +32,7 @@ export type CaptureSnapshot = (payload: {
   snapshotContext: SnapshotContext;
   webPageDirPath: string;
   webPageUrl: string;
+  previousFailuresInSnapshotQueue: PreviousFailuresInSnapshotQueue[];
 }) => Promise<OperationResult>;
 
 export type DownloadSnapshot = (

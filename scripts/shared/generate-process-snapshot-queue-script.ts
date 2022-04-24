@@ -10,6 +10,7 @@ import { AbortError } from "../../shared/errors";
 import { generateProgress } from "../../shared/generate-progress";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
 import { getSnapshotGenerator } from "../../shared/snapshot-generators";
+import { PreviousFailuresInSnapshotQueue } from "../../shared/snapshot-generators/types";
 import {
   generateSnapshotQueueDocumentPath,
   readSnapshotQueueDocument,
@@ -31,6 +32,8 @@ const generateWebPageDirPathByUrl = async (): Promise<
 
   return result;
 };
+
+const previousFailuresInSnapshotQueue: PreviousFailuresInSnapshotQueue[] = [];
 
 export const generateProcessSnapshotQueueScript =
   ({
@@ -150,6 +153,7 @@ export const generateProcessSnapshotQueueScript =
           reportIssue: (message) =>
             output.write(chalk.yellow(`\n${progressPrefix}${message}`)),
           webPageUrl: item.webPageUrl,
+          previousFailuresInSnapshotQueue,
         });
 
         if (abortController.signal.aborted) {
@@ -175,6 +179,10 @@ export const generateProcessSnapshotQueueScript =
             ),
           );
         } else {
+          previousFailuresInSnapshotQueue.push({
+            webPageUrl: item.webPageUrl,
+            message: operationResult.message,
+          });
           output.write(
             chalk.red(
               `\n${progressPrefix}Snapshot failed${
