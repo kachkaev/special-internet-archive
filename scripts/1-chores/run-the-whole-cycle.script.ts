@@ -10,9 +10,9 @@ const script = async () => {
   await runScriptSequence({
     // prettier-ignore
     items: [
-      { scriptFilePath: "scripts/2-web-pages/register-from-url-inbox/1-ensure-file-exists.script.ts" },
-      { scriptFilePath: "scripts/2-web-pages/register-from-url-inbox/2-register-from-file.script.ts" },
-      { scriptFilePath: "scripts/2-web-pages/register-from-url-inbox/3-clean-up-file.script.ts" },
+      { scriptFilePath: "scripts/2-registration/1-ensure-url-inbox-exists.script.ts" },
+      { scriptFilePath: "scripts/2-registration/2-register-from-url-inbox.script.ts" },
+      { scriptFilePath: "scripts/2-registration/3-clean-up-url-inbox.script.ts" },
 
       { scriptFilePath: "scripts/3-snapshots/wayback-machine/1-update-inventory.script.ts" },
       { scriptFilePath: "scripts/3-snapshots/wayback-machine/2-compose-queue.script.ts" },

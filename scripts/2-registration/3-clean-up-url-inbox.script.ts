@@ -11,10 +11,10 @@ import { processWebPages } from "../../shared/web-page-documents";
 const output = process.stdout;
 
 const script = async () => {
-  output.write(chalk.bold("Cleaning up URL inbox file\n"));
+  output.write(chalk.bold("Cleaning up URL inbox\n"));
 
   output.write(
-    `${chalk.green("URL inbox file location:")} ${getUrlInboxFilePath()}\n`,
+    `${chalk.green("URL inbox location:")} ${getUrlInboxFilePath()}\n`,
   );
 
   const parsedRows = await readUrlInboxRows();

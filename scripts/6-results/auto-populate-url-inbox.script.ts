@@ -93,9 +93,7 @@ const script = async () => {
         } not been registered yet.\n`,
       ),
     );
-    output.write(
-      `URL inbox file location: ${chalk.gray(getUrlInboxFilePath())}\n`,
-    );
+    output.write(`URL inbox location: ${chalk.gray(getUrlInboxFilePath())}\n`);
 
     return;
   }
@@ -128,9 +126,7 @@ const script = async () => {
     output.write(`${chalk.blue(chalk.underline(urlToAppend))}\n`);
   }
 
-  output.write(
-    `URL inbox file location: ${chalk.magenta(getUrlInboxFilePath())}\n`,
-  );
+  output.write(`URL inbox location: ${chalk.magenta(getUrlInboxFilePath())}\n`);
 };
 
 await script();

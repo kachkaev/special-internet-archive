@@ -10,7 +10,7 @@ export const getCollectionDirPath = (): string => {
   const env = cleanEnv({
     COLLECTION_DIR_PATH: envalid.str({
       desc: "Location of archive collection (path to directory)",
-      example: "../data/collections/COLLECTION_NAME",
+      example: "../data/collections/my-collection",
     }),
   });
 
@@ -51,7 +51,7 @@ export const readUrlInboxRows = async (): Promise<
     });
   } catch {
     throw new UserFriendlyError(
-      "Unable tor read URL inbox file. Try running `yarn exe scripts/web-pages/ensure-url-inbox.script.ts` first.",
+      "Unable tor read URL inbox. Try running `yarn exe yarn exe scripts/2-registration/1-ensure-url-inbox-exists.script.ts` first.",
     );
   }
 };
