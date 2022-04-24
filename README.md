@@ -235,7 +235,7 @@ The tooling can be re-used globally to create structured archive collections for
     ## покажет ≥ 3.0
     
     node --version
-    ## покажет ≥ 16.0, < 17
+    ## покажет ≥ 16.14, < 17 или ≥ 18.0, < 19
     ```
 
 1.  Установите последнюю версию [ярна](https://yarnpkg.com) (менеджера зависимостей):
