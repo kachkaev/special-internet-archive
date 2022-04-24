@@ -54,6 +54,16 @@ const getWebPageSource = (webPageUrl: string): WebPageSource => {
   );
 };
 
+export const checkIfWebPageUrlIsAcceptable = (webPageUrl: string): boolean => {
+  try {
+    getWebPageSource(webPageUrl).assertWebPageUrl(webPageUrl);
+
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export const generateWebPageDirPath = (webPageUrl: string): string => {
   return getWebPageSource(webPageUrl).generateWebPageDirPath(webPageUrl);
 };

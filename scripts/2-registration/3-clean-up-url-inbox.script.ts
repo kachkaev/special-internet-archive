@@ -2,11 +2,11 @@ import chalk from "chalk";
 
 import {
   getUrlInboxFilePath,
-  ParsedUrlInboxRow,
   readUrlInboxRows,
+  UrlInboxRow,
   writeUrlInbox,
 } from "../../shared/collection";
-import { processWebPages } from "../../shared/web-page-documents";
+import { generateWebPageDirPathLookup } from "../../shared/web-page-documents";
 
 const output = process.stdout;
 
@@ -17,57 +17,76 @@ const script = async () => {
     `${chalk.green("URL inbox location:")} ${getUrlInboxFilePath()}\n`,
   );
 
-  const parsedRows = await readUrlInboxRows();
-  if (!parsedRows) {
+  const urlInboxRows = await readUrlInboxRows();
+  if (!urlInboxRows) {
     output.write(chalk.yellow("File is empty.\n"));
 
     return;
   }
 
-  const parsedRowsToKeep: ParsedUrlInboxRow[] = [];
-  const parsedRowsToRemove: ParsedUrlInboxRow[] = [];
+  const urlInboxRowsToKeep: UrlInboxRow[] = [];
+  const urlInboxRowsToRemove: UrlInboxRow[] = [];
 
-  const webPageUrlLookup: Record<string, true> = {};
-  await processWebPages({
-    processWebPage: ({ webPageDocument }) => {
-      webPageUrlLookup[webPageDocument.webPageUrl] = true;
-    },
-  });
+  const webPageDirPathLookup = await generateWebPageDirPathLookup();
 
-  for (const parsedRow of parsedRows) {
-    if (parsedRow.type === "url" && webPageUrlLookup[parsedRow.url]) {
-      parsedRowsToRemove.push(parsedRow);
+  for (const urlInboxRow of urlInboxRows) {
+    if (urlInboxRow.type === "url" && webPageDirPathLookup[urlInboxRow.url]) {
+      urlInboxRowsToRemove.push(urlInboxRow);
     } else {
-      parsedRowsToKeep.push(parsedRow);
+      urlInboxRowsToKeep.push(urlInboxRow);
     }
   }
 
-  if (parsedRowsToRemove.length === 0) {
-    output.write(
-      chalk.gray(
-        "URL inbox does not contain any registered web pages, so there are no rows to remove.\n",
-      ),
-    );
+  for (let rowIndex = 0; rowIndex < urlInboxRowsToKeep.length; rowIndex += 1) {
+    if (
+      !urlInboxRowsToKeep[rowIndex]?.text.startsWith(
+        "## ↓ appended by auto-populate-url-inbox script",
+      ) ||
+      !urlInboxRowsToKeep[rowIndex + 1]?.text.startsWith(
+        "## ↑ appended by auto-populate-url-inbox script",
+      )
+    ) {
+      continue;
+    }
+
+    urlInboxRowsToRemove.push(...urlInboxRowsToKeep.splice(rowIndex, 2));
+
+    if (urlInboxRowsToKeep[rowIndex - 1]?.text.trim() === "") {
+      urlInboxRowsToRemove.push(...urlInboxRowsToKeep.splice(rowIndex - 1, 1));
+      rowIndex -= 1;
+    }
+  }
+
+  if (urlInboxRowsToKeep.length === urlInboxRows.length) {
+    output.write(chalk.gray("There are no rows to remove from url-inbox\n"));
 
     return;
   }
 
-  await writeUrlInbox(parsedRowsToKeep.map((parsedRow) => parsedRow.text));
+  const linesToWrite = urlInboxRowsToKeep.map(
+    (urlInboxRow) => urlInboxRow.text,
+  );
 
-  for (const parsedRow of parsedRows) {
-    if (parsedRowsToRemove.includes(parsedRow)) {
-      output.write(`\n${chalk.magenta(chalk.strikethrough(parsedRow.text))}`);
+  await writeUrlInbox(linesToWrite);
+
+  for (const urlInboxRow of urlInboxRows) {
+    if (urlInboxRowsToRemove.includes(urlInboxRow)) {
+      output.write(`\n${chalk.magenta(chalk.strikethrough(urlInboxRow.text))}`);
     } else {
-      output.write(`\n${chalk.blue(parsedRow.text)}`);
+      output.write(`\n${chalk.blue(urlInboxRow.text)}`);
     }
   }
 
-  const totalUrlCount = parsedRows.filter(
-    (parsedRow) => parsedRow.type === "url",
+  const removedUrlCount = urlInboxRowsToRemove.filter(
+    (urlInboxRow) => urlInboxRow.type === "url",
+  ).length;
+
+  const totalUrlCount = urlInboxRows.filter(
+    (urlInboxRow) => urlInboxRow.type === "url",
   ).length;
 
   output.write(
-    `\nDone. URLs removed: ${parsedRowsToRemove.length} of ${totalUrlCount}.\n`,
+    `\nDone. URLs removed: ${removedUrlCount} of ${totalUrlCount}.\n`,
   );
 };
 

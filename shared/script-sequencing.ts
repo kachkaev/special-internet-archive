@@ -1,7 +1,7 @@
 import chalk from "chalk";
+import { execa } from "execa";
 import fs from "fs-extra";
 import { DateTime } from "luxon";
-import path from "node:path";
 import { WriteStream } from "node:tty";
 
 import { AbortError } from "./errors";
@@ -48,7 +48,9 @@ export const runScriptSequence = async ({
     const dateTimeAtScriptLaunch = DateTime.local();
 
     output.write(chalk.inverse(`yarn exe ${item.scriptFilePath}\n\n`));
-    await import(path.resolve(item.scriptFilePath));
+
+    // Using sub-process is slower, but more robust. It also allows to import scripts multiple times.
+    await execa("yarn", ["exe", item.scriptFilePath], { stdio: "inherit" });
 
     output.write(
       chalk.blue(

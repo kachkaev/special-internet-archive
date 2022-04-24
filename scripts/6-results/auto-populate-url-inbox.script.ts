@@ -67,12 +67,12 @@ const script = async () => {
   await fs.ensureFile(getUrlInboxFilePath());
 
   const urlInboxLookup: Record<string, true> = {};
-  const parsedRows = (await readUrlInboxRows()) ?? [];
+  const urlInboxRows = (await readUrlInboxRows()) ?? [];
   const linesToWrite: string[] = [];
-  for (const parsedRow of parsedRows) {
-    linesToWrite.push(parsedRow.text);
-    if (parsedRow.type === "url") {
-      urlInboxLookup[parsedRow.url] = true;
+  for (const urlInboxRow of urlInboxRows) {
+    linesToWrite.push(urlInboxRow.text);
+    if (urlInboxRow.type === "url") {
+      urlInboxLookup[urlInboxRow.url] = true;
     }
   }
 

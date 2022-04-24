@@ -25,12 +25,12 @@ export const getUrlInboxFilePath = (): string =>
 
 export const relevantTimeMin = "2022-02-20T00:00:00Z";
 
-export type ParsedUrlInboxRow =
+export type UrlInboxRow =
   | { type: "url"; text: string; url: string }
   | { type: "other"; text: string };
 
 export const readUrlInboxRows = async (): Promise<
-  ParsedUrlInboxRow[] | undefined
+  UrlInboxRow[] | undefined
 > => {
   const filePath = getUrlInboxFilePath();
 

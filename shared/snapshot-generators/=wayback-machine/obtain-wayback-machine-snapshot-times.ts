@@ -2,6 +2,7 @@ import * as envalid from "envalid";
 import _ from "lodash";
 import { DateTime } from "luxon";
 
+import { cleanEnv } from "../../clean-env";
 import { relevantTimeMin } from "../../collection";
 import { serializeTime } from "../../time";
 import { ObtainSnapshotTimes } from "../types";
@@ -40,7 +41,7 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
   const url = aliasUrl ?? webPageUrl;
   const result: string[] = [];
 
-  const env = envalid.cleanEnv(process.env, {
+  const env = cleanEnv({
     WAYBACK_MACHINE_SNAPSHOT_INVENTORY_API: envalid.str({
       choices: ["ajax", "cdx"],
       default: "ajax",

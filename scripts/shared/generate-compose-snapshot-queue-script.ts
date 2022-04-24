@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import envalid from "envalid";
+import * as envalid from "envalid";
 import _ from "lodash";
 import { DateTime } from "luxon";
 import { randomUUID } from "node:crypto";

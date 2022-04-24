@@ -2,7 +2,10 @@ import chalk from "chalk";
 import _ from "lodash";
 
 import { getUrlInboxFilePath, readUrlInboxRows } from "../../shared/collection";
-import { registerWebPage } from "../../shared/web-page-documents";
+import {
+  generateWebPageDirPathLookup,
+  registerWebPage,
+} from "../../shared/web-page-documents";
 import { generateUrlExamplesMessage } from "../../shared/web-page-sources";
 
 const output = process.stdout;
@@ -14,30 +17,33 @@ const script = async () => {
     `${chalk.green("URL inbox location:")} ${getUrlInboxFilePath()}\n`,
   );
 
-  const parsedRows = await readUrlInboxRows();
-  if (!parsedRows) {
+  const urlInboxRows = await readUrlInboxRows();
+  if (!urlInboxRows) {
     output.write(chalk.yellow("File is empty.\n"));
 
     return;
   }
 
-  const maxRowLength = _.max(parsedRows.map((row) => row.text.length)) ?? 0;
+  const maxRowLength = _.max(urlInboxRows.map((row) => row.text.length)) ?? 0;
 
   let numberOfErrors = 0;
 
-  for (const parsedRow of parsedRows) {
-    output.write(`\n${chalk.blue(parsedRow.text.padEnd(maxRowLength + 1))}`);
+  const webPageDirPathLookup = await generateWebPageDirPathLookup();
 
-    if (parsedRow.type !== "url") {
-      if (parsedRow.text.trim().length > 0) {
+  for (const urlInboxRow of urlInboxRows) {
+    output.write(`\n${chalk.blue(urlInboxRow.text.padEnd(maxRowLength + 1))}`);
+
+    if (urlInboxRow.type !== "url") {
+      if (urlInboxRow.text.trim().length > 0) {
         output.write(`${chalk.yellow("not a URL")}`);
       }
       continue;
     }
 
     const operationResult = await registerWebPage(
-      parsedRow.url,
+      urlInboxRow.url,
       "script:register-from-url-inbox",
+      webPageDirPathLookup,
     );
 
     switch (operationResult.status) {

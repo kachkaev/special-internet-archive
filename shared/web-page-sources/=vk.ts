@@ -9,6 +9,8 @@ import { interactWithVkPlaywrightPage } from "./=vk/interact-with-vk-playwright-
 import { WebPageSource } from "./types";
 
 export const vkWebPageSource: WebPageSource = {
+  assertWebPageUrl: assertVkUrl,
+
   calculateRelevantTimeMinForNewIncrementalSnapshot:
     calculateRelevantTimeMinForNewIncrementalVkSnapshot,
 
@@ -51,6 +53,4 @@ export const vkWebPageSource: WebPageSource = {
 
     return [webPageUrl.replace("//vk", "//m.vk")];
   },
-
-  assertWebPageUrl: assertVkUrl,
 };
