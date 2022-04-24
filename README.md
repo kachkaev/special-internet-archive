@@ -21,8 +21,8 @@ Although local snapshots are less accessible, they may contain details that thir
 However, those modest datasets it helps create can be still useful for the researches of the future.
 
 Based on the initial scope of the project, the instructions below are in Russian.
-The code is written in Typescript and script output is in English.
-The tooling can be re-used globally to create structured archive collections for any web pages.
+The software is written in TypeScript and its output uses English.
+The code can be re-used globally to create structured archive collections with any web pages.
 
 👀 [English version via Google Translate](https://translate.google.com/translate?sl=ru&tl=en&u=https://github.com/kachkaev/special-internet-archive/blob/main/README.md)
 
