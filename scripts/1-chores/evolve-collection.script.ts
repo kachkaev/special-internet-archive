@@ -13,10 +13,14 @@ const script = async () => {
   output.write(chalk.bold(`Evolve collection\n`));
 
   const env = cleanEnv({
-    EVOLVE_COLLECTION_REPEATEDLY: envalid.bool({ default: true }),
+    COLLECTION_EVOLVEMENT_MODE: envalid.str({
+      choices: ["repeatedly", "once"],
+      default: "repeatedly",
+    }),
   });
 
-  const evolveCollectionRepeatedly = env.EVOLVE_COLLECTION_REPEATEDLY;
+  const evolveCollectionRepeatedly =
+    env.COLLECTION_EVOLVEMENT_MODE === "repeatedly";
 
   for (;;) {
     await runScriptSequence({

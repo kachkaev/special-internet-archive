@@ -29,7 +29,7 @@ summary
   сводка
 
 to capture
-  сделать снимок
+  создать снимок
 
 snapshot generator
   генератор снимков
