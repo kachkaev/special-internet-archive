@@ -106,32 +106,25 @@ The tooling can be re-used globally to create structured archive collections for
 
   📂 web-pages/
 
-    📂 vk/
+    📂 some/
 
-      📂 accounts/
+      📂 path/
 
-        🌐 id12345/
-        🌐 club54321/
-        🌐 typical_ensk/
+        📂 to/
+
+          🌐 some-web-page/
+          🌐 some-other-web-page/
 
 
-      📂 posts/
+    📂 some-other-path/
 
-        📂 -54321/
-
-          🌐 111/
-          🌐 222/
-          🌐 333/
-
-        📂 12345/
-
-          🌐 444/
-          🌐 555/
-          🌐 666/
+      🌐 to-a-different-web-page/
+      🌐 to-another-web-page/
 
 
   🛠 .gitattributes
   🛠 .gitignore
+  🛠 .prettierrc
   🛠 README.md
   ⏳ url-inbox.txt
 ```
@@ -146,7 +139,7 @@ The tooling can be re-used globally to create structured archive collections for
 Папка каждой веб-страницы имеет такую структуру:
 
 ```txt
-🌐 some/path/to/web-page/
+🌐 some/path/to/some-web-page/
 
   📸 snapshots/
 
@@ -195,11 +188,11 @@ The tooling can be re-used globally to create structured archive collections for
 Вложенных папок веб-страниц быть не должно:
 
 ```txt
-🌐 some/path/to/web-page/
+🌐 some/path/to/some-web-page/
   📜 web-page.json
 
 
-❌ some/path/to/web-page/some/subfolder/
+❌ some/path/to/some-web-page/some/subfolder/
   ❌ web-page.json
 ```
 
