@@ -2,21 +2,21 @@
 
 // Context:
 // https://github.com/nodejs/node/issues/30810
+// https://github.com/yarnpkg/berry/blob/2cf0a8fe3e4d4bd7d4d344245d24a85a45d4c5c9/packages/yarnpkg-pnp/sources/loader/applyPatch.ts#L414-L435
 
-const { emitWarning } = process;
+const originalEmit = process.emit;
 
-process.emitWarning = (warning, ...args) => {
-  if (args[0] === "ExperimentalWarning") {
-    return;
-  }
-
+process.emit = (name, data, ...args) => {
   if (
-    args[0] &&
-    typeof args[0] === "object" &&
-    args[0].type === "ExperimentalWarning"
+    name === `warning` &&
+    typeof data === `object` &&
+    data.name === `ExperimentalWarning` &&
+    (data.message.includes(`--experimental-loader`) ||
+      data.message.includes(`Custom ESM Loaders is an experimental feature`) ||
+      data.message.includes(`specifier resolution flag`))
   ) {
-    return;
+    return false;
   }
 
-  return emitWarning(warning, ...args);
+  return originalEmit.apply(process, [name, data, ...args]);
 };
