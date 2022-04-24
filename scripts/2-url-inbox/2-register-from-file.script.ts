@@ -1,12 +1,9 @@
 import chalk from "chalk";
 import _ from "lodash";
 
-import {
-  getUrlInboxFilePath,
-  readUrlInboxRows,
-} from "../../../shared/collection";
-import { registerWebPage } from "../../../shared/web-page-documents";
-import { generateUrlExamplesMessage } from "../../../shared/web-page-sources";
+import { getUrlInboxFilePath, readUrlInboxRows } from "../../shared/collection";
+import { registerWebPage } from "../../shared/web-page-documents";
+import { generateUrlExamplesMessage } from "../../shared/web-page-sources";
 
 const output = process.stdout;
 

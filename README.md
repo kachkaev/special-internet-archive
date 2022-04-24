@@ -253,18 +253,27 @@ The code can be re-used globally to create structured archive collections with a
 
 1.  [Клонируйте](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) этот репозиторий в папку `[project-dir-path]/tooling`.
 
-    Чтобы клонировать этот приватный репозиторий, в консоли введите команду:
+    Чтобы клонировать этот приватный репозиторий, перейдите в консоли в заранее созданную папку `[project-dir-path]`:
 
     ```sh
-    git clone https://[github-username]:[personal-access-token]@github.com/kachkaev/special-internet-archive-tooling.git
+    cd "[project-dir-path]"
+    
+    ## пример:
+    # cd "/Users/bob/projects/special-internet-archive"
     ```
 
-    `[github-username]` - это ваш ник на гитхабе.
-    `[personal-access-token]` - это ваш персональный токен аутентификации для доступа к приватному репозиторию.
-    [Инструкция](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) по созданию персонального токена.
-    Если результат оказался в другой папке, например, `[project-dir-path]/special-archive-tooling` или `[project-dir-path]/archive/tooling`, то папку можно перенести.
+    Название этой папки должно появиться слева от места ввода команды.
+
+    Запустите эту команду:
+
+    ```sh
+    git clone https://github.com/kachkaev/special-internet-archive.git tooling
+    ```
+
+    В качестве самопроверки убедитесь, что на вашем компьютере появился файл `[project-dir-path]/tooling/README.md`.
+
+    Если результат клонирования репозитория оказался в другой папке, например, `[project-dir-path]/special-archive-tooling` или `[project-dir-path]/archive/tooling`, то папку желательно перенести.
     Связь с гитхабом при этом не потеряется.
-    В качестве самопроверки убедитесь, что на вашем компьютере существует файл `[project-dir-path]/tooling/README.md`.
 
     Про `[project-dir-path]` написано выше.
 
@@ -272,9 +281,10 @@ The code can be re-used globally to create structured archive collections with a
 
     ```sh
     cd "[project-dir-path]/tooling"
+    
+    ## пример:
+    #  cd "/Users/bob/projects/special-internet-archive/tooling"
     ```
-
-    Название этой папки должно появиться слева от места ввода команды.
 
 1.  Будучи в папке `[project-dir-path]/tooling`, установите зависимые библиотеки:
 
@@ -308,25 +318,26 @@ The code can be re-used globally to create structured archive collections with a
     Чтобы клонировать, в консоли введите команду из папки `[project-dir-path]/data`:
 
     ```sh
-    git clone https://[github-username]:[personal-access-token]@github.com/kachkaev/special-internet-archive-data.git --branch=collections/[collection-id] --single-branch collections/[collection-id]
+    git clone https://[github-username]:[personal-access-token]@github.com/[repository].git --branch=collections/[collection-id] --single-branch collections/[collection-id]
+    
+    ## пример:
+    #  git clone https://bob:ghp_llNyHjFzdKimHctg0JDPOGLsPgIvmTPevAKs@github.com/example/repo.git --branch=collections/my-collection --single-branch collections/my-collection
     ```
 
-    `[github-username]` - это ваш ник на гитхабе.
-    `[personal-access-token]` - это ваш персональный токен аутентификации для доступа к приватному репозиторию (создавать новый не нужно, используйте уже созданный).
-    `[collection-id]` — это название коллекции (например, `region-ru-pnz` или `topic-xyz`).
-    Название папки соответствует названию ветки репозитория с данными (`collections/[collection-id]`).
+    - `[github-username]` — это ваш ник на гитхабе.
+    - `[personal-access-token]` — это ваш персональный токен аутентификации для доступа к приватному репозиторию ([инструкция](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)).
+    - `[repository]` - это названия репозитория, где будет храниться ваша коллекция архива.
+    - `[collection-id]` — это название коллекции (например, `region-ru-pnz` или `topic-xyz`).
+      Название папки соответствует названию ветки репозитория с данными (`collections/[collection-id]`).
 
 1.  Откройте файл `[project-dir-path]/tooling/.env.local` как текстовый и укажите путь к коллекции архива.
     Это делается добавлением такой строчки:
 
     ```ini
     COLLECTION_DIR_PATH=[project-dir-path]/data/collections/[collection-id]
-    ```
-
-    Части `[project-dir-path]` и `[collection-id]` надо заменить на настоящие, например:
-
-    ```ini
-    COLLECTION_DIR_PATH=/Users/me/projects/special-internet-archive/data/collections/collection-ru-pnz
+    
+    ## пример:
+    #  COLLECTION_DIR_PATH=/Users/bob/projects/special-internet-archive/data/collections/my-collection
     ```
 
 <!--

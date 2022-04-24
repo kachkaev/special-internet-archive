@@ -5,8 +5,8 @@ import {
   ParsedUrlInboxRow,
   readUrlInboxRows,
   writeUrlInbox,
-} from "../../../shared/collection";
-import { processWebPages } from "../../../shared/web-page-documents";
+} from "../../shared/collection";
+import { processWebPages } from "../../shared/web-page-documents";
 
 const output = process.stdout;
 
