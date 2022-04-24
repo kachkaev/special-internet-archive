@@ -5,7 +5,7 @@ import { runScriptSequence } from "../../shared/script-sequencing";
 const output = process.stdout;
 
 const script = async () => {
-  output.write(chalk.bold(`Running the whole cycle\n`));
+  output.write(chalk.bold(`Evolve collection\n`));
 
   await runScriptSequence({
     // prettier-ignore
