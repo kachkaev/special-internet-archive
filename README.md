@@ -13,16 +13,17 @@ This repository helps archive public web pages before they are removed or edited
 It contains software that produces structured archive collections and orchestrates snapshot capturing.
 Harvested data is shaped so that it fits git repositories or cloud storage like S3.
 The architecture supports various web page sources (websites) as well as multiple snapshot generators, both local and third-party.
+
 The initial version of the tooling only works with public VK communities.
 It relies on [web.archive.org](https://web.archive.org) as a third-party snapshot generator and supplements it with local [Playwright](https://playwright.dev) snapshots.
 Although local snapshots are less accessible, they may contain details that third-party tools are unable to collect.
 
 “Special Internet Archive” does not aim to “capture the whole internet”.
-However, those modest datasets it helps create can be still useful for the researches of the future.
+However, those modest datasets it helps create can be useful for the researches of the future.
 
 Based on the initial scope of the project, the instructions below are in Russian.
 The software is written in TypeScript and its output uses English.
-The code can be re-used globally to create structured archive collections with any web pages.
+The code can be re-used to create structured archive collections with web pages from any source.
 
 👀 [English version via Google Translate](https://translate.google.com/translate?sl=ru&tl=en&u=https://github.com/kachkaev/special-internet-archive/blob/main/README.md)
 
