@@ -34,8 +34,14 @@ to capture
 snapshot generator
   генератор снимков
 
+local snapshot generator
+  локальный генератор снимков
+
+third-party snapshot generator
+  сторонний генератор снимков
+
 inventory
-  инвентаризация (учёт?)
+  инвентаризация
 
 label
   метка

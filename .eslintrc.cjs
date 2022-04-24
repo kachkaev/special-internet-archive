@@ -8,7 +8,7 @@ module.exports = {
     {
       files: ["**/scripts/**/shared/**"],
       rules: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention -- external limitation
+        // eslint-disable-next-line @typescript-eslint/naming-convention -- third-party limitation
         "no-restricted-syntax": require("@kachkaev/eslint-config-base").rules[
           "no-restricted-syntax"
         ],

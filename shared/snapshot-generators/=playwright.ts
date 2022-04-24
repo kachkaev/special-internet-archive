@@ -15,6 +15,6 @@ export const playwrightSnapshotGenerator: SnapshotGenerator = {
   name: "Playwright",
   obtainSnapshotTimes: obtainPlaywrightSnapshotTimes,
   extractSnapshotSummaryData: extractPlaywrightSnapshotSummaryData,
-  role: "internal",
+  role: "local",
   snapshotAttemptTimeoutInSeconds: 120,
 };

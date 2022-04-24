@@ -7,6 +7,6 @@ export const waybackMachineSnapshotGenerator: SnapshotGenerator = {
   captureSnapshot: captureWaybackMachineSnapshot,
   name: "Wayback Machine",
   obtainSnapshotTimes: obtainWaybackMachineSnapshotTimes,
-  role: "external",
+  role: "thirdParty",
   snapshotAttemptTimeoutInSeconds: 30,
 };

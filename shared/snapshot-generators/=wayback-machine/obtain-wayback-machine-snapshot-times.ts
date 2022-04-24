@@ -57,7 +57,7 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
       {
         responseType: "json",
         transitional: {
-          // eslint-disable-next-line @typescript-eslint/naming-convention -- external API
+          // eslint-disable-next-line @typescript-eslint/naming-convention -- third-party API
           silentJSONParsing: false, // Disables Object to string conversion if parsing fails
         },
         params: { url, output: "json" },
@@ -103,7 +103,7 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
           {
             responseType: "json",
             transitional: {
-              // eslint-disable-next-line @typescript-eslint/naming-convention -- external API
+              // eslint-disable-next-line @typescript-eslint/naming-convention -- third-party API
               silentJSONParsing: false, // Disables Object to string conversion if parsing fails
             },
             params: { url, date: `${year}` },

@@ -102,7 +102,7 @@ export const generateExtractSnapshotSummariesScript =
 
           try {
             if (!(await fs.pathExists(snapshotFilePath))) {
-              if (snapshotGeneratorRole === "internal") {
+              if (snapshotGeneratorRole === "local") {
                 throw new Error(
                   `Snapshot file is unexpectedly missing. Please update snapshot inventory.`,
                 );

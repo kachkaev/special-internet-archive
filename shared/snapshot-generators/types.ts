@@ -67,6 +67,6 @@ export interface SnapshotGenerator {
   generateSnapshotFilePath?: GenerateSnapshotFilePath;
   name: string;
   obtainSnapshotTimes: ObtainSnapshotTimes;
-  role: "external" | "internal";
+  role: "local" | "thirdParty";
   snapshotAttemptTimeoutInSeconds: number;
 }

@@ -41,12 +41,12 @@ The tooling can be re-used globally to create structured archive collections for
 📸 **Снимок веб-страницы** — это копия того, что выдавал сервер в конкретный момент времени.
 Каждому адресу веб-страницы может соответствовать несколько снимков.
 Они отличаются как временем, так и способом получения.
-Снимки бывают локальными (созданные волонтёром у себя на компьютере) и внешними (созданные сторонними сервисами).
+Снимки бывают локальными (созданные волонтёром у себя на компьютере) и сторонними (созданные внешними сервисами).
 
 Локальные снимки более гибкие и содержательные, потому что мы сами управляем инструментами для их создания.
-Внешние снимки содержат меньше информации, но считаются более надёжными.
-Чисто в теории локальные снимки могут быть подделкой, поэтому использование внешних сервисов — это что-то вроде получения нотариально заверенных копий.
-Даже если весь наш архив с данными уничтожить, внешние снимки веб-страниц всё равно доживут до потомков.
+Сторонние снимки содержат меньше информации, но считаются более надёжными.
+Чисто в теории локальные снимки могут быть подделкой, поэтому использование сторонних сервисов — это что-то вроде получения нотариально заверенных копий.
+Даже если весь наш архив с данными уничтожить, сторонние снимки веб-страниц всё равно доживут до потомков.
 
 🏷 **Аннотация веб-страницы** — это дополнительные данные, которые были добавлены человеком или скриптами в процессе архивации.
 Пример аннотаций — метки (теги).
@@ -99,9 +99,9 @@ The tooling can be re-used globally to create structured archive collections for
 
   📂 snapshot-queues/
 
-    ⏳ some-external-generator.json
-    ⏳ some-internal-generator.json
-    ⏳ some-other-external-generator.json
+    ⏳ some-third-party-generator.json
+    ⏳ some-local-generator.json
+    ⏳ some-other-third-party-generator.json
 
 
   📂 web-pages/
@@ -143,20 +143,20 @@ The tooling can be re-used globally to create structured archive collections for
 
   📸 snapshots/
 
-    📜 2022-03-10-011223z-some-internal-generator.zip
-    ⏳ 2022-03-10-011223z-some-internal-generator.zip.summary.json
+    📜 2022-03-10-011223z-some-local-generator.zip
+    ⏳ 2022-03-10-011223z-some-local-generator.zip.summary.json
 
-    ⏳ 2022-04-05-124312z-some-external-generator.zip
-    ⏳ 2022-04-05-124312z-some-external-generator.zip.summary.json
+    ⏳ 2022-04-05-124312z-some-third-party-generator.zip
+    ⏳ 2022-04-05-124312z-some-third-party-generator.zip.summary.json
 
-    ⏳ 2022-04-27-071231z-some-other-external-generator.zip
-    ⏳ 2022-04-27-071231z-some-other-external-generator.zip.summary.json
+    ⏳ 2022-04-27-071231z-some-other-third-party-generator.zip
+    ⏳ 2022-04-27-071231z-some-other-third-party-generator.zip.summary.json
 
-    📜 2022-05-02-182048z-some-internal-generator.zip
-    ⏳ 2022-05-02-182048z-some-internal-generator.zip.summary.json
+    📜 2022-05-02-182048z-some-local-generator.zip
+    ⏳ 2022-05-02-182048z-some-local-generator.zip.summary.json
 
-    ⏳ 2022-05-02-182440z-some-external-generator.zip
-    ⏳ 2022-05-02-182440z-some-external-generator.zip.summary.json
+    ⏳ 2022-05-02-182440z-some-third-party-generator.zip
+    ⏳ 2022-05-02-182440z-some-third-party-generator.zip.summary.json
 
 
   ⏳ snapshot-summary-combination.json
@@ -455,12 +455,12 @@ The tooling can be re-used globally to create structured archive collections for
 
 Сбор новых снимков состоит из трёх действий: инвентаризация существующих снимков, составление очереди заявок на новые снимки и исполнение очереди.
 
-#### Внешние снимки: Wayback Machine
+#### Сторонние снимки: Wayback Machine
 
 [Wayback Machine](https://ru.wikipedia.org/wiki/Wayback_Machine) — это некоммерческий онлайн-архив интернета.
 Он [заблокирован в России](https://ru.wikipedia.org/wiki/Wayback_Machine#%D0%91%D0%BB%D0%BE%D0%BA%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B8), поэтому для работы со снимками в этом хранилище [вам понадобится VPN](https://roskomsvoboda.org/cards/card/whydoyouneedVPN/).
 
-[web.archive.org](https://web.archive.org) пока что выступает в роли единственного внешнего хранилища.
+[web.archive.org](https://web.archive.org) пока что выступает в роли единственного стороннего хранилища.
 Возможно, в будущем мы подключим и другой онлайн-архив: [archive.ph](https://archive.ph).
 Комбинирование хранилищ повышает надёжность и полноту архива.
 
@@ -560,7 +560,7 @@ Playwright умеет сохранять такие автоматизирова
 Сначала мы разбираем известные нам снимки и извлекаем сводку по каждому из них.
 Так как у каждой веб-страницы может быть по несколько снимков, мы комбинируем полученные сводки отдельным скриптом.
 
-#### Внешние снимки: Wayback Machine
+#### Сторонние снимки: Wayback Machine
 
 > ⛔️ пока не работает
 

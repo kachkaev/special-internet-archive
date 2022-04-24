@@ -121,7 +121,7 @@ export const generateUpdateInventoryScript =
 
     let thereWasAtLeastOneAlias = false;
 
-    if (snapshotGenerator.role === "external") {
+    if (snapshotGenerator.role === "thirdParty") {
       const env = cleanEnv({
         EAGER: envalid.bool({
           default: false,
@@ -295,7 +295,7 @@ export const generateUpdateInventoryScript =
         );
 
         if (
-          snapshotGenerator.role === "external" ||
+          snapshotGenerator.role === "thirdParty" ||
           !_.isEqual(
             orderedItems,
             updatedWebPageDocument.snapshotInventoryLookup[snapshotGeneratorId]
