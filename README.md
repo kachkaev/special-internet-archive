@@ -1,7 +1,7 @@
 # Special Internet Archive 📜 Спецархив
 
 This project was created in response to a [“special military operation”](https://en.wikipedia.org/wiki/2022_Russian_invasion_of_Ukraine), which Russian army started against Ukraine in February 2022.
-“Special Internet Archive” aims to automate the preservation of related online content, thus providing future researchers with historic data to analyse.
+“Special Internet Archive” aims to automate preservation of related online content, thus providing future researchers with historic data to analyse.
 
 Wars of the 20<sup>th</sup> century left physical artefacts like newspapers, letters, diaries and films.
 Some of these objects were studied only decades later and became crucial for shedding some light on the tragic past.
@@ -11,7 +11,7 @@ Thus, if we don’t proactively preserve the present, future generations won’t
 
 This repository helps archive public web pages before they are removed or edited.
 It contains software that produces structured archive collections and orchestrates snapshot capturing.
-Harvested data is shaped so that it fits git repositories or cloud storage like S3.
+The shaped of harvested data is compatible with git repositories or cloud storage like S3.
 The architecture supports various web page sources (websites) as well as multiple snapshot generators, both local and third-party.
 
 The initial version of the tooling only works with public VK communities.
@@ -19,11 +19,11 @@ It relies on [web.archive.org](https://web.archive.org) as a third-party snapsho
 Although local snapshots are less accessible, they may contain details that third-party tools are unable to collect.
 
 “Special Internet Archive” does not aim to “capture the whole internet”.
-However, those modest datasets it helps create can be useful for the researches of the future.
+However, those modest datasets it helps create might useful for the researches of the future.
 
 Based on the initial scope of the project, the instructions below are in Russian.
 The software is written in TypeScript and its output uses English.
-The code can be re-used to create structured archive collections with web pages from any source.
+This repository can be used globally to create structured archive collections with any web pages.
 
 👀 [English version via Google Translate](https://translate.google.com/translate?sl=ru&tl=en&u=https://github.com/kachkaev/special-internet-archive/blob/main/README.md)
 
@@ -443,7 +443,7 @@ The code can be re-used to create structured archive collections with web pages 
 
     Если у веб-страницы есть недавно созданный снимок, скрипт её тоже пропустит.
     Такой режим работы ускоряет повторную инвентаризацию крупных коллекций архива.
-    Чтобы провести инвентаризацию для всех страниц, задайте переменную окружения `EAGER=true`.
+    Чтобы провести инвентаризацию и для страниц с недавними снимками, задайте переменную окружения `EAGER=true`.
 
 1.  Составьте очередь заявок на новые снимки:
 
@@ -464,7 +464,6 @@ The code can be re-used to create structured archive collections with web pages 
     ```
 
     Скрипт посмотрит на адреса веб-страниц в очереди и отправит каждую из них через форму https://web.archive.org/save.
-
     Обработку очереди можно прерывать и перезапускать.
     Успешные заявки обрабатываться по второму разу не будут.
 
@@ -482,13 +481,13 @@ The code can be re-used to create structured archive collections with web pages 
 [Playwright](https://playwright.dev) — инструмент для тестирования веб-приложений.
 По сути это обёртка вокруг веб-браузера, которая позволяет автоматизировать взаимодействие с сайтами.
 Программа может открывать веб-страницы, нажимать на ссылки и кнопки, проматывать содержимое, вводить текст и так далее.
-Playwright умеет сохранять такие автоматизированные сессии в виде очень детализированных отпечатков (traces).
+Playwright умеет сохранять такие автоматизированные сессии в виде очень детализированных отпечатков ([traces](https://playwright.dev/docs/trace-viewer)).
 Отпечаток Playwright — это что-то вроде слайдов в презентации, только в формате `zip`.
 Внутри архива находятся все необходимые ресурсы для отображения «слайдов»: разметка, стили и картинки.
 Каждый «слайд» соответствует одному действию (например, прокрутка веб-страницы вниз).
 
 Программа Playwright имеет открытый исходный код и свободную лицензию.
-Формат отпечатков тоже открыт и поэтому без проблем прочитается в будущем.
+Формат отпечатков тоже открыт и поэтому должен прочитаться даже в далёком будущем.
 Пример отпечатка веб-страницы в Playwright [доступен на сайте проекта](https://trace.playwright.dev/?trace=https://demo.playwright.dev/reports/todomvc/data/cb0fa77ebd9487a5c899f3ae65a7ffdbac681182.zip).
 
 Для тестировщиков веб-приложений отпечатки Playwright — это средство отладки кода.
@@ -579,7 +578,7 @@ Playwright умеет сохранять такие автоматизирова
 #### Комбинация сводок
 
 После запуска предыдущих скриптов у нас есть сводки по каждому снимку: `⏳ [web-page-dir-path]/snapshots/*.summary.json`.
-Информация в этих файлах повторяется, поэтому мы комбинируем сводки в файлы `⏳ [web-page-dir-path]/snapshot-summary-combination.json`:
+Информация в этих файлах частично повторяется, поэтому мы комбинируем сводки в файлы `⏳ [web-page-dir-path]/snapshot-summary-combination.json`:
 
 ```sh
 yarn exe scripts/4-snapshot-summaries/extract-summary-combinations.script.ts
