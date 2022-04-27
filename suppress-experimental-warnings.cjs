@@ -13,6 +13,7 @@ process.emit = (name, data, ...args) => {
     data.name === `ExperimentalWarning` &&
     (data.message.includes(`--experimental-loader`) ||
       data.message.includes(`Custom ESM Loaders is an experimental feature`) ||
+      data.message.includes(`The Fetch API is an experimental feature`) ||
       data.message.includes(`specifier resolution flag`))
   ) {
     return false;
