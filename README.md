@@ -1,7 +1,7 @@
 # Special Internet Archive 📜 Спецархив
 
 This project was created in response to a [“special military operation”](https://en.wikipedia.org/wiki/2022_Russian_invasion_of_Ukraine), which Russian army started against Ukraine in February 2022.
-“Special Internet Archive” aims to automate preservation of related online content, thus providing future researchers with historic data to analyse.
+“Special Internet Archive” aims to automate the preservation of related online content, thus providing future researchers with historic data to analyse.
 
 Wars of the 20<sup>th</sup> century left physical artefacts like newspapers, letters, diaries and films.
 Some of these objects were studied only decades later and became crucial for shedding some light on the tragic past.
@@ -11,15 +11,15 @@ Thus, if we don’t proactively preserve the present, future generations won’t
 
 This repository helps archive public web pages before they are removed or edited.
 It contains software that produces structured archive collections and orchestrates snapshot capturing.
-The shaped of harvested data is compatible with git repositories or cloud storage like S3.
-The architecture supports various web page sources (websites) as well as multiple snapshot generators, both local and third-party.
+The shape of the harvested data is compatible with git repositories or cloud storage like S3.
+Code architecture supports various web page sources (websites) as well as multiple snapshot generators, both local and third-party.
 
 The initial version of the tooling only works with public VK communities.
 It relies on [web.archive.org](https://web.archive.org) as a third-party snapshot generator and supplements it with local [Playwright](https://playwright.dev) snapshots.
 Although local snapshots are less accessible, they may contain details that third-party tools are unable to collect.
 
 “Special Internet Archive” does not aim to “capture the whole internet”.
-However, those modest datasets it helps create might useful for the researches of the future.
+However, those modest datasets it helps collect might useful for the researches of the future.
 
 Based on the initial scope of the project, the instructions below are in Russian.
 The software is written in TypeScript and its output uses English.
