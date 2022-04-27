@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@next/eslint-plugin-next": "^12.1.5",
-    "axios": "^0.27.1",
+    "axios": "^0.27.2",
     "axios-retry": "^3.2.4",
     "dotenv-flow": "^3.2.0",
     "lodash": "^4.17.21",
@@ -58,7 +58,7 @@
     "fs-extra": "^10.1.0",
     "globby": "^13.1.1",
     "husky": "^7.0.4",
-    "jest": "^28.0.1",
+    "jest": "^28.0.2",
     "js-yaml": "^4.1.0",
     "lint-staged": "^12.4.1",
     "markdownlint-cli": "^0.31.1",
