@@ -11,12 +11,12 @@ Thus, if we don’t proactively preserve the present, future generations won’t
 
 This repository helps archive public web pages before they are removed or edited.
 It contains software that produces structured archive collections and orchestrates snapshot capturing.
-The shape of the harvested data is compatible with git repositories or cloud storage like S3.
+The shape of the harvested data is compatible with git repositories or cloud storages like S3.
 Code architecture supports various web page sources (websites) as well as multiple snapshot generators, both local and third-party.
 
 The initial version of the tooling only works with public VK communities.
 It relies on [web.archive.org](https://web.archive.org) as a third-party snapshot generator and supplements it with local [Playwright](https://playwright.dev) snapshots.
-Although local snapshots are less accessible, they may contain details that third-party tools are unable to collect.
+Although local snapshots are less accessible, they may contain content that third-party tools are unable to collect.
 
 “Special Internet Archive” does not aim to “capture the whole internet”.
 However, those modest datasets it helps collect might useful for the researches of the future.
@@ -47,11 +47,11 @@ This repository can be used globally to create structured archive collections wi
 Локальные снимки более гибкие и содержательные, потому что мы сами управляем инструментами для их создания.
 Сторонние снимки содержат меньше информации, но считаются более надёжными.
 Чисто в теории локальные снимки могут быть подделкой, поэтому использование сторонних сервисов — это что-то вроде получения нотариально заверенных копий веб-страниц.
-Даже если весь наш архив с локальными снимками уничтожить, сторонние снимки всё равно доживут до потомков.
+Даже если весь наш архив с локальными снимками уничтожить, сторонние снимки всё равно имеют шанс дожить до потомков.
 
-🏷 **Аннотация веб-страницы** — это дополнительные данные, которые были добавлены человеком или скриптами в процессе архивации.
-Пример аннотаций — метки (теги).
-Они помогают собирать, структурировать и анализировать архивные данные, при этом хранятся отдельно от снимков веб-страниц.
+🏷 **Аннотация веб-страницы** — это дополнительные данные, которые были добавлены человеком или программой в процессе архивации.
+Частный случай аннотации — метки (теги).
+Аннотации помогают собирать, структурировать и анализировать архивные данные, при этом хранятся отдельно от снимков веб-страниц.
 
 ### Структура архива
 
@@ -115,8 +115,8 @@ This repository can be used globally to create structured archive collections wi
 
     📂 some-other-path/
 
-      🌐 to-a-different-web-page/
-      🌐 to-another-web-page/
+      🌐 another-web-page/
+      🌐 different-web-page/
 
 
   🛠 .gitattributes
