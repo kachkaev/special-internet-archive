@@ -29,7 +29,7 @@ const ensureTraceViewerServerIsRunning = async (): Promise<void> => {
     "lib/server/trace/viewer/traceViewer.js",
   );
 
-  const { showTraceViewer } = await import(importPath);
+  const { showTraceViewer } = await import(`file://${importPath}`);
 
   traceViewerContext = await showTraceViewer(
     [],
