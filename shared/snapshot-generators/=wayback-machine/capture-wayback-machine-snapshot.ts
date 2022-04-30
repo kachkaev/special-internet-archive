@@ -92,7 +92,7 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
 
       if (html.includes("The server encountered an internal error")) {
         reportIssue?.(
-          "Wayback Machine server encountered an error (possible API rate limiting)",
+          "Wayback Machine server encountered an error (possible API rate limiting – this is OK)",
         );
         continue;
       }
