@@ -20,9 +20,28 @@ const closeAuthModalIfPresent = async ({
   return false;
 };
 
+// e.g. https://vk.com/newstregion is 18+ for some reason
+const closeAgeRestrictionModalIfPreset = async ({
+  playwrightPage,
+}: PlaywrightPageInteractionPayload): Promise<boolean> => {
+  const checkbox = playwrightPage.locator(".group_age_checkbox").nth(0);
+  if (await checkbox.isVisible()) {
+    await checkbox.click();
+    await playwrightPage
+      .locator(".group_age_disclaimer_box .FlatButton--primary")
+      .click();
+
+    return true;
+  }
+
+  return false;
+};
+
 const scrollPosts = async (
   payload: PlaywrightPageInteractionPayload,
 ): Promise<void> => {
+  await closeAgeRestrictionModalIfPreset(payload);
+
   const {
     abortSignal,
     playwrightPage,
