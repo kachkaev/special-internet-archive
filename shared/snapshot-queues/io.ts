@@ -69,18 +69,19 @@ export const writeSnapshotQueueDocument = async (
   });
 };
 
-export const reportSnapshotQueueAttempt = async ({
+export const reportSnapshotQueueAttempts = async ({
   attemptMessage,
   attemptStartedAt,
   attemptStatus,
   snapshotGeneratorId,
-  snapshotQueueItemId,
+  snapshotQueueItemIds,
 }: {
   attemptMessage?: string | undefined;
   attemptStartedAt: string;
   attemptStatus: SnapshotAttemptStatus;
   snapshotGeneratorId: SnapshotGeneratorId;
-  snapshotQueueItemId: string;
+  /** undefined is used when mass-capturing snapshots (all items are affected in the same manner) */
+  snapshotQueueItemIds: string[];
 }): Promise<void> => {
   const snapshotQueueDocument = await readSnapshotQueueDocument(
     snapshotGeneratorId,
@@ -88,35 +89,38 @@ export const reportSnapshotQueueAttempt = async ({
 
   const newSnapshotQueueDocument = _.cloneDeep(snapshotQueueDocument);
 
-  const queueItem = newSnapshotQueueDocument.items.find(
-    (item) => item.id === snapshotQueueItemId,
+  const snapshotQueueItemIdsSet = new Set(snapshotQueueItemIds);
+
+  const queueItems = newSnapshotQueueDocument.items.filter((item) =>
+    snapshotQueueItemIdsSet.has(item.id),
   );
-  if (!queueItem) {
+  if (queueItems.length === 0) {
     return;
   }
 
-  queueItem.attempts ??= [];
+  for (const queueItem of queueItems) {
+    queueItem.attempts ??= [];
+    const newAttempt: SnapshotAttempt = {
+      startedAt: attemptStartedAt,
+      status: attemptStatus,
+    };
+    if (attemptMessage) {
+      newAttempt.message = attemptMessage;
+    }
 
-  const newAttempt: SnapshotAttempt = {
-    startedAt: attemptStartedAt,
-    status: attemptStatus,
-  };
-  if (attemptMessage) {
-    newAttempt.message = attemptMessage;
-  }
+    const existingAttemptIndex = queueItem.attempts.findIndex(
+      (attempt) => attempt.startedAt === attemptStartedAt,
+    );
 
-  const existingAttemptIndex = queueItem.attempts.findIndex(
-    (attempt) => attempt.startedAt === attemptStartedAt,
-  );
+    if (queueItem.attempts[existingAttemptIndex]?.status === "aborted") {
+      return;
+    }
 
-  if (queueItem.attempts[existingAttemptIndex]?.status === "aborted") {
-    return;
-  }
-
-  if (existingAttemptIndex !== -1) {
-    queueItem.attempts.splice(existingAttemptIndex, 1, newAttempt);
-  } else {
-    queueItem.attempts.push(newAttempt);
+    if (existingAttemptIndex !== -1) {
+      queueItem.attempts.splice(existingAttemptIndex, 1, newAttempt);
+    } else {
+      queueItem.attempts.push(newAttempt);
+    }
   }
 
   await writeSnapshotQueueDocument(newSnapshotQueueDocument);

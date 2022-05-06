@@ -35,6 +35,18 @@ export type CaptureSnapshot = (payload: {
   previousFailuresInSnapshotQueue: PreviousFailuresInSnapshotQueue[];
 }) => Promise<OperationResult>;
 
+/**
+ * Mass-captures the whole queue at once.
+ * Possible for some third-party snapshot generators.
+ * @returns OperationResult with "error" if this particular snapshot failed.
+ *      If "skipped", the queue should be processed one by one via CaptureSnapshot.
+ */
+export type MassCaptureSnapshots = (payload: {
+  abortSignal?: AbortSignal;
+  reportIssue?: ReportIssue;
+  webPagesUrls: string[];
+}) => Promise<OperationResult>;
+
 export type DownloadSnapshot = (
   payload: {
     webPageDirPath: string;
@@ -65,6 +77,7 @@ export interface SnapshotGenerator {
   finishCaptureSnapshotBatch?: FinishCaptureSnapshotBatch;
   finishExtractSnapshotSummaryDataBatch?: FinishExtractSnapshotSummaryDataBatch;
   generateSnapshotFilePath?: GenerateSnapshotFilePath;
+  massCaptureSnapshots?: MassCaptureSnapshots;
   name: string;
   obtainSnapshotTimes: ObtainSnapshotTimes;
   role: "local" | "thirdParty";

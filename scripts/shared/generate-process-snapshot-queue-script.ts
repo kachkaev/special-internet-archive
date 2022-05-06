@@ -14,7 +14,7 @@ import { PreviousFailuresInSnapshotQueue } from "../../shared/snapshot-generator
 import {
   generateSnapshotQueueDocumentPath,
   readSnapshotQueueDocument,
-  reportSnapshotQueueAttempt,
+  reportSnapshotQueueAttempts,
 } from "../../shared/snapshot-queues";
 import { serializeTime } from "../../shared/time";
 import { processWebPages } from "../../shared/web-page-documents";
@@ -80,10 +80,53 @@ export const generateProcessSnapshotQueueScript =
       chalk.green(`Queue items to process: ${itemsToProcess.length}\n`),
     );
 
+    if (itemsToProcess.length === 0) {
+      return;
+    }
+
     const orderedItemsToProcess = _.orderBy(
       itemsToProcess,
       (item) => item.attempts?.at(-1)?.startedAt,
     );
+
+    if (snapshotGenerator.massCaptureSnapshots) {
+      output.write(chalk.green(`Attempting to mass-capture all snapshots... `));
+      const attemptStartedAt = serializeTime();
+
+      const snapshotQueueItemIds = orderedItemsToProcess.map((item) => item.id);
+
+      await reportSnapshotQueueAttempts({
+        attemptStartedAt,
+        attemptStatus: "started",
+        snapshotGeneratorId,
+        snapshotQueueItemIds,
+      });
+
+      const operationResult = await snapshotGenerator.massCaptureSnapshots({
+        webPagesUrls: orderedItemsToProcess.map((item) => item.webPageUrl),
+      });
+
+      if (operationResult.status !== "skipped") {
+        await reportSnapshotQueueAttempts({
+          attemptMessage: operationResult.message,
+          attemptStartedAt,
+          attemptStatus:
+            operationResult.status === "processed" ? "succeeded" : "failed",
+          snapshotGeneratorId,
+          snapshotQueueItemIds,
+        });
+
+        return;
+      }
+
+      output.write(
+        chalk.gray(
+          `Skipped.${
+            operationResult.message ? ` ${operationResult.message}` : ""
+          }\n`,
+        ),
+      );
+    }
 
     let numberOfAttempts = 0;
     let numberOfSucceededAttempts = 0;
@@ -118,19 +161,19 @@ export const generateProcessSnapshotQueueScript =
         numberOfAttempts += 1;
         const attemptStartedAt = serializeTime();
 
-        await reportSnapshotQueueAttempt({
+        await reportSnapshotQueueAttempts({
           attemptStartedAt,
           attemptStatus: "started",
           snapshotGeneratorId,
-          snapshotQueueItemId: item.id,
+          snapshotQueueItemIds: [item.id],
         });
 
         const abortHandler = () => {
-          void reportSnapshotQueueAttempt({
+          void reportSnapshotQueueAttempts({
             attemptStartedAt,
             attemptStatus: "aborted",
             snapshotGeneratorId,
-            snapshotQueueItemId: item.id,
+            snapshotQueueItemIds: [item.id],
           });
         };
 
@@ -160,13 +203,13 @@ export const generateProcessSnapshotQueueScript =
           return;
         }
 
-        await reportSnapshotQueueAttempt({
+        await reportSnapshotQueueAttempts({
           attemptMessage: operationResult.message,
           attemptStartedAt,
           attemptStatus:
             operationResult.status === "processed" ? "succeeded" : "failed",
           snapshotGeneratorId,
-          snapshotQueueItemId: item.id,
+          snapshotQueueItemIds: [item.id],
         });
 
         if (operationResult.status === "processed") {
