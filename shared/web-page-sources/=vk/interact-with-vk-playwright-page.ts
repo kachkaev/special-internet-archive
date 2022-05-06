@@ -40,8 +40,6 @@ const closeAgeRestrictionModalIfPreset = async ({
 const scrollPosts = async (
   payload: PlaywrightPageInteractionPayload,
 ): Promise<void> => {
-  await closeAgeRestrictionModalIfPreset(payload);
-
   const {
     abortSignal,
     playwrightPage,
@@ -170,6 +168,7 @@ export const interactWithVkPlaywrightPage: InteractWithPlaywrightPage = async (
       .locator("#public_wall,#group_wall,#profile_wall")
       .isVisible()
   ) {
+    await closeAgeRestrictionModalIfPreset(payload);
     await scrollPosts(payload);
 
     return;
