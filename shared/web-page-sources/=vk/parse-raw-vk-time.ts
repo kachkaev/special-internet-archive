@@ -25,7 +25,7 @@ export const parseRawVkTime = (rawTime: string): string => {
     {
       // сегодня в 13:42, вчера в 10:15
       const [, relativeDate, rawHour, rawMinute] =
-        rawTime.match(/^(сегодня|вчера) в (\d+):(\d+)$/) ?? [];
+        rawTime.match(/^(сегодня|вчера)\sв\s(\d+):(\d+)$/) ?? [];
 
       if (relativeDate && rawHour && rawMinute) {
         resultTingDateTime = baseDateTime
@@ -42,7 +42,7 @@ export const parseRawVkTime = (rawTime: string): string => {
     {
       // 10 фев в 0:15
       const [, rawDay, rawMonth, rawHour, rawMinute] =
-        rawTime.match(/^(\d+) (\p{L}{3}) в (\d+):(\d+)$/u) ?? [];
+        rawTime.match(/^(\d+)\s(\p{L}{3})\sв\s(\d+):(\d+)$/u) ?? [];
 
       if (rawDay && rawMonth && rawHour && rawMinute) {
         resultTingDateTime = baseDateTime.set({
@@ -59,7 +59,7 @@ export const parseRawVkTime = (rawTime: string): string => {
     {
       // 10 фев 2020 в 0:15
       const [, rawDay, rawMonth, rawYear, rawHour, rawMinute] =
-        rawTime.match(/^(\d+) (\p{L}{3}) (\d{4}) в (\d+):(\d+)$/u) ?? [];
+        rawTime.match(/^(\d+)\s(\p{L}{3})\s(\d{4})\sв\s(\d+):(\d+)$/u) ?? [];
 
       if (rawDay && rawMonth && rawYear && rawHour && rawMinute) {
         resultTingDateTime = baseDateTime.set({
@@ -77,7 +77,7 @@ export const parseRawVkTime = (rawTime: string): string => {
     {
       // 10 фев 2020
       const [, rawDay, rawMonth, rawYear] =
-        rawTime.match(/^(\d+) (\p{L}{3}) (\d{4})$/u) ?? [];
+        rawTime.match(/^(\d+)\s(\p{L}{3})\s(\d{4})$/u) ?? [];
 
       if (rawDay && rawMonth && rawYear) {
         resultTingDateTime = baseDateTime.set({
