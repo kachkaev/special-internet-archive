@@ -14,26 +14,26 @@ import { UserFriendlyError } from "../../../shared/errors";
 const output = process.stdout;
 
 const script = async () => {
-  output.write(chalk.bold(`Downloading collection catalog\n`));
+  output.write(chalk.bold(`Downloading collection catalog seed file\n`));
 
   const collectionCatalogDirPath = getCollectionCatalogDirPath();
   await fs.ensureDir(collectionCatalogDirPath);
 
   const env = cleanEnv({
-    COLLECTION_CATALOG_SOURCE_URL: envalid.url({
+    COLLECTION_CATALOG_UPSTREAM_SEED_URL: envalid.url({
       example: "https://docs.google.com/spreadsheets/d/[sheet-id]",
     }),
   });
 
-  const sourceUrl = env.COLLECTION_CATALOG_SOURCE_URL;
+  const upstreamSeedUrl = env.COLLECTION_CATALOG_UPSTREAM_SEED_URL;
 
-  const googleSheetId = sourceUrl.match(
+  const googleSheetId = upstreamSeedUrl.match(
     /^https:\/\/docs.google.com\/spreadsheets\/d\/([\w-]+)/i,
   )?.[1];
 
   if (!googleSheetId) {
     throw new UserFriendlyError(
-      `Unable to extract google sheet id from URL "${sourceUrl}"`,
+      `Unable to extract google sheet id from URL "${upstreamSeedUrl}"`,
     );
   }
 

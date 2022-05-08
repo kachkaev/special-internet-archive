@@ -41,7 +41,7 @@ const parseBoolean = (rawValue: string | undefined): boolean => {
 };
 
 const script = async () => {
-  output.write(chalk.bold(`Updating collection catalog from the download\n`));
+  output.write(chalk.bold(`Generating collection catalog seed URL inboxes\n`));
 
   const downloadFilePath = getCollectionCatalogSeedFilePath();
   if (!(await fs.pathExists(downloadFilePath))) {
