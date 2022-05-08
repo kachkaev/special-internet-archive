@@ -11,7 +11,7 @@ import { checkIfWebPageUrlIsAcceptable } from "../../shared/web-page-sources";
 const output = process.stdout;
 
 const script = async () => {
-  output.write(chalk.bold(`Evolve collection\n`));
+  output.write(chalk.bold(`Evolving collection\n`));
 
   const env = cleanEnv({
     FILTER_SNAPSHOT_GENERATOR: envalid.str({
