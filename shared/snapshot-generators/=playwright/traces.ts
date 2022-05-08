@@ -54,8 +54,8 @@ export const ensureTraceViewerServerIsStopped = () => {
 export const openTrace = async (traceFilePath: string): Promise<Page> => {
   await ensureTraceViewerServerIsRunning();
   const page = await traceContext!.newPage();
-  page.setDefaultTimeout(120_000);
-  page.setDefaultNavigationTimeout(120_000);
+  page.setDefaultTimeout(20_000);
+  page.setDefaultNavigationTimeout(20_000);
 
   await page.goto(
     `http://localhost:${traceViewerServerPort}/trace/index.html?trace=${encodeURIComponent(
