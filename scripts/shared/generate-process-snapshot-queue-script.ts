@@ -116,6 +116,14 @@ export const generateProcessSnapshotQueueScript =
           snapshotQueueItemIds,
         });
 
+        output.write(
+          (operationResult.status === "processed" ? chalk.magenta : chalk.red)(
+            `Done${
+              operationResult.message ? `. ${operationResult.message}` : ""
+            }`,
+          ),
+        );
+
         return;
       }
 
