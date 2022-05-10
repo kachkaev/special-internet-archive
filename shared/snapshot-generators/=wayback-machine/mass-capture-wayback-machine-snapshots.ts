@@ -10,10 +10,21 @@ type Response =
   | { error: string }
   | { digest: string; project: string; submitter: string; uuid: string };
 
+// Wayback machine updates indexes faster if Isodos API is not used.
+// So it’s best to not mass-capture small numbers of snapshots.
+const minNumberOfUrls = 20;
+
 export const massCaptureWaybackMachineSnapshots: MassCaptureSnapshots = async ({
   abortSignal,
   webPagesUrls,
 }) => {
+  if (webPagesUrls.length < minNumberOfUrls) {
+    return {
+      status: "skipped",
+      message: `Number of snapshots is less than ${minNumberOfUrls}`,
+    };
+  }
+
   const env = cleanEnv({
     INTERNET_ARCHIVE_S3_ACCESS_KEY: envalid.str({ default: "" }),
     INTERNET_ARCHIVE_S3_SECRET_KEY: envalid.str({ default: "" }),
