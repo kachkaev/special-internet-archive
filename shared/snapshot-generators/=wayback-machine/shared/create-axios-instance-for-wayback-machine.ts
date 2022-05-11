@@ -7,6 +7,7 @@ export const createAxiosInstanceForWaybackMachine = (): AxiosInstance => {
   const axiosInstance = axios.create({
     httpAgent: new http.Agent({ keepAlive: true }),
     httpsAgent: new https.Agent({ keepAlive: true }),
+    timeout: 10_000,
   });
 
   axiosRetry(axiosInstance, {

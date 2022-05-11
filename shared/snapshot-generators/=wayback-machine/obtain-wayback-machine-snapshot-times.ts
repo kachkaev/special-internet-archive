@@ -62,7 +62,6 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
           silentJSONParsing: false, // Disables Object to string conversion if parsing fails
         },
         params: { url, output: "json" },
-        timeout: 5000,
         ...(abortSignal ? { signal: abortSignal } : {}),
       },
     );
@@ -108,7 +107,6 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
               silentJSONParsing: false, // Disables Object to string conversion if parsing fails
             },
             params: { url, date: `${year}` },
-            timeout: 5000,
             ...(abortSignal ? { signal: abortSignal } : {}),
           },
         );
