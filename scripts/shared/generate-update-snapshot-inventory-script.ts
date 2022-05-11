@@ -193,7 +193,9 @@ export const generateUpdateInventoryScript =
 
         if (!eager) {
           const webPageSnapshotQueueItems = existingSnapshotQueueItems.filter(
-            (item) => item.webPageUrl === webPageDocument.webPageUrl,
+            (item) =>
+              item.webPageUrl === webPageDocument.webPageUrl &&
+              !item.attempts?.some((attempt) => attempt.status === "succeeded"),
           );
 
           const knownSnapshotTimesInAscOrder = listKnownSnapshotTimesInAscOrder(
