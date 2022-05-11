@@ -75,23 +75,26 @@ const reportSkippedFetching = ({
 }) => {
   output.write(
     chalk.gray(
-      `skipped (${reason}); snapshot count: ${calculateSnapshotCount(
+      `snapshot count: ${calculateSnapshotCount(
         existingSnapshotInventory.items,
-      )}`,
+      )} - ${reason}`,
     ),
   );
 
   for (const aliasUrl of aliasUrls) {
-    output.write(
-      chalk.gray(
-        `\n${progressPrefix}alias ${chalk.underline(
-          aliasUrl,
-        )} snapshot count: ${calculateSnapshotCount(
-          existingSnapshotInventory.items,
-          aliasUrl,
-        )}`,
-      ),
+    const aliasSnapshotCount = calculateSnapshotCount(
+      existingSnapshotInventory.items,
+      aliasUrl,
     );
+    if (aliasSnapshotCount) {
+      output.write(
+        chalk.gray(
+          `\n${progressPrefix}alias ${chalk.underline(
+            aliasUrl,
+          )} snapshot count: ${aliasSnapshotCount}`,
+        ),
+      );
+    }
   }
 };
 
@@ -252,15 +255,17 @@ export const generateUpdateInventoryScript =
             if (snapshotInventoryItemsForAlias?.length) {
               snapshotInventoryItems.push(...snapshotInventoryItemsForAlias);
             }
-            output.write(
-              chalk.gray(
-                `\n${progressPrefix}alias ${chalk.underline(
-                  aliasUrl,
-                )} skipped; snapshot count: ${
-                  snapshotInventoryItemsForAlias?.length ?? 0
-                }`,
-              ),
-            );
+            const aliasSnapshotCount =
+              snapshotInventoryItemsForAlias?.length ?? 0;
+            if (aliasSnapshotCount) {
+              output.write(
+                chalk.gray(
+                  `\n${progressPrefix}alias ${chalk.underline(
+                    aliasUrl,
+                  )} snapshot count: ${aliasSnapshotCount} - skipped`,
+                ),
+              );
+            }
           } else {
             output.write(
               `\n${progressPrefix}alias ${chalk.underline(aliasUrl)} `,
