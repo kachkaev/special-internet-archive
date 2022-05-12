@@ -28,7 +28,7 @@ export const syncCollectionIfNeeded = async ({
       default: true,
     }),
     AUTO_SYNC_COLLECTION_INTERVAL_IN_MINUTES: envalid.num({
-      default: 10,
+      default: 5,
     }),
   });
 
