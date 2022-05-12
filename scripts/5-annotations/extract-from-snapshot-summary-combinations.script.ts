@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import _ from "lodash";
 
+import { syncCollectionIfNeeded } from "../../shared/collection-syncing";
 import {
   checkIfSnapshotSummaryCombinationDocumentExists,
   readSnapshotSummaryCombinationDocument,
@@ -63,6 +64,11 @@ const script = async () => {
       ),
     );
   }
+
+  await syncCollectionIfNeeded({
+    output,
+    message: `Extract annotations from snapshot summary combinations`,
+  });
 };
 
 await script();

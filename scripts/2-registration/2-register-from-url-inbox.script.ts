@@ -2,6 +2,7 @@ import chalk from "chalk";
 import _ from "lodash";
 
 import { getUrlInboxFilePath, readUrlInboxRows } from "../../shared/collection";
+import { syncCollectionIfNeeded } from "../../shared/collection-syncing";
 import {
   generateWebPageDirPathLookup,
   registerWebPage,
@@ -79,6 +80,11 @@ const script = async () => {
   } else {
     output.write("Done.\n");
   }
+
+  await syncCollectionIfNeeded({
+    output,
+    message: `Register web pages from URL inbox`,
+  });
 };
 
 await script();

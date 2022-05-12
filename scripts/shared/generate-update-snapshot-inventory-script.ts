@@ -7,6 +7,7 @@ import sortKeys from "sort-keys";
 
 import { cleanEnv } from "../../shared/clean-env";
 import { relevantTimeMin } from "../../shared/collection";
+import { syncCollectionIfNeeded } from "../../shared/collection-syncing";
 import { UserFriendlyError } from "../../shared/errors";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
 import { getSnapshotGenerator } from "../../shared/snapshot-generators";
@@ -323,14 +324,25 @@ export const generateUpdateInventoryScript =
         if (!_.isEqual(webPageDocument, updatedWebPageDocument)) {
           await writeWebPageDocument(webPageDirPath, updatedWebPageDocument);
         }
+
+        await syncCollectionIfNeeded({
+          output,
+          mode: "intermediate",
+          message: `Update inventory (${snapshotGenerator.name}, intermediate)`,
+        });
       },
     });
 
     if (!updateAliases && (thereWasAtLeastOneAlias as boolean)) {
       output.write(
         chalk.blue(
-          "Updating web page aliases is skipped by default to speed up the process. Use UPDATE_ALIASES=true to override that. You may also want to set EAGER=true to include web pages for which snapshots are not due yet.\n",
+          "Updating web page aliases is skipped by default to speed up the process. Use UPDATE_ALIASES=true to override that. You may also want to set EAGER=true to include web pages for which snapshots are not due yet\n",
         ),
       );
     }
+
+    await syncCollectionIfNeeded({
+      output,
+      message: `Update inventory (${snapshotGenerator.name})`,
+    });
   };

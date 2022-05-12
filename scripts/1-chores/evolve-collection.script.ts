@@ -48,7 +48,6 @@ const script = async () => {
         { scriptFilePath: "scripts/4-snapshot-summaries/extract-summary-combinations.script.ts" },
         { scriptFilePath: "scripts/5-annotations/extract-from-snapshot-summary-combinations.script.ts" },
 
-        { scriptFilePath: "scripts/6-results/commit-and-push-changes.script.ts" },
         { scriptFilePath: "scripts/6-results/auto-populate-url-inbox.script.ts" },
 
         { scriptFilePath: "scripts/2-registration/1-ensure-url-inbox-exists.script.ts" },
@@ -61,8 +60,6 @@ const script = async () => {
         { scriptFilePath: "scripts/3-snapshots/wayback-machine/2-compose-queue.script.ts" },
         { scriptFilePath: "scripts/3-snapshots/wayback-machine/3-process-queue.script.ts" },
       ] : []),
-
-      { scriptFilePath: "scripts/6-results/commit-and-push-changes.script.ts" },
     ],
       output,
     });
