@@ -9,8 +9,10 @@ export class AbortError extends Error {
 }
 
 export class EarlyExitError extends Error {
-  constructor() {
+  readonly exitCode: number;
+  constructor(exitCode = 1) {
     super();
+    this.exitCode = exitCode;
   }
 }
 

@@ -4,10 +4,11 @@ import fs from "fs-extra";
 import { DateTime } from "luxon";
 import { WriteStream } from "node:tty";
 
-import { AbortError } from "./errors";
+import { AbortError, EarlyExitError } from "./errors";
 
 export interface ScriptSequenceItem {
   scriptFilePath: string;
+  continueOnError?: boolean;
 }
 
 export const runScriptSequence = async ({
@@ -25,9 +26,9 @@ export const runScriptSequence = async ({
     }
   }
 
-  const outputLocalTime = () => {
+  const outputLocalTime = (color = chalk.blue) => {
     output.write(
-      chalk.blue(
+      color(
         chalk.inverse(`Local time ${DateTime.local().toFormat("HH:mm:ss")}\n`),
       ),
     );
@@ -42,6 +43,21 @@ export const runScriptSequence = async ({
   };
   process.on("SIGINT", handleSigint);
 
+  const finalizeSequence = (color = chalk.blue) => {
+    process.off("SIGINT", handleSigint);
+
+    output.write(
+      color(
+        chalk.inverse(
+          `All scripts took ${DateTime.local()
+            .diff(dateTimeAtSequenceLaunch)
+            .toFormat("hh:mm:ss")}\n`,
+        ),
+      ),
+    );
+    outputLocalTime(color);
+  };
+
   for (const item of items) {
     outputLocalTime();
 
@@ -50,33 +66,38 @@ export const runScriptSequence = async ({
     output.write(chalk.inverse(`yarn exe ${item.scriptFilePath}\n\n`));
 
     // Using sub-process is slower, but more robust. It also allows to import scripts multiple times.
-    await execa("yarn", ["exe", item.scriptFilePath], { stdio: "inherit" });
-
-    output.write(
-      chalk.blue(
-        chalk.inverse(
-          `\nScript took ${DateTime.local()
-            .diff(dateTimeAtScriptLaunch)
-            .toFormat("hh:mm:ss")}\n`,
-        ),
-      ),
-    );
+    const { exitCode } = await execa("yarn", ["exe", item.scriptFilePath], {
+      stdio: "inherit",
+      reject: false,
+      signal: abortController.signal,
+    });
 
     if (abortController.signal.aborted) {
       throw new AbortError();
     }
+
+    const scriptDuration = DateTime.local()
+      .diff(dateTimeAtScriptLaunch)
+      .toFormat("hh:mm:ss");
+
+    if (exitCode) {
+      output.write(
+        chalk.red(
+          chalk.inverse(
+            `\nScript failed with exit code ${exitCode} after ${scriptDuration}\n`,
+          ),
+        ),
+      );
+      if (!item.continueOnError) {
+        finalizeSequence(chalk.red);
+        throw new EarlyExitError(exitCode);
+      }
+    } else {
+      output.write(
+        chalk.blue(chalk.inverse(`\nScript took ${scriptDuration}\n`)),
+      );
+    }
   }
 
-  process.off("SIGINT", handleSigint);
-
-  output.write(
-    chalk.blue(
-      chalk.inverse(
-        `All scripts took ${DateTime.local()
-          .diff(dateTimeAtSequenceLaunch)
-          .toFormat("hh:mm:ss")}\n`,
-      ),
-    ),
-  );
-  outputLocalTime();
+  finalizeSequence();
 };
