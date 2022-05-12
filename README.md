@@ -656,38 +656,12 @@ git push
 yarn exe scripts/1-chores/evolve-collection.script.ts
 ```
 
-Смысл скомбинированного скрипта — запустить все эти команды:
+Смысл скомбинированного скрипта — запустить все необходимые команды в нужном порядке.
 
-```sh
-yarn exe scripts/2-registration/1-ensure-url-inbox-exists.script.ts
-yarn exe scripts/2-registration/2-register-from-url-inbox.script.ts
-yarn exe scripts/2-registration/3-clean-up-url-inbox.script.ts
-
-yarn exe scripts/3-snapshots/wayback-machine/1-update-inventory.script.ts
-yarn exe scripts/3-snapshots/wayback-machine/2-compose-queue.script.ts
-yarn exe scripts/3-snapshots/wayback-machine/3-process-queue.script.ts
-
-yarn exe scripts/3-snapshots/playwright/1-update-inventory.script.ts
-yarn exe scripts/3-snapshots/playwright/2-compose-queue.script.ts
-yarn exe scripts/3-snapshots/playwright/3-process-queue.script.ts
-
-## 🚧 секция пока не готова, но это не препятствует сбору данных
-# yarn exe scripts/4-snapshot-summaries/wayback-machine/1-update-inventory.script.ts
-# yarn exe scripts/4-snapshot-summaries/wayback-machine/2-extract-summaries.script.ts
-
-yarn exe scripts/4-snapshot-summaries/playwright/1-update-inventory.script.ts
-yarn exe scripts/4-snapshot-summaries/playwright/2-extract-summaries.script.ts
-
-yarn exe scripts/4-snapshot-summaries/extract-summary-combinations.script.ts
-
-yarn exe scripts/5-annotations/extract-from-snapshot-summary-combinations.script.ts
-
-yarn exe scripts/6-results/commit-and-push-changes.script.ts
-yarn exe scripts/6-results/auto-populate-url-inbox.script.ts
-```
-
+<!--
 Если на последнем шаге в файле `⏳ [collection-dir-path]/url-inbox.txt` появляются новые ссылки, процесса сбора и обработки данных повторяется.
 Автоповтор можно отключить переменной окружения `COLLECTION_EVOLVEMENT_MODE=once`.
+-->
 
 Скомбинированный скрипт подойдет как для обновления, так и для первичного наполнения коллекций архива.
 Если коллекция новая, киньте несколько ссылок в файл `⏳ [collection-dir-path]/url-inbox.txt` перед тем, как запускать скрипт.
