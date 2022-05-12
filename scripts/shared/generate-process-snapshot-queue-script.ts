@@ -275,4 +275,11 @@ export const generateProcessSnapshotQueueScript =
         `\nDone. Attempts: ${numberOfAttempts} (${numberOfSucceededAttempts} succeeded, ${numberOfFailedAttempts} failed)\n`,
       );
     }
+
+    if (snapshotGenerator.role === "local") {
+      await syncCollectionIfNeeded({
+        output,
+        message: `Process snapshot queue (${snapshotGenerator.name})`,
+      });
+    }
   };
