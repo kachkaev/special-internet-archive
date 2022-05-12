@@ -6,6 +6,7 @@ import RegexParser from "regex-parser";
 
 import { cleanEnv } from "../../shared/clean-env";
 import { relevantTimeMin } from "../../shared/collection";
+import { syncCollectionIfNeeded } from "../../shared/collection-syncing";
 import { AbortError } from "../../shared/errors";
 import { generateProgress } from "../../shared/generate-progress";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
@@ -242,6 +243,14 @@ export const generateProcessSnapshotQueueScript =
             ),
           );
           numberOfFailedAttempts += 1;
+        }
+
+        if (snapshotGenerator.role === "local") {
+          await syncCollectionIfNeeded({
+            output,
+            mode: "intermediate",
+            message: `Process snapshot queue (${snapshotGenerator.name}, intermediate)`,
+          });
         }
 
         abortController.signal.removeEventListener("abort", abortHandler);
