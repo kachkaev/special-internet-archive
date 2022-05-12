@@ -8,7 +8,7 @@ import { WriteStream } from "node:tty";
 
 import { cleanEnv } from "./clean-env";
 import { getCollectionDirPath } from "./collection";
-import { UserFriendlyError } from "./errors";
+import { EarlyExitError, UserFriendlyError } from "./errors";
 
 type SyncMode = "auto" | "forced" | "intermediate";
 
@@ -58,9 +58,9 @@ export const syncCollectionIfNeeded = async ({
 
   const collectionDirPath = getCollectionDirPath();
 
-  const collectionIsGitRepo = !(await fs.pathExists(
+  const collectionIsGitRepo = await fs.pathExists(
     path.resolve(collectionDirPath, ".git"),
-  ));
+  );
 
   if (!collectionIsGitRepo) {
     if (mode === "forced") {
@@ -68,7 +68,7 @@ export const syncCollectionIfNeeded = async ({
         `Collection ${collectionDirPath} is not a git repository.`,
       );
     } else {
-      if (mode === "intermediate") {
+      if (mode === "auto") {
         output.write(
           chalk.yellow(
             `Collection syncing is skipped because ${collectionDirPath} is not a git repository. Your data is at risk because it is not backed up\n`,
@@ -104,5 +104,12 @@ export const syncCollectionIfNeeded = async ({
     await execa("git", ["commit", "--message", message], execaOptions);
   }
 
-  await execa("git", ["push"], { ...execaOptions, reject: false });
+  const { exitCode } = await execa("git", ["push"], {
+    ...execaOptions,
+    reject: false,
+  });
+
+  if (exitCode && mode === "forced") {
+    throw new EarlyExitError(exitCode);
+  }
 };
