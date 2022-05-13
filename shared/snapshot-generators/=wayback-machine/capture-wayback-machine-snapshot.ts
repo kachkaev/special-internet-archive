@@ -40,8 +40,11 @@ const mapRetryCountToDelay = (retryCount: number): number => {
   );
 };
 
-const apiLimitsReachedMessage =
+const personalApiLimitsReachedMessage =
   "API limits reached. Try using another internet connection or continue tomorrow";
+
+const hostLimitsReachedMessage =
+  "Wayback Machine servers stopped crawling this host for today. Try again tomorrow";
 
 /**
  * Inspired by https://github.com/tgbot-collection/archiver/blob/e5996b5944fa33244a75dce883b5c80e9e92d50e/archiveOrg.go#L30-L38
@@ -54,14 +57,20 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
 }) => {
   const webPageUrlObject = new URL(webPageUrl);
 
-  if (
-    previousFailuresInSnapshotQueue.some(
+  const previousFailureMessage = previousFailuresInSnapshotQueue
+    .filter(
       (failure) =>
-        failure.message === apiLimitsReachedMessage &&
         webPageUrlObject.hostname === new URL(failure.webPageUrl).hostname,
     )
-  ) {
-    return { status: "skipped", message: apiLimitsReachedMessage };
+    .map((failure) => failure.message)
+    .find(
+      (failureMessage) =>
+        failureMessage === personalApiLimitsReachedMessage ||
+        failureMessage === hostLimitsReachedMessage,
+    );
+
+  if (previousFailureMessage) {
+    return { status: "skipped", message: previousFailureMessage };
   }
 
   const formData = new URLSearchParams({
@@ -103,7 +112,17 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
       if (html.includes("by this user account")) {
         return {
           status: "failed",
-          message: apiLimitsReachedMessage,
+          message: personalApiLimitsReachedMessage,
+        };
+      }
+
+      // This host has been already captured N00,000.0 times today. Please
+      // try again tomorrow. Please email us at "info@archive.org" if you
+      // would like to discuss this more.
+      if (html.includes("Please try again tomorrow")) {
+        return {
+          status: "failed",
+          message: hostLimitsReachedMessage,
         };
       }
 
