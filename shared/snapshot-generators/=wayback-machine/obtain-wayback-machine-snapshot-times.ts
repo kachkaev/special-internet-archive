@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 
 import { cleanEnv } from "../../clean-env";
 import { relevantTimeMin } from "../../collection";
-import { serializeTime } from "../../time";
+import { serializeTime, unserializeTime } from "../../time";
 import { ObtainSnapshotTimes } from "../types";
 import { createAxiosInstanceForWaybackMachine } from "./shared/create-axios-instance-for-wayback-machine";
 
@@ -93,7 +93,7 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
       result.push(serializedTime);
     }
   } else {
-    const yearMin = DateTime.fromISO(relevantTimeMin, { setZone: true }).year;
+    const yearMin = unserializeTime(relevantTimeMin).year;
     const yearMax = DateTime.utc().year;
 
     for (let year = yearMin; year <= yearMax; year += 1) {

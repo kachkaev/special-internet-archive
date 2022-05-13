@@ -1,6 +1,6 @@
-import { DateTime } from "luxon";
 import path from "node:path";
 
+import { unserializeTime } from "../../time";
 import { GenerateSnapshotFilePath } from "../types";
 
 export const generatePlaywrightSnapshotFilePath: GenerateSnapshotFilePath = ({
@@ -12,10 +12,8 @@ export const generatePlaywrightSnapshotFilePath: GenerateSnapshotFilePath = ({
     throw new Error(`Did not expect aliasUrl to be defined (${aliasUrl})`);
   }
 
-  const serializedCapturedAt = DateTime.fromISO(capturedAt, {
-    zone: "utc",
-    setZone: true,
-  }).toFormat("yyyy-MM-dd-HHmmss");
+  const serializedCapturedAt =
+    unserializeTime(capturedAt).toFormat("yyyy-MM-dd-HHmmss");
 
   const result = path.resolve(
     webPageDirPath,
