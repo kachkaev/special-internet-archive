@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call */
+import getPort from "get-port";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { BrowserContext, chromium, Page } from "playwright";
@@ -6,7 +7,7 @@ import sleep from "sleep-promise";
 
 // Context: https://github.com/microsoft/playwright/issues/9883
 
-const traceViewerServerPort = 42_424;
+const traceViewerServerPort = await getPort({ port: 42_424 });
 
 let traceViewerStarted = false;
 let traceViewerContext: BrowserContext | undefined;

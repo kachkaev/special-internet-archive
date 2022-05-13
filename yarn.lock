@@ -3326,6 +3326,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"get-port@npm:^6.1.2":
+  version: 6.1.2
+  resolution: "get-port@npm:6.1.2"
+  checksum: e3c3d591492a11393455ef220f24c812a28f7da56ec3e4a2512d931a1f196d42850b50ac6138349a44622eda6dc3c0ccd8495cd91376d968e2d9e6f6f849e0a9
+  languageName: node
+  linkType: hard
+
 "get-stdin@npm:~9.0.0":
   version: 9.0.0
   resolution: "get-stdin@npm:9.0.0"
@@ -6335,6 +6342,7 @@ __metadata:
     eslint: ^8.15.0
     execa: ^6.1.0
     fs-extra: ^10.1.0
+    get-port: ^6.1.2
     globby: ^13.1.1
     husky: ^7.0.4
     jest: ^28.1.0
