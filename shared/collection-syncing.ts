@@ -98,6 +98,8 @@ export const syncCollectionIfNeeded = async ({
         ),
       );
     }
+
+    return;
   } else {
     await execa("git", ["add", "--all"], execaOptions);
 
