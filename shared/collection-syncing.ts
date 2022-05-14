@@ -45,7 +45,7 @@ export const syncCollectionIfNeeded = async ({
       return;
     }
 
-    if (lastSyncDateTime.diff(now).as("milliseconds") < autoSyncInterval) {
+    if (now.diff(lastSyncDateTime).as("milliseconds") < autoSyncInterval) {
       return;
     }
   }
