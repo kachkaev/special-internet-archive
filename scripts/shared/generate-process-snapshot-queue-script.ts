@@ -10,7 +10,11 @@ import {
   checkIfCollectionHasUncommittedChanges,
   syncCollectionIfNeeded,
 } from "../../shared/collection-syncing";
-import { AbortError, ExitCodeError } from "../../shared/errors";
+import {
+  AbortError,
+  ExitCodeError,
+  UserFriendlyError,
+} from "../../shared/errors";
 import { generateProgress } from "../../shared/generate-progress";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
 import {
@@ -62,12 +66,26 @@ export const generateProcessSnapshotQueueScript =
     assertSnapshotGeneratorMatchesFilter({ output, snapshotGeneratorId });
 
     const env = cleanEnv({
+      MAX_NUMBER_OF_FAILED_ATTEMPTS: envalid.num({
+        default: 100,
+        desc: "Queue processing is terminated after this number of failures",
+      }),
       FILTER_URL: envalid.str({
-        desc: "Regex to filter web page URLs",
         default: ".*",
+        desc: "Regex to filter web page URLs",
       }),
     });
+    const maxNumberOfFailedAttempts = env.MAX_NUMBER_OF_FAILED_ATTEMPTS;
     const filterUrlRegex = RegexParser(env.FILTER_URL);
+
+    if (
+      maxNumberOfFailedAttempts < 0 ||
+      Math.round(maxNumberOfFailedAttempts) !== maxNumberOfFailedAttempts
+    ) {
+      throw new UserFriendlyError(
+        "Expected MAX_NUMBER_OF_FAILED_ATTEMPTS to be a non-negative integer number",
+      );
+    }
 
     const webPageDirPathByUrl: Record<string, string> =
       await generateWebPageDirPathByUrl();
@@ -254,6 +272,12 @@ export const generateProcessSnapshotQueueScript =
             ),
           );
           numberOfFailedAttempts += 1;
+          if (
+            maxNumberOfFailedAttempts &&
+            numberOfFailedAttempts === maxNumberOfFailedAttempts
+          ) {
+            break;
+          }
         }
 
         if (snapshotGenerator.role === "local") {
@@ -291,6 +315,16 @@ export const generateProcessSnapshotQueueScript =
       output.write(
         `\nDone. Attempts: ${numberOfAttempts} (${numberOfSucceededAttempts} succeeded, ${numberOfFailedAttempts} failed)\n`,
       );
+      if (
+        maxNumberOfFailedAttempts &&
+        maxNumberOfFailedAttempts === numberOfFailedAttempts
+      ) {
+        output.write(
+          chalk.red(
+            `Processing stopped after reaching MAX_NUMBER_OF_FAILED_ATTEMPTS\n`,
+          ),
+        );
+      }
     }
 
     if (snapshotGenerator.role === "local") {
