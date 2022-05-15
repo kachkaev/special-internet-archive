@@ -32,20 +32,20 @@ export const assertSnapshotGeneratorMatchesFilter = ({
   snapshotGeneratorId: SnapshotGeneratorId;
 }) => {
   const env = cleanEnv({
-    FILTER_SNAPSHOT_GENERATOR: envalid.str({
+    FILTER_SNAPSHOT_GENERATOR_ID: envalid.str({
       desc: "Regex to use when filtering snapshot generators",
       default: ".*",
     }),
   });
 
-  const filterSnapshotGeneratorRegex = RegexParser(
-    env.FILTER_SNAPSHOT_GENERATOR,
+  const filterSnapshotGeneratorIdRegex = RegexParser(
+    env.FILTER_SNAPSHOT_GENERATOR_ID,
   );
 
-  if (!filterSnapshotGeneratorRegex.test(snapshotGeneratorId)) {
+  if (!filterSnapshotGeneratorIdRegex.test(snapshotGeneratorId)) {
     output.write(
       chalk.gray(
-        `Skipped because of FILTER_SNAPSHOT_GENERATOR=${env.FILTER_SNAPSHOT_GENERATOR}\n`,
+        `Skipped because of FILTER_SNAPSHOT_GENERATOR_ID=${env.FILTER_SNAPSHOT_GENERATOR_ID}\n`,
       ),
     );
     throw new EarlyExitError(0);
