@@ -28,7 +28,7 @@ export const syncCollectionIfNeeded = async ({
       default: true,
     }),
     AUTO_SYNC_COLLECTION_INTERVAL_IN_MINUTES: envalid.num({
-      default: 5,
+      default: 10,
     }),
   });
 
@@ -48,6 +48,8 @@ export const syncCollectionIfNeeded = async ({
     if (now.diff(lastSyncDateTime).as("milliseconds") < autoSyncInterval) {
       return;
     }
+
+    output.write("\n");
   }
 
   if (mode !== "forced" && !autoSync) {
