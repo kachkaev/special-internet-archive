@@ -12,7 +12,7 @@ const output = process.stdout;
 const script = async () => {
   const env = cleanEnv({
     FILTER_COLLECTION_ID: envalid.str({
-      desc: "Regex to use when collection ids",
+      desc: "Regex to filter collections",
       default: ".*",
     }),
     OUTPUT_FORMAT: envalid.str({

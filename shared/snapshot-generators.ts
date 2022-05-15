@@ -33,7 +33,7 @@ export const assertSnapshotGeneratorMatchesFilter = ({
 }) => {
   const env = cleanEnv({
     FILTER_SNAPSHOT_GENERATOR_ID: envalid.str({
-      desc: "Regex to use when filtering snapshot generators",
+      desc: "Regex to filter snapshot generator by its id",
       default: ".*",
     }),
   });
