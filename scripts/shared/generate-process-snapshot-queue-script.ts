@@ -63,7 +63,7 @@ export const generateProcessSnapshotQueueScript =
 
     const env = cleanEnv({
       FILTER_URL: envalid.str({
-        desc: "Regex to use when filtering URLs",
+        desc: "Regex to filter web page URLs",
         default: ".*",
       }),
     });

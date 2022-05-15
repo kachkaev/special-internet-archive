@@ -130,7 +130,7 @@ export const generateUpdateInventoryScript =
       ),
     );
 
-    let repeatIntervalInMinutes = 0;
+    let inventoryDurabilityInMinutes = 0;
     let eager = true;
     let updateAliases = true;
 
@@ -141,9 +141,9 @@ export const generateUpdateInventoryScript =
         EAGER: envalid.bool({
           default: false,
         }),
-        REPEAT_INTERVAL_IN_MINUTES: envalid.num({
+        INVENTORY_DURABILITY_IN_MINUTES: envalid.num({
           default: 60,
-          desc: "How frequently to update snapshot inventory",
+          desc: "Inventory durability in minutes",
         }),
         UPDATE_ALIASES: envalid.bool({
           default: false,
@@ -151,12 +151,15 @@ export const generateUpdateInventoryScript =
       });
 
       eager = env.EAGER;
-      repeatIntervalInMinutes = env.REPEAT_INTERVAL_IN_MINUTES;
+      inventoryDurabilityInMinutes = env.INVENTORY_DURABILITY_IN_MINUTES;
       updateAliases = env.UPDATE_ALIASES;
 
-      if (Math.round(repeatIntervalInMinutes) !== repeatIntervalInMinutes) {
+      if (
+        Math.round(inventoryDurabilityInMinutes) !==
+        inventoryDurabilityInMinutes
+      ) {
         throw new UserFriendlyError(
-          "Expected REPEAT_INTERVAL_IN_MINUTES to be a non-negative integer number",
+          "Expected INVENTORY_DURABILITY_IN_MINUTES to be a non-negative integer number",
         );
       }
     }
@@ -187,7 +190,7 @@ export const generateUpdateInventoryScript =
 
         if (existingSnapshotInventory) {
           const minSerializedTimeToRefetch = serializeTime(
-            DateTime.utc().minus({ minutes: repeatIntervalInMinutes }),
+            DateTime.utc().minus({ minutes: inventoryDurabilityInMinutes }),
           );
           if (
             existingSnapshotInventory.updatedAt > minSerializedTimeToRefetch
@@ -197,7 +200,7 @@ export const generateUpdateInventoryScript =
               existingSnapshotInventory,
               output,
               progressPrefix,
-              reason: `updated less than ${repeatIntervalInMinutes} min ago`,
+              reason: `updated less than ${inventoryDurabilityInMinutes} min ago`,
             });
 
             return;
