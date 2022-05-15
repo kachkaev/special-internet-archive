@@ -26,14 +26,14 @@ export const massCaptureWaybackMachineSnapshots: MassCaptureSnapshots = async ({
   }
 
   const env = cleanEnv({
+    INTERNET_ARCHIVE_ISODOS_PROJECT: envalid.str({ default: "" }),
     INTERNET_ARCHIVE_S3_ACCESS_KEY: envalid.str({ default: "" }),
     INTERNET_ARCHIVE_S3_SECRET_KEY: envalid.str({ default: "" }),
-    INTERNET_ARCHIVE_ISODOS_PROJECT: envalid.str({ default: "" }),
   });
 
+  const isodosProject = env.INTERNET_ARCHIVE_ISODOS_PROJECT;
   const s3AccessKey = env.INTERNET_ARCHIVE_S3_ACCESS_KEY;
   const s3SecretKey = env.INTERNET_ARCHIVE_S3_SECRET_KEY;
-  const isodosProject = env.INTERNET_ARCHIVE_ISODOS_PROJECT;
 
   if (!s3AccessKey || !s3SecretKey || !isodosProject) {
     return {
