@@ -142,7 +142,7 @@ export const generateUpdateInventoryScript =
           default: false,
         }),
         REPEAT_INTERVAL_IN_MINUTES: envalid.num({
-          default: 5,
+          default: 60,
           desc: "How frequently to update snapshot inventory",
         }),
         UPDATE_ALIASES: envalid.bool({
