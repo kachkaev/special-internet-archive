@@ -142,7 +142,7 @@ export const generateUpdateInventoryScript =
           default: false,
         }),
         INVENTORY_DURABILITY_IN_MINUTES: envalid.num({
-          default: 60,
+          default: 1200, // 20 hours
           desc: "Inventory durability in minutes",
         }),
         UPDATE_ALIASES: envalid.bool({
@@ -155,8 +155,9 @@ export const generateUpdateInventoryScript =
       updateAliases = env.UPDATE_ALIASES;
 
       if (
+        inventoryDurabilityInMinutes < 0 ||
         Math.round(inventoryDurabilityInMinutes) !==
-        inventoryDurabilityInMinutes
+          inventoryDurabilityInMinutes
       ) {
         throw new UserFriendlyError(
           "Expected INVENTORY_DURABILITY_IN_MINUTES to be a non-negative integer number",
