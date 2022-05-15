@@ -7,7 +7,10 @@ import { WriteStream } from "node:tty";
 
 import { cleanEnv } from "../../shared/clean-env";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
-import { getSnapshotGenerator } from "../../shared/snapshot-generators";
+import {
+  assertSnapshotGeneratorMatchesFilter,
+  getSnapshotGenerator,
+} from "../../shared/snapshot-generators";
 import {
   generateSnapshotQueueDocumentPath,
   listKnownSnapshotTimesInAscOrder,
@@ -36,6 +39,8 @@ export const generateComposeSnapshotQueueScript =
     output.write(
       chalk.bold(`Composing ${snapshotGenerator.name} snapshot queue\n`),
     );
+
+    assertSnapshotGeneratorMatchesFilter({ output, snapshotGeneratorId });
 
     const env = cleanEnv({
       FORCE: envalid.bool({

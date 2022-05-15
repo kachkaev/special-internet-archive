@@ -10,7 +10,10 @@ import { syncCollectionIfNeeded } from "../../shared/collection-syncing";
 import { AbortError } from "../../shared/errors";
 import { generateProgress } from "../../shared/generate-progress";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
-import { getSnapshotGenerator } from "../../shared/snapshot-generators";
+import {
+  assertSnapshotGeneratorMatchesFilter,
+  getSnapshotGenerator,
+} from "../../shared/snapshot-generators";
 import { PreviousFailuresInSnapshotQueue } from "../../shared/snapshot-generators/types";
 import {
   generateSnapshotQueueDocumentPath,
@@ -49,6 +52,8 @@ export const generateProcessSnapshotQueueScript =
     output.write(
       chalk.bold(`Processing ${snapshotGenerator.name} snapshot queue\n`),
     );
+
+    assertSnapshotGeneratorMatchesFilter({ output, snapshotGeneratorId });
 
     const env = cleanEnv({
       FILTER_URL: envalid.str({

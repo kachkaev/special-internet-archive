@@ -4,7 +4,10 @@ import { WriteStream } from "node:tty";
 
 import { getErrorMessage, UserFriendlyError } from "../../shared/errors";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
-import { getSnapshotGenerator } from "../../shared/snapshot-generators";
+import {
+  assertSnapshotGeneratorMatchesFilter,
+  getSnapshotGenerator,
+} from "../../shared/snapshot-generators";
 import {
   checkIfSnapshotSummaryDocumentExists,
   readSnapshotSummaryDocument,
@@ -36,6 +39,8 @@ export const generateExtractSnapshotSummariesScript =
     output.write(
       chalk.bold(`Extracting ${snapshotGeneratorName} snapshot summaries\n`),
     );
+
+    assertSnapshotGeneratorMatchesFilter({ output, snapshotGeneratorId });
 
     if (!generateSnapshotFilePath || !extractSnapshotSummaryData) {
       throw new UserFriendlyError(

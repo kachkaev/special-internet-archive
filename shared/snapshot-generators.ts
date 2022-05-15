@@ -1,3 +1,10 @@
+import chalk from "chalk";
+import * as envalid from "envalid";
+import { WriteStream } from "node:tty";
+import RegexParser from "regex-parser";
+
+import { cleanEnv } from "./clean-env";
+import { EarlyExitError } from "./errors";
 import { SnapshotGeneratorId } from "./snapshot-generator-id";
 import { playwrightSnapshotGenerator } from "./snapshot-generators/=playwright";
 import { waybackMachineSnapshotGenerator } from "./snapshot-generators/=wayback-machine";
@@ -15,4 +22,32 @@ export const getSnapshotGenerator = (
   id: SnapshotGeneratorId,
 ): SnapshotGenerator => {
   return snapshotGeneratorLookup[id];
+};
+
+export const assertSnapshotGeneratorMatchesFilter = ({
+  output,
+  snapshotGeneratorId,
+}: {
+  output: WriteStream;
+  snapshotGeneratorId: SnapshotGeneratorId;
+}) => {
+  const env = cleanEnv({
+    FILTER_SNAPSHOT_GENERATOR: envalid.str({
+      desc: "Regex to use when filtering snapshot generators",
+      default: ".*",
+    }),
+  });
+
+  const filterSnapshotGeneratorRegex = RegexParser(
+    env.FILTER_SNAPSHOT_GENERATOR,
+  );
+
+  if (!filterSnapshotGeneratorRegex.test(snapshotGeneratorId)) {
+    output.write(
+      chalk.gray(
+        `Skipped because of FILTER_SNAPSHOT_GENERATOR=${env.FILTER_SNAPSHOT_GENERATOR}\n`,
+      ),
+    );
+    throw new EarlyExitError(0);
+  }
 };

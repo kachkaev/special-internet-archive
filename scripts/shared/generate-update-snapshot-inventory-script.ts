@@ -10,7 +10,10 @@ import { relevantTimeMin } from "../../shared/collection";
 import { syncCollectionIfNeeded } from "../../shared/collection-syncing";
 import { UserFriendlyError } from "../../shared/errors";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
-import { getSnapshotGenerator } from "../../shared/snapshot-generators";
+import {
+  assertSnapshotGeneratorMatchesFilter,
+  getSnapshotGenerator,
+} from "../../shared/snapshot-generators";
 import {
   listKnownSnapshotTimesInAscOrder,
   readSnapshotQueueDocument,
@@ -112,6 +115,8 @@ export const generateUpdateInventoryScript =
     output.write(
       chalk.bold(`Updating ${snapshotGenerator.name} snapshot inventory\n`),
     );
+
+    assertSnapshotGeneratorMatchesFilter({ output, snapshotGeneratorId });
 
     output.write(
       chalk.blue(

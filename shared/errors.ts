@@ -18,11 +18,11 @@ export class EarlyExitError extends Error {
 
 if (typeof process !== "undefined") {
   process.on("uncaughtException", (error) => {
-    if (
-      error instanceof AbortError ||
-      error instanceof EarlyExitError ||
-      error instanceof UserFriendlyError
-    ) {
+    if (error instanceof EarlyExitError) {
+      process.exit(error.exitCode);
+    }
+
+    if (error instanceof AbortError || error instanceof UserFriendlyError) {
       if (error.message) {
         // eslint-disable-next-line no-console
         console.log(chalk.red(error.message));
