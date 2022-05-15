@@ -4,7 +4,7 @@ import { WriteStream } from "node:tty";
 import RegexParser from "regex-parser";
 
 import { cleanEnv } from "./clean-env";
-import { EarlyExitError } from "./errors";
+import { ExitCodeError } from "./errors";
 import { SnapshotGeneratorId } from "./snapshot-generator-id";
 import { playwrightSnapshotGenerator } from "./snapshot-generators/=playwright";
 import { waybackMachineSnapshotGenerator } from "./snapshot-generators/=wayback-machine";
@@ -48,6 +48,6 @@ export const assertSnapshotGeneratorMatchesFilter = ({
         `Skipped because of FILTER_SNAPSHOT_GENERATOR_ID=${env.FILTER_SNAPSHOT_GENERATOR_ID}\n`,
       ),
     );
-    throw new EarlyExitError(0);
+    throw new ExitCodeError(0);
   }
 };

@@ -1,7 +1,7 @@
 import chalk from "chalk";
 
 import { syncCollectionIfNeeded } from "../../shared/collection-syncing";
-import { EarlyExitError } from "../../shared/errors";
+import { ExitCodeError } from "../../shared/errors";
 
 const output = process.stdout;
 
@@ -10,7 +10,7 @@ const script = async () => {
 
   const { status } = await syncCollectionIfNeeded({ output, mode: "forced" });
   if (status === "failed") {
-    throw new EarlyExitError();
+    throw new ExitCodeError();
   }
 };
 

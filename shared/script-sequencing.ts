@@ -4,7 +4,7 @@ import fs from "fs-extra";
 import { DateTime } from "luxon";
 import { WriteStream } from "node:tty";
 
-import { AbortError, EarlyExitError } from "./errors";
+import { AbortError, ExitCodeError } from "./errors";
 
 export interface ScriptSequenceItem {
   scriptFilePath: string;
@@ -90,7 +90,7 @@ export const runScriptSequence = async ({
       );
       if (!item.continueOnError) {
         finalizeSequence(chalk.red);
-        throw new EarlyExitError(exitCode);
+        throw new ExitCodeError(exitCode);
       }
     } else {
       output.write(

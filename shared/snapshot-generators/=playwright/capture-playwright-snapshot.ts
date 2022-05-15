@@ -1,7 +1,7 @@
 import { Page } from "playwright";
 import sleep from "sleep-promise";
 
-import { AbortError } from "../../errors";
+import { AbortError, getErrorMessage } from "../../errors";
 import { serializeTime } from "../../time";
 import { interactWithPlaywrightPage } from "../../web-page-sources";
 import { CaptureSnapshot } from "../types";
@@ -32,40 +32,49 @@ export const capturePlaywrightSnapshot: CaptureSnapshot = async ({
     locale: "ru-RU",
     timezoneId,
   });
-  await playwrightContext.tracing.start({ snapshots: true });
-  const playwrightPage = await playwrightContext.newPage();
-  await playwrightPage.goto(webPageUrl);
-  await playwrightPage.waitForLoadState("networkidle");
 
-  const capturedAt = serializeTime();
+  try {
+    await playwrightContext.tracing.start({ snapshots: true });
+    const playwrightPage = await playwrightContext.newPage();
+    await playwrightPage.goto(webPageUrl);
+    await playwrightPage.waitForLoadState("networkidle");
 
-  await interactWithPlaywrightPage({
-    abortSignal,
-    log: (message) => {
-      reportIssue?.(`Playwright: ${message}`);
-    },
-    playwrightPage,
-    snapshotContext,
-  });
+    const capturedAt = serializeTime();
 
-  if (abortSignal?.aborted) {
-    throw new AbortError();
+    await interactWithPlaywrightPage({
+      abortSignal,
+      log: (message) => {
+        reportIssue?.(`Playwright: ${message}`);
+      },
+      playwrightPage,
+      snapshotContext,
+    });
+
+    if (abortSignal?.aborted) {
+      throw new AbortError();
+    }
+
+    await tryLoadingAllImages(playwrightPage);
+
+    if (abortSignal?.aborted) {
+      throw new AbortError();
+    }
+
+    await playwrightContext.tracing.stop({
+      path: generatePlaywrightSnapshotFilePath({
+        webPageDirPath,
+        capturedAt,
+      }),
+    });
+  } catch (error) {
+    if (error instanceof AbortError) {
+      throw error;
+    }
+
+    return { status: "failed", message: getErrorMessage(error) };
+  } finally {
+    await playwrightContext.close();
   }
-
-  await tryLoadingAllImages(playwrightPage);
-
-  if (abortSignal?.aborted) {
-    throw new AbortError();
-  }
-
-  await playwrightContext.tracing.stop({
-    path: generatePlaywrightSnapshotFilePath({
-      webPageDirPath,
-      capturedAt,
-    }),
-  });
-
-  await playwrightContext.close();
 
   return { status: "processed" };
 };

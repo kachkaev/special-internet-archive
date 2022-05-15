@@ -10,7 +10,7 @@ import {
   checkIfCollectionHasUncommittedChanges,
   syncCollectionIfNeeded,
 } from "../../shared/collection-syncing";
-import { AbortError } from "../../shared/errors";
+import { AbortError, ExitCodeError } from "../../shared/errors";
 import { generateProgress } from "../../shared/generate-progress";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
 import {
@@ -300,5 +300,9 @@ export const generateProcessSnapshotQueueScript =
           ? undefined
           : `Process snapshot queue (${snapshotGenerator.name})`,
       });
+    }
+
+    if (numberOfFailedAttempts > 0) {
+      throw new ExitCodeError();
     }
   };

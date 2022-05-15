@@ -8,7 +8,7 @@ export class AbortError extends Error {
   }
 }
 
-export class EarlyExitError extends Error {
+export class ExitCodeError extends Error {
   readonly exitCode: number;
   constructor(exitCode = 1) {
     super();
@@ -18,7 +18,7 @@ export class EarlyExitError extends Error {
 
 if (typeof process !== "undefined") {
   process.on("uncaughtException", (error) => {
-    if (error instanceof EarlyExitError) {
+    if (error instanceof ExitCodeError) {
       process.exit(error.exitCode);
     }
 
