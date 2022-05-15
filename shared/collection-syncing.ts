@@ -103,7 +103,7 @@ export const syncCollectionIfNeeded = async ({
     stdio: "inherit",
   };
 
-  if (await checkIfCollectionHasUncommittedChanges()) {
+  if (!(await checkIfCollectionHasUncommittedChanges())) {
     if (mode !== "intermediate") {
       output.write(
         chalk.gray(
