@@ -6,7 +6,10 @@ import RegexParser from "regex-parser";
 
 import { cleanEnv } from "../../shared/clean-env";
 import { relevantTimeMin } from "../../shared/collection";
-import { syncCollectionIfNeeded } from "../../shared/collection-syncing";
+import {
+  checkIfCollectionHasUncommittedChanges,
+  syncCollectionIfNeeded,
+} from "../../shared/collection-syncing";
 import { AbortError } from "../../shared/errors";
 import { generateProgress } from "../../shared/generate-progress";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
@@ -48,6 +51,9 @@ export const generateProcessSnapshotQueueScript =
     snapshotGeneratorId: SnapshotGeneratorId;
   }) =>
   async () => {
+    let collectionHadUncommittedChanges =
+      await checkIfCollectionHasUncommittedChanges();
+
     const snapshotGenerator = getSnapshotGenerator(snapshotGeneratorId);
     output.write(
       chalk.bold(`Processing ${snapshotGenerator.name} snapshot queue\n`),
@@ -251,11 +257,17 @@ export const generateProcessSnapshotQueueScript =
         }
 
         if (snapshotGenerator.role === "local") {
-          await syncCollectionIfNeeded({
+          const { status } = await syncCollectionIfNeeded({
             output,
             mode: "intermediate",
-            message: `Process snapshot queue (${snapshotGenerator.name}, intermediate)`,
+            message: collectionHadUncommittedChanges
+              ? undefined
+              : `Process snapshot queue (${snapshotGenerator.name}, intermediate)`,
           });
+
+          if (status === "processed") {
+            collectionHadUncommittedChanges = false;
+          }
         }
 
         abortController.signal.removeEventListener("abort", abortHandler);
@@ -284,7 +296,9 @@ export const generateProcessSnapshotQueueScript =
     if (snapshotGenerator.role === "local") {
       await syncCollectionIfNeeded({
         output,
-        message: `Process snapshot queue (${snapshotGenerator.name})`,
+        message: collectionHadUncommittedChanges
+          ? undefined
+          : `Process snapshot queue (${snapshotGenerator.name})`,
       });
     }
   };

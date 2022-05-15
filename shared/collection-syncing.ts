@@ -8,7 +8,23 @@ import { WriteStream } from "node:tty";
 
 import { cleanEnv } from "./clean-env";
 import { getCollectionDirPath } from "./collection";
-import { EarlyExitError, UserFriendlyError } from "./errors";
+import { UserFriendlyError } from "./errors";
+import { OperationResult } from "./operations";
+
+export const checkIfCollectionHasUncommittedChanges =
+  async (): Promise<boolean> => {
+    const collectionDirPath = getCollectionDirPath();
+    try {
+      const { stdout } = await execa("git", ["status", "--short"], {
+        cwd: collectionDirPath,
+        stdio: "pipe",
+      });
+
+      return Boolean(stdout);
+    } catch {
+      return false;
+    }
+  };
 
 type SyncMode = "auto" | "forced" | "intermediate";
 
@@ -20,9 +36,9 @@ export const syncCollectionIfNeeded = async ({
   mode = "auto",
 }: {
   output: WriteStream;
-  message?: string;
+  message?: string | undefined;
   mode?: SyncMode;
-}) => {
+}): Promise<OperationResult> => {
   const env = cleanEnv({
     AUTO_SYNC_COLLECTION: envalid.bool({
       default: true,
@@ -42,18 +58,18 @@ export const syncCollectionIfNeeded = async ({
     if (!lastSyncDateTime) {
       lastSyncDateTime = now;
 
-      return;
+      return { status: "skipped" };
     }
 
     if (now.diff(lastSyncDateTime).as("milliseconds") < autoSyncInterval) {
-      return;
+      return { status: "skipped" };
     }
 
     output.write("\n");
   }
 
   if (mode !== "forced" && !autoSync) {
-    return;
+    return { status: "skipped" };
   }
 
   lastSyncDateTime = now;
@@ -78,7 +94,7 @@ export const syncCollectionIfNeeded = async ({
         );
       }
 
-      return;
+      return { status: "skipped" };
     }
   }
 
@@ -87,12 +103,7 @@ export const syncCollectionIfNeeded = async ({
     stdio: "inherit",
   };
 
-  const { stdout } = await execa("git", ["status", "--short"], {
-    ...execaOptions,
-    stdio: "pipe",
-  });
-
-  if (!stdout) {
+  if (await checkIfCollectionHasUncommittedChanges()) {
     if (mode !== "intermediate") {
       output.write(
         chalk.gray(
@@ -101,7 +112,7 @@ export const syncCollectionIfNeeded = async ({
       );
     }
 
-    return;
+    return { status: "skipped" };
   } else {
     await execa("git", ["add", "--all"], execaOptions);
 
@@ -113,7 +124,9 @@ export const syncCollectionIfNeeded = async ({
     reject: false,
   });
 
-  if (exitCode && mode === "forced") {
-    throw new EarlyExitError(exitCode);
+  if (exitCode) {
+    return { status: "failed" };
   }
+
+  return { status: "processed" };
 };
