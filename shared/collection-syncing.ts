@@ -11,22 +11,21 @@ import { getCollectionDirPath } from "./collection";
 import { UserFriendlyError } from "./errors";
 import { OperationResult } from "./operations";
 
-export const checkIfCollectionHasUncommittedChanges =
-  async (): Promise<boolean> => {
-    const collectionDirPath = getCollectionDirPath();
-    try {
-      const { stdout } = await execa("git", ["status", "--short"], {
-        cwd: collectionDirPath,
-        stdio: "pipe",
-      });
+const checkIfCollectionHasUncommittedChanges = async (): Promise<boolean> => {
+  const collectionDirPath = getCollectionDirPath();
+  try {
+    const { stdout } = await execa("git", ["status", "--short"], {
+      cwd: collectionDirPath,
+      stdio: "pipe",
+    });
 
-      return Boolean(stdout);
-    } catch {
-      return false;
-    }
-  };
+    return Boolean(stdout);
+  } catch {
+    return false;
+  }
+};
 
-type SyncMode = "auto" | "forced" | "intermediate";
+type SyncMode = "auto" | "forced" | "intermediate" | "preliminary";
 
 let lastSyncDateTime: DateTime | undefined;
 
@@ -104,7 +103,7 @@ export const syncCollectionIfNeeded = async ({
   };
 
   if (!(await checkIfCollectionHasUncommittedChanges())) {
-    if (mode !== "intermediate") {
+    if (mode !== "intermediate" && mode !== "preliminary") {
       output.write(
         chalk.gray(
           `Collection ${collectionDirPath} contains no changes to commit\n`,

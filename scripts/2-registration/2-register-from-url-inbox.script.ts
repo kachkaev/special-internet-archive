@@ -2,10 +2,7 @@ import chalk from "chalk";
 import _ from "lodash";
 
 import { getUrlInboxFilePath, readUrlInboxRows } from "../../shared/collection";
-import {
-  checkIfCollectionHasUncommittedChanges,
-  syncCollectionIfNeeded,
-} from "../../shared/collection-syncing";
+import { syncCollectionIfNeeded } from "../../shared/collection-syncing";
 import {
   generateWebPageDirPathLookup,
   registerWebPage,
@@ -17,8 +14,10 @@ const output = process.stdout;
 const script = async () => {
   output.write(chalk.bold("Registering web pages from URL inbox\n"));
 
-  const collectionHadUncommittedChanges =
-    await checkIfCollectionHasUncommittedChanges();
+  await syncCollectionIfNeeded({
+    output,
+    mode: "preliminary",
+  });
 
   output.write(
     `${chalk.green("URL inbox location:")} ${getUrlInboxFilePath()}\n`,
@@ -89,9 +88,7 @@ const script = async () => {
 
   await syncCollectionIfNeeded({
     output,
-    message: collectionHadUncommittedChanges
-      ? undefined
-      : `Register web pages from URL inbox`,
+    message: "Register web pages from URL inbox",
   });
 };
 

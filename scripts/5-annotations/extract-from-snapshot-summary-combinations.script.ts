@@ -1,10 +1,7 @@
 import chalk from "chalk";
 import _ from "lodash";
 
-import {
-  checkIfCollectionHasUncommittedChanges,
-  syncCollectionIfNeeded,
-} from "../../shared/collection-syncing";
+import { syncCollectionIfNeeded } from "../../shared/collection-syncing";
 import {
   checkIfSnapshotSummaryCombinationDocumentExists,
   readSnapshotSummaryCombinationDocument,
@@ -25,8 +22,10 @@ const script = async () => {
   );
   let pagesWithoutSnapshotSummaryCombination = false;
 
-  const collectionHadUncommittedChanges =
-    await checkIfCollectionHasUncommittedChanges();
+  await syncCollectionIfNeeded({
+    output,
+    mode: "preliminary",
+  });
 
   await processWebPages({
     output,
@@ -73,9 +72,7 @@ const script = async () => {
 
   await syncCollectionIfNeeded({
     output,
-    message: collectionHadUncommittedChanges
-      ? undefined
-      : `Extract annotations from snapshot summary combinations`,
+    message: "Extract annotations from snapshot summary combinations",
   });
 };
 

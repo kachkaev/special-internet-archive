@@ -7,10 +7,7 @@ import sortKeys from "sort-keys";
 
 import { cleanEnv } from "../../shared/clean-env";
 import { relevantTimeMin } from "../../shared/collection";
-import {
-  checkIfCollectionHasUncommittedChanges,
-  syncCollectionIfNeeded,
-} from "../../shared/collection-syncing";
+import { syncCollectionIfNeeded } from "../../shared/collection-syncing";
 import { UserFriendlyError } from "../../shared/errors";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
 import {
@@ -119,8 +116,10 @@ export const generateUpdateInventoryScript =
       chalk.bold(`Updating ${snapshotGenerator.name} snapshot inventory\n`),
     );
 
-    let collectionHadUncommittedChanges =
-      await checkIfCollectionHasUncommittedChanges();
+    await syncCollectionIfNeeded({
+      output,
+      mode: "preliminary",
+    });
 
     assertSnapshotGeneratorMatchesFilter({ output, snapshotGeneratorId });
 
@@ -341,17 +340,11 @@ export const generateUpdateInventoryScript =
           await writeWebPageDocument(webPageDirPath, updatedWebPageDocument);
         }
 
-        const { status } = await syncCollectionIfNeeded({
+        await syncCollectionIfNeeded({
           output,
           mode: "intermediate",
-          message: collectionHadUncommittedChanges
-            ? undefined
-            : `Update inventory (${snapshotGenerator.name}, intermediate)`,
+          message: `Update inventory (${snapshotGenerator.name}, intermediate)`,
         });
-
-        if (status === "processed") {
-          collectionHadUncommittedChanges = false;
-        }
       },
     });
 
@@ -365,8 +358,6 @@ export const generateUpdateInventoryScript =
 
     await syncCollectionIfNeeded({
       output,
-      message: collectionHadUncommittedChanges
-        ? undefined
-        : `Update inventory (${snapshotGenerator.name})`,
+      message: `Update inventory (${snapshotGenerator.name})`,
     });
   };
