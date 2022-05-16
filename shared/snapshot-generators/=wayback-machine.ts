@@ -10,5 +10,6 @@ export const waybackMachineSnapshotGenerator: SnapshotGenerator = {
   name: "Wayback Machine",
   obtainSnapshotTimes: obtainWaybackMachineSnapshotTimes,
   role: "thirdParty",
-  snapshotAttemptTimeoutInSeconds: 30,
+  snapshotQueueAttemptTimeoutInSeconds: 30,
+  snapshotQueueAttemptSuccessExpiryInSeconds: 60 * 60 * 24 * 1.5, // 1.5 days (because of Isodos API)
 };

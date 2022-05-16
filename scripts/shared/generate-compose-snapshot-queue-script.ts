@@ -18,7 +18,7 @@ import {
   SnapshotQueueItem,
   writeSnapshotQueueDocument,
 } from "../../shared/snapshot-queues";
-import { serializeTime } from "../../shared/time";
+import { serializeTime, unserializeTime } from "../../shared/time";
 import { processWebPages } from "../../shared/web-page-documents";
 import {
   calculateRelevantTimeMinForNewIncrementalSnapshot,
@@ -79,7 +79,7 @@ export const generateComposeSnapshotQueueScript =
           if (
             serializeTime(
               DateTime.utc().minus({
-                seconds: snapshotGenerator.snapshotAttemptTimeoutInSeconds,
+                seconds: snapshotGenerator.snapshotQueueAttemptTimeoutInSeconds,
               }),
             )
           ) {
@@ -140,7 +140,10 @@ export const generateComposeSnapshotQueueScript =
         const queueItemsSucceededAfterInventoryUpdate =
           existingQueueItems.filter((item) => {
             const succeededAttemptTime = item.attempts?.find(
-              (attempt) => attempt.status === "succeeded",
+              (attempt) =>
+                attempt.status === "succeeded" &&
+                -unserializeTime(attempt.startedAt).diffNow().as("seconds") <
+                  snapshotGenerator.snapshotQueueAttemptSuccessExpiryInSeconds,
             )?.startedAt;
 
             return (

@@ -81,5 +81,7 @@ export interface SnapshotGenerator {
   name: string;
   obtainSnapshotTimes: ObtainSnapshotTimes;
   role: "local" | "thirdParty";
-  snapshotAttemptTimeoutInSeconds: number;
+  snapshotQueueAttemptTimeoutInSeconds: number;
+  /** time after which processed items are no longer accounted */
+  snapshotQueueAttemptSuccessExpiryInSeconds: number;
 }
