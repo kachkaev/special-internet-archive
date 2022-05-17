@@ -63,6 +63,7 @@ const relevantTerms = [
   "налог",
   "наци",
   "оборон",
+  "объясняемрф",
   "объясняем.рф",
   "ополчен",
   "отмен",
@@ -107,7 +108,7 @@ const relevantTerms = [
 export const checkIfTextIsRelevant = (text: string): boolean => {
   const textWithoutLinks = text
     .replace(
-      /[\w#%+.:=@~-]{1,256}\.[\d()a-z]{1,6}\b([\w\p{L}#%&()+./:=?@~-]*)/giu, // URLs https://stackoverflow.com/a/3809435/1818285 + \p{L}
+      /[\p{L}#%+.:=@~-]{1,256}\.[\d\p{L}]{1,6}([\p{L}#%&()+./:=?@~-]*)/giu, // URLs https://stackoverflow.com/a/3809435/1818285 + \p{L}
       "",
     )
     .replace(
