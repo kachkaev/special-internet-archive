@@ -219,7 +219,6 @@ const scrollPosts = async (
 
     if (!authModalAlreadyClosed) {
       authModalAlreadyClosed = await closeAuthModalIfPresent(payload);
-      continue;
     }
 
     // Early exit reached the bottom of the wall
