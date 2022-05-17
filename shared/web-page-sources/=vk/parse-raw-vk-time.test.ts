@@ -24,6 +24,17 @@ const formatMoscowTime = ({
 describe("parseRawVkTime", () => {
   it.each`
     input                                 | expectedResult
+    ${"только что"}                       | ${formatMoscowTime({})}
+    ${"42 секунды назад"}                 | ${formatMoscowTime({})}
+    ${"минуту назад"}                     | ${formatMoscowTime({ minus: { minute: 1 } })}
+    ${"две минуты назад"}                 | ${formatMoscowTime({ minus: { minute: 2 } })}
+    ${"три минуты назад"}                 | ${formatMoscowTime({ minus: { minute: 3 } })}
+    ${"4 минуты назад"}                   | ${formatMoscowTime({ minus: { minute: 4 } })}
+    ${"10 минут назад"}                   | ${formatMoscowTime({ minus: { minute: 10 } })}
+    ${"42 минуты назад"}                  | ${formatMoscowTime({ minus: { minute: 42 } })}
+    ${"час назад"}                        | ${formatMoscowTime({ minus: { hour: 1 } })}
+    ${"три часа назад"}                   | ${formatMoscowTime({ minus: { hour: 3 } })}
+    ${"10 часов назад"}                   | ${formatMoscowTime({ minus: { hour: 10 } })}
     ${"сегодня в 13:42"}                  | ${formatMoscowTime({ set: { hour: 13, minute: 42 } })}
     ${"вчера в 10:15"}                    | ${formatMoscowTime({ minus: { day: 1 }, set: { hour: 10, minute: 15 } })}
     ${"10 фев в 0:15"}                    | ${formatMoscowTime({ set: { month: 2, day: 10, hour: 0, minute: 15 } })}

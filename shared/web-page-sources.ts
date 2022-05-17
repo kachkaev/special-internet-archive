@@ -1,9 +1,11 @@
 import _ from "lodash";
 
 import { checkIfTextIsRelevant } from "./check-if-text-is-relevant";
+import { relevantTimeMin } from "./collection";
 import { UserFriendlyError } from "./errors";
 import { TempRawVkPost } from "./snapshot-summaries";
 import { vkWebPageSource } from "./web-page-sources/=vk";
+import { parseRawVkTime } from "./web-page-sources/=vk/parse-raw-vk-time";
 import {
   CalculateRelevantTimeMinForNewIncrementalSnapshot,
   CheckIfSnapshotIsDue,
@@ -104,11 +106,22 @@ export const extractSnapshotSummaryCombinationData: ExtractSnapshotSummaryCombin
         continue;
       }
       for (const tempRawVkPost of snapshotSummaryDocument.tempRawVkPosts) {
-        tempRawVkPostByUrl[tempRawVkPost.url] = tempRawVkPost;
+        tempRawVkPostByUrl[tempRawVkPost.url] = {
+          ...tempRawVkPost,
+          date: parseRawVkTime(
+            tempRawVkPost.date,
+            snapshotSummaryDocument.capturedAt,
+          ),
+        };
       }
     }
 
-    return { tempRawVkPosts: Object.values(tempRawVkPostByUrl) };
+    return {
+      tempRawVkPosts: _.orderBy(
+        Object.values(tempRawVkPostByUrl),
+        (tempRawVkPost) => tempRawVkPost.url,
+      ),
+    };
   };
 
 export const updateWebPageAnnotation: UpdateWebPageAnnotation = ({
@@ -127,7 +140,10 @@ export const updateWebPageAnnotation: UpdateWebPageAnnotation = ({
 
   const newLinkSet = new Set<string>();
   for (const tempRawVkPost of snapshotSummaryCombinationDocument.tempRawVkPosts) {
-    if (checkIfTextIsRelevant(tempRawVkPost.text)) {
+    if (
+      checkIfTextIsRelevant(tempRawVkPost.text) &&
+      tempRawVkPost.date >= relevantTimeMin
+    ) {
       newLinkSet.add(tempRawVkPost.url);
     }
   }
