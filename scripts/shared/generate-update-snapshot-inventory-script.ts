@@ -317,14 +317,17 @@ export const generateUpdateInventoryScript =
           (item) => item.capturedAt,
         );
 
-        if (
-          snapshotGenerator.role === "thirdParty" ||
-          !_.isEqual(
-            orderedItems,
-            updatedWebPageDocument.snapshotInventoryLookup[snapshotGeneratorId]
-              ?.items,
-          )
-        ) {
+        const needToUpdateDocument =
+          snapshotGenerator.role === "thirdParty"
+            ? true
+            : !_.isEqual(
+                orderedItems,
+                updatedWebPageDocument.snapshotInventoryLookup[
+                  snapshotGeneratorId
+                ]?.items ?? [],
+              );
+
+        if (needToUpdateDocument) {
           updatedWebPageDocument.snapshotInventoryLookup[snapshotGeneratorId] =
             {
               updatedAt: serializeTime(),
