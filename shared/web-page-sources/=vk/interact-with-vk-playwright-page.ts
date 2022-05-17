@@ -212,14 +212,14 @@ const scrollPosts = async (
       throw new AbortError();
     }
 
-    if (!authModalAlreadyClosed) {
-      authModalAlreadyClosed = await closeAuthModalIfPresent(payload);
-      continue;
-    }
-
     // Early exit if the wall is empty
     if (!bottomPostRawTime) {
       break;
+    }
+
+    if (!authModalAlreadyClosed) {
+      authModalAlreadyClosed = await closeAuthModalIfPresent(payload);
+      continue;
     }
 
     // Early exit reached the bottom of the wall
