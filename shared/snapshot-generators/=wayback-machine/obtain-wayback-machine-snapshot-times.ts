@@ -6,6 +6,7 @@ import { cleanEnv } from "../../clean-env";
 import { relevantTimeMin } from "../../collection";
 import { serializeTime, unserializeTime } from "../../time";
 import { ObtainSnapshotTimes } from "../types";
+import { obtainFastSnapshotTimes } from "./obtain-wayback-machine-snapshot-times/obtain-fast-snapshot-times";
 import { createAxiosInstanceForWaybackMachine } from "./shared/create-axios-instance-for-wayback-machine";
 
 type CdxApiResponse = Array<
@@ -43,15 +44,15 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
 
   const env = cleanEnv({
     WAYBACK_MACHINE_SNAPSHOT_INVENTORY_API: envalid.str({
-      choices: ["ajax", "cdx"],
-      default: "ajax",
+      choices: ["fast-ajax", "ajax", "cdx"],
+      default: "fast-ajax",
     }),
   });
 
-  const useCdxApi = env.WAYBACK_MACHINE_SNAPSHOT_INVENTORY_API === "cdx";
+  const apiToUse = env.WAYBACK_MACHINE_SNAPSHOT_INVENTORY_API;
 
   // CDX API is likely to provide outdated data (by a few days)
-  if (useCdxApi) {
+  if (apiToUse === "cdx") {
     // E.g. http://web.archive.org/cdx/search/cdx?url=https://vk.com/penza_live&output=json
     const { data: rawCdxApiResponse } = await axiosInstance.get<CdxApiResponse>(
       "https://web.archive.org/cdx/search/cdx",
@@ -93,6 +94,16 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
       result.push(serializedTime);
     }
   } else {
+    if (apiToUse === "fast-ajax") {
+      const fastSnapshotTimes = await obtainFastSnapshotTimes(
+        url,
+        axiosInstance,
+      );
+      if (fastSnapshotTimes) {
+        return fastSnapshotTimes;
+      }
+    }
+
     const yearMin = unserializeTime(relevantTimeMin).year;
     const yearMax = DateTime.utc().year;
 
