@@ -6,6 +6,7 @@ import { randomUUID } from "node:crypto";
 import { WriteStream } from "node:tty";
 
 import { cleanEnv } from "../../shared/clean-env";
+import { throwExitCodeErrorIfOperationFailed } from "../../shared/errors";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
 import {
   assertSnapshotGeneratorMatchesFilter,
@@ -106,7 +107,7 @@ export const generateComposeSnapshotQueueScript =
     const allNewQueueItems: SnapshotQueueItem[] = [];
     const newQueueItemAddedAt = serializeTime();
 
-    await processWebPages({
+    const operationResult = await processWebPages({
       output,
       handleSkippedWebPage: ({ webPageDocument }) => {
         const existingQueueItems = allExistingQueueItems.filter(
@@ -207,4 +208,6 @@ export const generateComposeSnapshotQueueScript =
       ...existingSnapshotQueueDocument,
       items: allNewQueueItems,
     });
+
+    throwExitCodeErrorIfOperationFailed(operationResult);
   };

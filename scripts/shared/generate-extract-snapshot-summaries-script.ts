@@ -2,7 +2,10 @@ import chalk from "chalk";
 import fs from "fs-extra";
 import { WriteStream } from "node:tty";
 
-import { getErrorMessage, UserFriendlyError } from "../../shared/errors";
+import {
+  throwExitCodeErrorIfOperationFailed,
+  UserFriendlyError,
+} from "../../shared/errors";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
 import {
   assertSnapshotGeneratorMatchesFilter,
@@ -50,7 +53,7 @@ export const generateExtractSnapshotSummariesScript =
 
     let pagesWithoutSnapshotsFound = false;
 
-    await processWebPages({
+    const operationResult = await processWebPages({
       output,
       processWebPage: async ({
         progressPrefix,
@@ -105,49 +108,45 @@ export const generateExtractSnapshotSummariesScript =
             continue;
           }
 
-          try {
-            if (!(await fs.pathExists(snapshotFilePath))) {
-              if (snapshotGeneratorRole === "local") {
-                throw new Error(
-                  `Snapshot file is unexpectedly missing. Please update snapshot inventory.`,
-                );
-              } else {
-                if (!downloadSnapshot) {
-                  throw new Error(
-                    `Unable to download ${snapshotGeneratorName} snapshot because this is not implemented yet`,
-                  );
-                }
-
-                await downloadSnapshot({
-                  webPageDirPath,
-                  webPageDocument,
-                  ...snapshotInventoryItem,
-                });
-              }
-            }
-
-            if (await checkIfSnapshotSummaryDocumentExists(snapshotFilePath)) {
-              output.write("snapshot summary is being updated... ");
+          if (!(await fs.pathExists(snapshotFilePath))) {
+            if (snapshotGeneratorRole === "local") {
+              throw new Error(
+                `Snapshot file is unexpectedly missing. Please update snapshot inventory.`,
+              );
             } else {
-              output.write("snapshot summary is being created... ");
+              if (!downloadSnapshot) {
+                throw new Error(
+                  `Unable to download ${snapshotGeneratorName} snapshot because this is not implemented yet`,
+                );
+              }
+
+              await downloadSnapshot({
+                webPageDirPath,
+                webPageDocument,
+                ...snapshotInventoryItem,
+              });
             }
-
-            const snapshotSummaryData = await extractSnapshotSummaryData({
-              snapshotFilePath,
-            });
-
-            await writeSnapshotSummaryDocument(snapshotFilePath, {
-              documentType: "snapshotSummary",
-              webPageUrl: webPageDocument.webPageUrl,
-              ...snapshotInventoryItem,
-              extractedAt: serializeTime(),
-              ...snapshotSummaryData,
-            });
-
-            output.write(chalk.magenta("done"));
-          } catch (error) {
-            output.write(chalk.red(getErrorMessage(error)));
           }
+
+          if (await checkIfSnapshotSummaryDocumentExists(snapshotFilePath)) {
+            output.write("snapshot summary is being updated... ");
+          } else {
+            output.write("snapshot summary is being created... ");
+          }
+
+          const snapshotSummaryData = await extractSnapshotSummaryData({
+            snapshotFilePath,
+          });
+
+          await writeSnapshotSummaryDocument(snapshotFilePath, {
+            documentType: "snapshotSummary",
+            webPageUrl: webPageDocument.webPageUrl,
+            ...snapshotInventoryItem,
+            extractedAt: serializeTime(),
+            ...snapshotSummaryData,
+          });
+
+          output.write(chalk.magenta("done"));
         }
       },
     });
@@ -161,4 +160,6 @@ export const generateExtractSnapshotSummariesScript =
         ),
       );
     }
+
+    throwExitCodeErrorIfOperationFailed(operationResult);
   };

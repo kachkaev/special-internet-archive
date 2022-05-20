@@ -25,21 +25,7 @@ import {
   reportSnapshotQueueAttempts,
 } from "../../shared/snapshot-queues";
 import { serializeTime } from "../../shared/time";
-import { processWebPages } from "../../shared/web-page-documents";
-
-const generateWebPageDirPathByUrl = async (): Promise<
-  Record<string, string>
-> => {
-  const result: Record<string, string> = {};
-
-  await processWebPages({
-    processWebPage: ({ webPageDirPath, webPageDocument }) => {
-      result[webPageDocument.webPageUrl] = webPageDirPath;
-    },
-  });
-
-  return result;
-};
+import { generateWebPageDirPathLookup } from "../../shared/web-page-documents";
 
 const previousFailuresInSnapshotQueue: PreviousFailuresInSnapshotQueue[] = [];
 
@@ -86,8 +72,7 @@ export const generateProcessSnapshotQueueScript =
       );
     }
 
-    const webPageDirPathByUrl: Record<string, string> =
-      await generateWebPageDirPathByUrl();
+    const webPageDirPathByUrl = await generateWebPageDirPathLookup();
 
     output.write(
       `${chalk.green(`Queue file:`)} ${generateSnapshotQueueDocumentPath(

@@ -8,7 +8,10 @@ import sortKeys from "sort-keys";
 import { cleanEnv } from "../../shared/clean-env";
 import { relevantTimeMin } from "../../shared/collection";
 import { syncCollectionIfNeeded } from "../../shared/collection-syncing";
-import { UserFriendlyError } from "../../shared/errors";
+import {
+  throwExitCodeErrorIfOperationFailed,
+  UserFriendlyError,
+} from "../../shared/errors";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
 import {
   assertSnapshotGeneratorMatchesFilter,
@@ -169,7 +172,7 @@ export const generateUpdateInventoryScript =
     );
     const existingSnapshotQueueItems = snapshotQueueDocument.items;
 
-    await processWebPages({
+    const operationResult = await processWebPages({
       output,
       processWebPage: async ({
         progressPrefix,
@@ -363,4 +366,6 @@ export const generateUpdateInventoryScript =
       output,
       message: `Update inventory (${snapshotGenerator.name})`,
     });
+
+    throwExitCodeErrorIfOperationFailed(operationResult);
   };

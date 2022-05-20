@@ -1,5 +1,7 @@
 import chalk from "chalk";
 
+import { OperationResult, OperationStatus } from "./operations";
+
 export class UserFriendlyError extends Error {}
 
 export class AbortError extends Error {
@@ -41,4 +43,16 @@ export const getErrorMessage = (error: unknown) => {
   }
 
   return `${error as string}`;
+};
+
+export const throwExitCodeErrorIfOperationFailed = (
+  operationResultOrStatus: OperationResult | OperationStatus,
+): void => {
+  if (
+    (typeof operationResultOrStatus === "object" &&
+      operationResultOrStatus.status === "failed") ||
+    operationResultOrStatus === "failed"
+  ) {
+    throw new ExitCodeError(1);
+  }
 };

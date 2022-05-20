@@ -2,6 +2,7 @@ import chalk from "chalk";
 import _ from "lodash";
 
 import { syncCollectionIfNeeded } from "../../shared/collection-syncing";
+import { throwExitCodeErrorIfOperationFailed } from "../../shared/errors";
 import {
   checkIfSnapshotSummaryCombinationDocumentExists,
   readSnapshotSummaryCombinationDocument,
@@ -27,7 +28,7 @@ const script = async () => {
     mode: "preliminary",
   });
 
-  await processWebPages({
+  const operationResult = await processWebPages({
     output,
     processWebPage: async ({ webPageDirPath, webPageDocument }) => {
       if (
@@ -74,6 +75,8 @@ const script = async () => {
     output,
     message: "Extract annotations from snapshot summary combinations",
   });
+
+  throwExitCodeErrorIfOperationFailed(operationResult);
 };
 
 await script();

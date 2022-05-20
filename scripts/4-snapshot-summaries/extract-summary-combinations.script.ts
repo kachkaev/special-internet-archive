@@ -2,6 +2,7 @@ import chalk from "chalk";
 import _ from "lodash";
 import path from "node:path";
 
+import { throwExitCodeErrorIfOperationFailed } from "../../shared/errors";
 import { listFilePaths } from "../../shared/list-file-paths";
 import {
   readSnapshotSummaryCombinationDocument,
@@ -23,7 +24,7 @@ const script = async () => {
 
   let pagesWithoutSnapshotSummariesFound = false;
 
-  await processWebPages({
+  const operationResult = await processWebPages({
     output,
     processWebPage: async ({ webPageDirPath, webPageDocument }) => {
       const snapshotSummaryFilePaths = await listFilePaths({
@@ -108,6 +109,8 @@ const script = async () => {
       ),
     );
   }
+
+  throwExitCodeErrorIfOperationFailed(operationResult);
 };
 
 await script();

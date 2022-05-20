@@ -6,6 +6,7 @@ import {
   readUrlInboxRows,
   writeUrlInbox,
 } from "../../shared/collection";
+import { throwExitCodeErrorIfOperationFailed } from "../../shared/errors";
 import { serializeTime } from "../../shared/time";
 import { processWebPages } from "../../shared/web-page-documents";
 import { extractRelevantWebPageUrls } from "../../shared/web-page-sources";
@@ -18,7 +19,7 @@ const script = async () => {
   const registeredWebPageUrlSet = new Set<string>();
   const relevantWebPageUrlSet = new Set<string>();
 
-  await processWebPages({
+  const operationResult = await processWebPages({
     output,
     processWebPage: ({ webPageDirPath, webPageDocument }) => {
       registeredWebPageUrlSet.add(webPageDocument.webPageUrl);
@@ -127,6 +128,8 @@ const script = async () => {
   }
 
   output.write(`URL inbox location: ${chalk.magenta(getUrlInboxFilePath())}\n`);
+
+  throwExitCodeErrorIfOperationFailed(operationResult);
 };
 
 await script();

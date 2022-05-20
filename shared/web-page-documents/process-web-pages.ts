@@ -9,6 +9,7 @@ import { getWebPagesDirPath } from "../collection";
 import { getErrorMessage } from "../errors";
 import { generateProgress } from "../generate-progress";
 import { listFilePaths } from "../list-file-paths";
+import { OperationResult } from "../operations";
 import { WebPageDocument } from "../web-page-documents";
 import { readWebPageDocument } from "./io";
 
@@ -28,7 +29,7 @@ export const processWebPages = async ({
   output?: WriteStream | undefined;
   handleSkippedWebPage?: ProcessWebPage;
   processWebPage: ProcessWebPage;
-}) => {
+}): Promise<OperationResult> => {
   const env = cleanEnv({
     FILTER_URL: envalid.str({
       desc: "Regex to filter web page URLs",
@@ -39,7 +40,7 @@ export const processWebPages = async ({
 
   let numberOfProcessed = 0;
   let numberOfErrors = 0;
-  let numberOfSkipped = 0;
+  let numberOfFilteredOut = 0;
 
   const webPageDocumentPaths = await listFilePaths({
     filesNicknameToLog: "web page documents",
@@ -79,7 +80,7 @@ export const processWebPages = async ({
     webPageUrlLookup[webPageDocument.webPageUrl] = true;
 
     if (!filterUrlRegex.test(webPageDocument.webPageUrl)) {
-      numberOfSkipped += 1;
+      numberOfFilteredOut += 1;
       output?.write(chalk.gray(`does not match FILTER_URL`));
       await handleSkippedWebPage?.({
         progressPrefix,
@@ -99,13 +100,25 @@ export const processWebPages = async ({
       numberOfProcessed += 1;
     } catch (error) {
       numberOfErrors += 1;
-      output?.write(chalk.red(`Unexpected error ${getErrorMessage(error)}`));
+      output?.write(chalk.red(getErrorMessage(error)));
     }
   }
 
   output?.write(
     `\n\nWeb pages in collection: ${
-      numberOfProcessed + numberOfErrors + numberOfSkipped
-    } (processed: ${numberOfProcessed}, errors: ${numberOfErrors}, filtered out: ${numberOfSkipped})\n`,
+      numberOfProcessed + numberOfErrors + numberOfFilteredOut
+    } (processed: ${numberOfProcessed}, ${(numberOfErrors > 0
+      ? chalk.red
+      : chalk.reset)(
+      `errors: ${numberOfErrors}`,
+    )}, filtered out: ${numberOfFilteredOut})\n`,
   );
+
+  if (numberOfErrors) {
+    return { status: "failed" };
+  } else if (numberOfProcessed) {
+    return { status: "processed" };
+  } else {
+    return { status: "skipped" };
+  }
 };
