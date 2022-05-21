@@ -1,16 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention,unicorn/consistent-function-scoping -- needed for playwrightPage.evaluate() */
 
 import { AbortError } from "../../errors";
-import {
-  calculateDaysBetween,
-  serializeTime,
-  unserializeTime,
-} from "../../time";
+import { calculateDaysBetween, unserializeTime } from "../../time";
 import {
   InteractWithPlaywrightPage,
   PlaywrightPageInteractionPayload,
 } from "../types";
 import { parseRawVkTime } from "./parse-raw-vk-time";
+import { serializeVkDate } from "./serialize-vk-date";
 
 const closeAuthModalIfPresent = async ({
   playwrightPage,
@@ -42,67 +39,44 @@ const closeAgeRestrictionModalIfPreset = async ({
   return false;
 };
 
-interface BatchScrollInfo {
-  bottomPostTime: string;
-  uniqueDayCountInBatchScroll: number;
-}
-
-/**
- * We scroll by at least 1 day.
- * A heuristic to scroll for more than one unique day inside evaluate
- * helps reduce the number of actions and to speed up capturing
- */
-const guessUniqueDayCountInNextScroll = ({
-  batchScrollInfos,
-  relevantTimeMax,
+const listRawDatesToScrollPast = ({
+  lastSeenBottomPostTime,
   relevantTimeMin,
 }: {
-  batchScrollInfos: BatchScrollInfo[];
-  relevantTimeMax: string;
+  lastSeenBottomPostTime: string;
   relevantTimeMin: string;
-}): number => {
-  const bottomPostTime = batchScrollInfos.at(-1)?.bottomPostTime;
-  if (!bottomPostTime) {
-    return 1;
+}): string[] => {
+  const startDateTime = unserializeTime(lastSeenBottomPostTime)
+    .setZone("Europe/Moscow")
+    .startOf("day");
+  const dateTimeMinMinusOneDay = unserializeTime(relevantTimeMin).minus({
+    day: 1,
+  });
+
+  const candidateStopDateTime =
+    startDateTime.day === 1
+      ? startDateTime.minus({ month: 1 }).set({ day: 15 })
+      : startDateTime.day <= 15
+      ? startDateTime.set({ day: 1 })
+      : startDateTime.set({ day: 15 });
+
+  const stopDateTime = (
+    dateTimeMinMinusOneDay > candidateStopDateTime
+      ? dateTimeMinMinusOneDay
+      : candidateStopDateTime
+  )
+    .setZone("Europe/Moscow")
+    .startOf("day");
+
+  const result: string[] = [];
+
+  let dateTime = startDateTime;
+  while (calculateDaysBetween(stopDateTime, dateTime) >= 1) {
+    result.push(serializeVkDate(dateTime));
+    dateTime = dateTime.minus({ days: 1 });
   }
 
-  let uniqueDayCountInAllScrolls = 0;
-  for (const { uniqueDayCountInBatchScroll } of batchScrollInfos) {
-    uniqueDayCountInAllScrolls += uniqueDayCountInBatchScroll;
-  }
-
-  const scrolledDayCount = calculateDaysBetween(
-    bottomPostTime,
-    relevantTimeMax,
-  );
-
-  const meanDaysPerScroll = scrolledDayCount / uniqueDayCountInAllScrolls;
-
-  const bottomPostDateTime = unserializeTime(bottomPostTime);
-  const relevantDateTimeMin = unserializeTime(relevantTimeMin);
-
-  for (const uniqueDayCountCandidate of [20, 10, 5, 2]) {
-    // Gradually speed up
-    if (uniqueDayCountInAllScrolls < uniqueDayCountCandidate) {
-      continue;
-    }
-    const estimatedLandingDateTime = bottomPostDateTime.minus({
-      days: Math.floor(uniqueDayCountCandidate * meanDaysPerScroll),
-    });
-
-    const estimatedUniqueDatesInTail =
-      estimatedLandingDateTime.diff(relevantDateTimeMin).as("days") /
-      meanDaysPerScroll;
-
-    // Gradually slow down
-    if (estimatedUniqueDatesInTail < uniqueDayCountCandidate) {
-      continue;
-    }
-
-    return uniqueDayCountCandidate;
-  }
-
-  return 1;
+  return result;
 };
 
 const scrollPosts = async (
@@ -116,23 +90,23 @@ const scrollPosts = async (
   } = payload;
 
   let authModalAlreadyClosed = false;
-  let lastSeenBottomPostRawTime: string | undefined;
-  const batchScrollInfos: BatchScrollInfo[] = [];
-  const relevantTimeMax = serializeTime();
+  let lastSeenBottomPostTime: string | undefined;
 
   for (;;) {
-    const uniqueDayCountInBatchScroll = guessUniqueDayCountInNextScroll({
-      batchScrollInfos,
-      relevantTimeMin,
-      relevantTimeMax,
-    });
+    const rawDatesToScrollPast =
+      lastSeenBottomPostTime && authModalAlreadyClosed
+        ? listRawDatesToScrollPast({
+            lastSeenBottomPostTime,
+            relevantTimeMin,
+          })
+        : [];
 
     // All interactions are placed inside a single evaluate call to reduce the number of
     // Playwright actions in the trace. This speeds up page capturing and reduces trace size.
     const bottomPostRawTime = await playwrightPage.evaluate<
       string | undefined,
-      number
-    >(async (_uniqueDayCountInBatchScroll) => {
+      string[]
+    >(async (_rawDatesToScrollPast) => {
       /** @returns "1 марта в 04:42" or "сегодня в 04:42"  */
       const _extractRawTime = (dateElement: Element): string => {
         return (
@@ -150,8 +124,11 @@ const scrollPosts = async (
           : undefined;
       };
 
-      const _extractRawDay = (rawTime: string): string =>
-        rawTime.match(/^(\d+ )?\p{L}+/u)?.[0] ?? "";
+      const _extractRawDate = (rawTime: string): string =>
+        (rawTime.match(/^(\d+\s)?\p{L}+(\s\d{4})?/u)?.[0] ?? "").replace(
+          /\s/g,
+          " ",
+        );
 
       const _sleep = (timeout: number) =>
         new Promise((resolve) => setTimeout(resolve, timeout));
@@ -160,9 +137,8 @@ const scrollPosts = async (
       if (!initialBottomPostRawTime) {
         return;
       }
-      let previousBottomPostDate = _extractRawDay(initialBottomPostRawTime);
+      let previousBottomPostDate = _extractRawDate(initialBottomPostRawTime);
       let previousBottomPostRawTime = initialBottomPostRawTime;
-      let uniqueDayCountLeftToScroll = _uniqueDayCountInBatchScroll - 1;
       for (;;) {
         // Scroll to bottom
         window.scrollTo(0, document.body.scrollHeight);
@@ -196,17 +172,16 @@ const scrollPosts = async (
         }
         previousBottomPostRawTime = currentBottomPostRawTime;
 
-        // Stop scrolling if scrolled to a new day
-        const currentBottomPostDate = _extractRawDay(currentBottomPostRawTime);
+        // Stop scrolling when seeing a new date (unless we should scroll past it)
+        const currentBottomPostDate = _extractRawDate(currentBottomPostRawTime);
         if (previousBottomPostDate !== currentBottomPostDate) {
-          if (uniqueDayCountLeftToScroll === 0) {
+          if (!_rawDatesToScrollPast.includes(currentBottomPostDate)) {
             return currentBottomPostRawTime;
           }
           previousBottomPostDate = currentBottomPostDate;
-          uniqueDayCountLeftToScroll -= 1;
         }
       }
-    }, uniqueDayCountInBatchScroll);
+    }, rawDatesToScrollPast);
 
     if (abortSignal?.aborted) {
       throw new AbortError();
@@ -222,25 +197,13 @@ const scrollPosts = async (
     }
 
     // Early exit reached the bottom of the wall
-    if (lastSeenBottomPostRawTime === bottomPostRawTime) {
+    const bottomPostTime = parseRawVkTime(bottomPostRawTime);
+    if (lastSeenBottomPostTime === bottomPostTime) {
       break;
     }
-    lastSeenBottomPostRawTime = bottomPostRawTime;
+    lastSeenBottomPostTime = bottomPostTime;
 
-    const bottomPostTime = parseRawVkTime(bottomPostRawTime);
-
-    batchScrollInfos.push({
-      bottomPostTime,
-      uniqueDayCountInBatchScroll,
-    });
-
-    log?.(
-      `Scrolled to ${bottomPostTime}${
-        uniqueDayCountInBatchScroll !== 1
-          ? ` (unique post dates: ${uniqueDayCountInBatchScroll})`
-          : ""
-      }`,
-    );
+    log?.(`Scrolled to ${bottomPostTime}`);
 
     if (bottomPostTime < relevantTimeMin) {
       break;
