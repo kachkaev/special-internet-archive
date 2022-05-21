@@ -357,7 +357,14 @@ export const generateUpdateInventoryScript =
     if (!updateAliases && (thereWasAtLeastOneAlias as boolean)) {
       output.write(
         chalk.blue(
-          "Updating web page aliases is skipped by default to speed up the process. Use UPDATE_ALIASES=true to override that. You may also want to set EAGER=true to include web pages for which snapshots are not due yet\n",
+          "Updating web page aliases is skipped by default to speed up the process. Use UPDATE_ALIASES=true to override that\n",
+        ),
+      );
+    }
+    if (!eager) {
+      output.write(
+        chalk.blue(
+          "You may want to set EAGER=true to include web pages for which snapshots are not due yet\n",
         ),
       );
     }
