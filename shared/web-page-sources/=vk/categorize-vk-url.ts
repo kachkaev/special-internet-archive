@@ -31,6 +31,6 @@ export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
   }
 
   throw new UserFriendlyError(
-    `URL ${webPageUrl} is not canonical or is not currently supported for VK.`,
+    `URL ${webPageUrl} is not canonical or is not currently supported for VK`,
   );
 };

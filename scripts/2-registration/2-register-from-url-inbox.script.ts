@@ -8,6 +8,7 @@ import {
   registerWebPage,
 } from "../../shared/web-page-documents";
 import { generateUrlExamplesMessage } from "../../shared/web-page-sources";
+import { reportGithubMessageIfNeeded } from "../../shared/workflow-commands";
 
 const output = process.stdout;
 
@@ -32,7 +33,7 @@ const script = async () => {
 
   const maxRowLength = _.max(urlInboxRows.map((row) => row.text.length)) ?? 0;
 
-  let numberOfErrors = 0;
+  const invalidUrls: string[] = [];
 
   const webPageDirPathLookup = await generateWebPageDirPathLookup();
 
@@ -54,7 +55,7 @@ const script = async () => {
 
     switch (operationResult.status) {
       case "failed": {
-        output.write(chalk.red(operationResult.message ?? "unknown error"));
+        output.write(chalk.yellow(operationResult.message ?? "unknown error"));
         break;
       }
       case "processed": {
@@ -69,22 +70,30 @@ const script = async () => {
     }
 
     if (operationResult.status === "failed") {
-      numberOfErrors += 1;
+      invalidUrls.push(urlInboxRow.url);
     }
   }
 
   output.write("\n");
   output.write("\n");
 
-  if (numberOfErrors) {
+  if (invalidUrls.length > 0) {
     output.write(
-      `Done with warnings. ${chalk.red(
-        `Number of invalid URLs: ${numberOfErrors}.`,
+      `${chalk.yellow(
+        `Done with warnings. Number of invalid URLs: ${invalidUrls.length}.`,
       )} ${generateUrlExamplesMessage()}`,
     );
   } else {
     output.write("Done.\n");
   }
+
+  reportGithubMessageIfNeeded({
+    messageType: "warning",
+    message: `URL inbox contains ${invalidUrls.length} invalid URL${
+      invalidUrls.length > 1 ? "s" : ""
+    }: ${invalidUrls.join(" ")}`,
+    output,
+  });
 
   await syncCollectionIfNeeded({
     output,

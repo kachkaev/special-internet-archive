@@ -52,7 +52,7 @@ const getWebPageSource = (webPageUrl: string): WebPageSource => {
   }
 
   throw new UserFriendlyError(
-    `URL ${webPageUrl} is invalid or is not currently supported.`,
+    `URL ${webPageUrl} is invalid or is not currently supported`,
   );
 };
 
