@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import * as envalid from "envalid";
 import _ from "lodash";
+import { DateTime } from "luxon";
 import { WriteStream } from "node:tty";
 import RegexParser from "regex-parser";
 
@@ -211,6 +212,8 @@ export const generateProcessSnapshotQueueScript =
 
         abortController.signal.addEventListener("abort", abortHandler);
 
+        const dateTimeAtSnapshotLaunch = DateTime.local();
+
         const operationResult = await snapshotGenerator.captureSnapshot({
           abortSignal: abortController.signal,
           snapshotContext: _.defaults({}, item.context, { relevantTimeMin }),
@@ -225,6 +228,10 @@ export const generateProcessSnapshotQueueScript =
           return;
         }
 
+        const serializedDuration = DateTime.local()
+          .diff(dateTimeAtSnapshotLaunch)
+          .toFormat("hh:mm:ss");
+
         await reportSnapshotQueueAttempts({
           attemptMessage: operationResult.message,
           attemptStartedAt,
@@ -238,7 +245,7 @@ export const generateProcessSnapshotQueueScript =
           numberOfSucceededAttempts += 1;
           output.write(
             chalk.magenta(
-              `\n${progressPrefix}Snapshot processed${
+              `\n${progressPrefix}Snapshot processed in ${serializedDuration}${
                 operationResult.message ? `. ${operationResult.message}` : ""
               }`,
             ),
@@ -250,7 +257,7 @@ export const generateProcessSnapshotQueueScript =
           });
           output.write(
             chalk.red(
-              `\n${progressPrefix}Snapshot failed${
+              `\n${progressPrefix}Snapshot failed in ${serializedDuration}${
                 operationResult.message ? `. ${operationResult.message}` : ""
               }`,
             ),
