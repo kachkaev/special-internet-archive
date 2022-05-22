@@ -3,12 +3,12 @@ import _ from "lodash";
 
 import { getUrlInboxFilePath, readUrlInboxRows } from "../../shared/collection";
 import { syncCollectionIfNeeded } from "../../shared/collection-syncing";
+import { reportGithubMessageIfNeeded } from "../../shared/github";
 import {
   generateWebPageDirPathLookup,
   registerWebPage,
 } from "../../shared/web-page-documents";
 import { generateUrlExamplesMessage } from "../../shared/web-page-sources";
-import { reportGithubMessageIfNeeded } from "../../shared/workflow-commands";
 
 const output = process.stdout;
 
@@ -83,17 +83,16 @@ const script = async () => {
         `Done with warnings. Number of invalid URLs: ${invalidUrls.length}.`,
       )} ${generateUrlExamplesMessage()}`,
     );
+    reportGithubMessageIfNeeded({
+      messageType: "warning",
+      message: `URL inbox contains ${invalidUrls.length} invalid URL${
+        invalidUrls.length > 1 ? "s" : ""
+      }: ${invalidUrls.join(" ")}`,
+      output,
+    });
   } else {
     output.write("Done.\n");
   }
-
-  reportGithubMessageIfNeeded({
-    messageType: "warning",
-    message: `URL inbox contains ${invalidUrls.length} invalid URL${
-      invalidUrls.length > 1 ? "s" : ""
-    }: ${invalidUrls.join(" ")}`,
-    output,
-  });
 
   await syncCollectionIfNeeded({
     output,
