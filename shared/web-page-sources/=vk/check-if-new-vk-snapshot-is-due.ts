@@ -1,3 +1,6 @@
+import * as envalid from "envalid";
+
+import { cleanEnv } from "../../clean-env";
 import { calculateDaysSince } from "../../time";
 import { CheckIfSnapshotIsDue } from "../types";
 import { assertVkUrl } from "./assert-vk-url";
@@ -9,6 +12,12 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = ({
   webPageDocument,
 }) => {
   assertVkUrl(webPageDocument.webPageUrl);
+
+  const env = cleanEnv({
+    VK_ACCOUNT_SNAPSHOT_FREQUENCY_IN_DAYS: envalid.num({
+      default: 3,
+    }),
+  });
 
   const categorizedVkUrl = categorizeVkUrl(webPageDocument.webPageUrl);
 
@@ -51,6 +60,8 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = ({
       // @todo Look into posts time stamps in the snapshot summary combination.
       // If there are time gaps, return true for Playwright because previous
       // snapshots could fail half-way.
-      return daysSinceNewestSnapshot > 1;
+      return (
+        daysSinceNewestSnapshot > env.VK_ACCOUNT_SNAPSHOT_FREQUENCY_IN_DAYS
+      );
   }
 };
