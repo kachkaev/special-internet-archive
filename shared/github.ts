@@ -10,10 +10,12 @@ export const reportGithubMessageIfNeeded = ({
   messageType: "warning" | "error";
   output: WriteStream;
   message: string;
-}): void => {
+}): boolean => {
   if (!process.env["GITHUB_ACTIONS"]) {
-    return;
+    return false;
   }
 
   output.write(`::${messageType}::${message}\n`);
+
+  return true;
 };

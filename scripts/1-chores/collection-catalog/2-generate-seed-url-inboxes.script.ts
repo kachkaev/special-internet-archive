@@ -10,7 +10,8 @@ import {
   getCollectionCatalogSeedUrlInboxesDirPath,
 } from "../../../shared/collection-catalog";
 import { UserFriendlyError } from "../../../shared/errors";
-import { isUrl } from "../../../shared/urls";
+import { reportGithubMessageIfNeeded } from "../../../shared/github";
+import { checkIfWebPageUrlIsAcceptable } from "../../../shared/web-page-sources";
 
 const output = process.stdout;
 
@@ -43,6 +44,14 @@ const parseBoolean = (rawValue: string | undefined): boolean => {
 const script = async () => {
   output.write(chalk.bold(`Generating collection catalog seed URL inboxes\n`));
 
+  const reportWarning = (message: string) => {
+    if (
+      !reportGithubMessageIfNeeded({ messageType: "warning", output, message })
+    ) {
+      output.write(chalk.yellow(`${message}\n`));
+    }
+  };
+
   const downloadFilePath = getCollectionCatalogSeedFilePath();
   if (!(await fs.pathExists(downloadFilePath))) {
     throw new UserFriendlyError(
@@ -74,11 +83,9 @@ const script = async () => {
       continue;
     }
 
-    if (!isUrl(url)) {
-      output.write(
-        chalk.yellow(
-          `Skipping row ${rowIndex} because URL looks invalid: ${url}\n`,
-        ),
+    if (!checkIfWebPageUrlIsAcceptable(url)) {
+      reportWarning(
+        `Skipping row ${rowIndex} because URL cannot be accepted: ${url}`,
       );
       continue;
     }
@@ -101,12 +108,10 @@ const script = async () => {
   const readyUrlsByCollectionId: Record<string, string[]> = {};
   for (const [url, itemsInGroup] of Object.entries(itemsGroupedByUrl)) {
     if (itemsInGroup.length > 1) {
-      output.write(
-        chalk.yellow(
-          `Ignoring URL ${url} as it appears multiple times (rows ${itemsInGroup
-            .map((item) => item.rowIndex)
-            .join(", ")})\n`,
-        ),
+      reportWarning(
+        `Ignoring URL ${url} as it appears multiple times (rows ${itemsInGroup
+          .map((item) => item.rowIndex)
+          .join(", ")})`,
       );
       continue;
     }

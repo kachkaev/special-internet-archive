@@ -56,18 +56,18 @@ const getWebPageSource = (webPageUrl: string): WebPageSource => {
   );
 };
 
+export const generateWebPageDirPath = (webPageUrl: string): string => {
+  return getWebPageSource(webPageUrl).generateWebPageDirPath(webPageUrl);
+};
+
 export const checkIfWebPageUrlIsAcceptable = (webPageUrl: string): boolean => {
   try {
-    getWebPageSource(webPageUrl).assertWebPageUrl(webPageUrl);
+    generateWebPageDirPath(webPageUrl);
 
     return true;
   } catch {
     return false;
   }
-};
-
-export const generateWebPageDirPath = (webPageUrl: string): string => {
-  return getWebPageSource(webPageUrl).generateWebPageDirPath(webPageUrl);
 };
 
 export const listWebPageAliases = (webPageUrl: string): string[] => {
