@@ -39,7 +39,10 @@ const ensureTraceViewerServerIsRunning = async (): Promise<void> => {
     traceViewerServerPort,
   );
 
-  const traceBrowser = await chromium.launch({ headless: true });
+  const traceBrowser = await chromium.launch({
+    headless: true,
+    args: ["--blink-settings=imagesEnabled=false"], // Reduces chances of crashing
+  });
   traceContext = await traceBrowser.newContext();
 };
 
