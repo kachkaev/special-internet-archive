@@ -31,7 +31,7 @@ export const vkWebPageSource: WebPageSource = {
         break;
     }
 
-    return pathSegments;
+    return ["vk", ...pathSegments];
   },
 
   interactWithPlaywrightPage: interactWithVkPlaywrightPage,
