@@ -79,7 +79,7 @@ export const evaluateSnapshot = async <T>(
   evaluate: (body: HTMLBodyElement) => T | Promise<T>,
 ): Promise<T> => {
   const snapshotBody = tracePage.frameLocator("#snapshot").locator("body");
-  await snapshotBody.waitFor({ state: "visible" });
+  await snapshotBody.waitFor({ state: "attached" });
 
   return snapshotBody.evaluate(evaluate);
 };
