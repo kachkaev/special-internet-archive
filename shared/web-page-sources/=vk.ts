@@ -1,6 +1,3 @@
-import path from "node:path";
-
-import { getWebPagesDirPath } from "../collection";
 import { assertVkUrl } from "./=vk/assert-vk-url";
 import { calculateRelevantTimeMinForNewIncrementalVkSnapshot } from "./=vk/calculate-relevant-time-min-for-mew-incremental-vk-snapshot";
 import { categorizeVkUrl } from "./=vk/categorize-vk-url";
@@ -16,11 +13,10 @@ export const vkWebPageSource: WebPageSource = {
 
   checkIfSnapshotIsDue: checkIfNewVkSnapshotIsDue,
 
-  generateWebPageDirPath: (webPageUrl) => {
-    assertVkUrl(webPageUrl);
+  generateWebPageDirPathSegments: (webPageUrl) => {
+    const categorizedVkUrl = categorizeVkUrl(webPageUrl);
 
     let pathSegments: string[];
-    const categorizedVkUrl = categorizeVkUrl(webPageUrl);
     switch (categorizedVkUrl.vkPageType) {
       case "account":
         pathSegments = ["accounts", categorizedVkUrl.accountId];
@@ -35,7 +31,7 @@ export const vkWebPageSource: WebPageSource = {
         break;
     }
 
-    return path.resolve(getWebPagesDirPath(), "vk", ...pathSegments);
+    return pathSegments;
   },
 
   interactWithPlaywrightPage: interactWithVkPlaywrightPage,

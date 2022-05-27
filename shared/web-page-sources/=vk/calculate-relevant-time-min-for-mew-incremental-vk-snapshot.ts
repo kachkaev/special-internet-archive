@@ -1,11 +1,8 @@
 import { CalculateRelevantTimeMinForNewIncrementalSnapshot } from "../types";
-import { assertVkUrl } from "./assert-vk-url";
 import { categorizeVkUrl } from "./categorize-vk-url";
 
 export const calculateRelevantTimeMinForNewIncrementalVkSnapshot: CalculateRelevantTimeMinForNewIncrementalSnapshot =
   ({ webPageDocument, mostRecentSnapshotTime, snapshotGeneratorId }) => {
-    assertVkUrl(webPageDocument.webPageUrl);
-
     const categorizedVkUrl = categorizeVkUrl(webPageDocument.webPageUrl);
 
     if (

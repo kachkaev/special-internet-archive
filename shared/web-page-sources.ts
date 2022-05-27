@@ -1,7 +1,8 @@
 import _ from "lodash";
+import path from "node:path";
 
 import { checkIfTextIsRelevant } from "./check-if-text-is-relevant";
-import { relevantTimeMin } from "./collection";
+import { getWebPagesDirPath, relevantTimeMin } from "./collection";
 import { UserFriendlyError } from "./errors";
 import { TempRawVkPost } from "./snapshot-summaries";
 import { vkWebPageSource } from "./web-page-sources/=vk";
@@ -56,13 +57,24 @@ const getWebPageSource = (webPageUrl: string): WebPageSource => {
   );
 };
 
-export const generateWebPageDirPath = (webPageUrl: string): string => {
-  return getWebPageSource(webPageUrl).generateWebPageDirPath(webPageUrl);
+export const generateWebPageDirPathSegments = (
+  webPageUrl: string,
+): string[] => {
+  return getWebPageSource(webPageUrl).generateWebPageDirPathSegments(
+    webPageUrl,
+  );
+};
+
+export const generateWebPageDirPath = (webpageUrl: string): string => {
+  return path.resolve(
+    getWebPagesDirPath(),
+    ...generateWebPageDirPathSegments(webpageUrl),
+  );
 };
 
 export const checkIfWebPageUrlIsAcceptable = (webPageUrl: string): boolean => {
   try {
-    generateWebPageDirPath(webPageUrl);
+    generateWebPageDirPathSegments(webPageUrl);
 
     return true;
   } catch {

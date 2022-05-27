@@ -3,7 +3,6 @@ import * as envalid from "envalid";
 import { cleanEnv } from "../../clean-env";
 import { calculateDaysSince } from "../../time";
 import { CheckIfSnapshotIsDue } from "../types";
-import { assertVkUrl } from "./assert-vk-url";
 import { categorizeVkUrl } from "./categorize-vk-url";
 
 export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = ({
@@ -11,15 +10,13 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = ({
   snapshotGeneratorId,
   webPageDocument,
 }) => {
-  assertVkUrl(webPageDocument.webPageUrl);
+  const categorizedVkUrl = categorizeVkUrl(webPageDocument.webPageUrl);
 
   const env = cleanEnv({
     VK_ACCOUNT_SNAPSHOT_FREQUENCY_IN_DAYS: envalid.num({
       default: 3,
     }),
   });
-
-  const categorizedVkUrl = categorizeVkUrl(webPageDocument.webPageUrl);
 
   const oldestSnapshotTime = knownSnapshotTimesInAscOrder.at(0);
   const newestSnapshotTime = knownSnapshotTimesInAscOrder.at(-1);

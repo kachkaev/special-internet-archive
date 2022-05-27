@@ -9,7 +9,7 @@ import {
 } from "../snapshot-summaries";
 import { WebPageAnnotation, WebPageDocument } from "../web-page-documents";
 
-export type GenerateWebPageDirPath = (webPageUrl: string) => string;
+export type GenerateWebPageDirPathSegments = (webPageUrl: string) => string[];
 export type AssertSourceUrl = (webPageUrl: string) => void;
 
 export type CalculateRelevantTimeMinForNewIncrementalSnapshot = (payload: {
@@ -55,7 +55,7 @@ export interface WebPageSource {
   assertWebPageUrl: AssertSourceUrl;
   calculateRelevantTimeMinForNewIncrementalSnapshot?: CalculateRelevantTimeMinForNewIncrementalSnapshot;
   checkIfSnapshotIsDue: CheckIfSnapshotIsDue;
-  generateWebPageDirPath: GenerateWebPageDirPath;
+  generateWebPageDirPathSegments: GenerateWebPageDirPathSegments;
   interactWithPlaywrightPage?: InteractWithPlaywrightPage;
   listUrlExamples: () => string[];
   listWebPageAliases: (webPageUrl: string) => string[];
