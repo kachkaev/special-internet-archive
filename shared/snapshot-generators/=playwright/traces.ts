@@ -30,13 +30,15 @@ export const ensureTraceViewerIsStopped = async () => {
   await traceBrowserContext?.close();
 };
 
+const timeoutThatToleratesEvenVeryLargeSnapshots = 5 * 60 * 1000;
+
 export const openTrace = async (traceFilePath: string): Promise<Page> => {
   await traceServer?.stop();
   traceServer = await startTraceServer();
 
   const page = await createPage();
-  page.setDefaultTimeout(120_000);
-  page.setDefaultNavigationTimeout(120_000);
+  page.setDefaultTimeout(timeoutThatToleratesEvenVeryLargeSnapshots);
+  page.setDefaultNavigationTimeout(timeoutThatToleratesEvenVeryLargeSnapshots);
 
   await page.goto(
     `${traceServer.urlPrefix}/trace/index.html?trace=${encodeURIComponent(
