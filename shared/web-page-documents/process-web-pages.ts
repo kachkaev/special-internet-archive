@@ -6,7 +6,7 @@ import RegexParser from "regex-parser";
 
 import { cleanEnv } from "../clean-env";
 import { getWebPagesDirPath } from "../collection";
-import { getErrorMessage } from "../errors";
+import { AbortError, getErrorMessage } from "../errors";
 import { generateProgress } from "../generate-progress";
 import { listFilePaths } from "../list-file-paths";
 import { OperationResult } from "../operations";
@@ -99,6 +99,9 @@ export const processWebPages = async ({
       });
       numberOfProcessed += 1;
     } catch (error) {
+      if (error instanceof AbortError) {
+        throw error;
+      }
       numberOfErrors += 1;
       output?.write(chalk.red(getErrorMessage(error)));
     }

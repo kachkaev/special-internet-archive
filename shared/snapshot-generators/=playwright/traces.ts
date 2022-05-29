@@ -1,68 +1,43 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call */
-import getPort from "get-port";
-import { createRequire } from "node:module";
-import path from "node:path";
 import { BrowserContext, chromium, Page } from "playwright";
-import sleep from "sleep-promise";
 
-// Context: https://github.com/microsoft/playwright/issues/9883
+import { startTraceServer, TraceServer } from "./traces/trace-server";
 
-const traceViewerServerPort = await getPort({ port: 42_424 });
+let traceServer: TraceServer | undefined;
 
-let traceViewerStarted = false;
-let traceViewerContext: BrowserContext | undefined;
-let traceContext: BrowserContext | undefined;
+const restartTraceServer = async (): Promise<TraceServer> => {
+  await traceServer?.stopTraceServer();
 
-const ensureTraceViewerServerIsRunning = async (): Promise<void> => {
-  if (traceViewerStarted) {
-    while (!traceContext) {
-      await sleep(100);
-    }
+  traceServer = await startTraceServer();
 
-    return;
-  }
-  traceViewerStarted = true;
-
-  const require = createRequire(import.meta.url);
-
-  const importPath = path.resolve(
-    path.dirname(require.resolve("playwright-core")),
-    "lib/server/trace/viewer/traceViewer.js",
-  );
-
-  const { showTraceViewer } = await import(`file://${importPath}`);
-
-  traceViewerContext = await showTraceViewer(
-    [],
-    "chromium",
-    true,
-    traceViewerServerPort,
-  );
-
-  const traceBrowser = await chromium.launch({
-    headless: true,
-    args: ["--blink-settings=imagesEnabled=false"], // Reduces chances of crashing
-  });
-  traceContext = await traceBrowser.newContext();
+  return traceServer;
 };
 
-export const ensureTraceViewerServerIsStopped = () => {
-  void traceContext?.close();
-  void traceViewerContext?.close();
+let traceBrowserContext: BrowserContext | undefined;
 
-  traceContext = undefined;
-  traceViewerContext = undefined;
-  traceViewerStarted = false;
+const createPage = async (): Promise<Page> => {
+  if (!traceBrowserContext) {
+    const traceBrowser = await chromium.launch({
+      headless: false,
+      args: ["--blink-settings=imagesEnabled=false"], // Reduces chances of crashing
+    });
+    traceBrowserContext = await traceBrowser.newContext();
+  }
+
+  return traceBrowserContext.newPage();
+};
+
+export const ensureTraceViewerServerIsStopped = async () => {
+  await traceServer?.stopTraceServer();
 };
 
 export const openTrace = async (traceFilePath: string): Promise<Page> => {
-  await ensureTraceViewerServerIsRunning();
-  const page = await traceContext!.newPage();
+  const { traceServerPrefix } = await restartTraceServer();
+  const page = await createPage();
   page.setDefaultTimeout(120_000);
   page.setDefaultNavigationTimeout(120_000);
 
   await page.goto(
-    `http://localhost:${traceViewerServerPort}/trace/index.html?trace=${encodeURIComponent(
+    `${traceServerPrefix}/trace/index.html?trace=${encodeURIComponent(
       traceFilePath,
     )}`,
   );

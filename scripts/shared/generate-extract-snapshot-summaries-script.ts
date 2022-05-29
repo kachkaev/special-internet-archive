@@ -3,6 +3,7 @@ import fs from "fs-extra";
 import { WriteStream } from "node:tty";
 
 import {
+  AbortError,
   throwExitCodeErrorIfOperationFailed,
   UserFriendlyError,
 } from "../../shared/errors";
@@ -53,6 +54,19 @@ export const generateExtractSnapshotSummariesScript =
 
     let pagesWithoutSnapshotsFound = false;
 
+    const abortController = new AbortController();
+
+    const handleSigint = () => {
+      output.write(
+        chalk.yellow(
+          "\n\nSnapshot summary extraction was aborted with SIGINT\n",
+        ),
+      );
+      abortController.abort();
+      process.off("SIGINT", handleSigint);
+    };
+    process.on("SIGINT", handleSigint);
+
     const operationResult = await processWebPages({
       output,
       processWebPage: async ({
@@ -60,6 +74,10 @@ export const generateExtractSnapshotSummariesScript =
         webPageDirPath,
         webPageDocument,
       }) => {
+        if (abortController.signal.aborted) {
+          throw new AbortError();
+        }
+
         const snapshotInventoryItems =
           webPageDocument.snapshotInventoryLookup[snapshotGeneratorId]?.items ??
           [];
@@ -150,6 +168,12 @@ export const generateExtractSnapshotSummariesScript =
         }
       },
     });
+
+    process.off("SIGINT", handleSigint);
+
+    if (abortController.signal.aborted) {
+      throw new AbortError();
+    }
 
     await finishExtractSnapshotSummaryDataBatch?.();
 
