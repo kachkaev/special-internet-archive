@@ -1,5 +1,4 @@
 import { Browser, BrowserContext, Page, webkit } from "playwright";
-import sleep from "sleep-promise";
 
 import { startTraceServer, TraceServer } from "./traces/trace-server";
 
@@ -35,43 +34,6 @@ export const openTrace = async (traceFilePath: string): Promise<Page> => {
   await traceServer?.stop();
   traceServer = await startTraceServer();
 
-  // const resp1 = await axios.get(`${traceServerPrefix}/trace/index.html`);
-  // console.log(resp1);
-
-  // // console.log("???", traceFilePath, `${traceServerPrefix}/trace/context`);
-  // const { data, ...rest } = await axios.get(
-  //   `${traceServerPrefix}/trace/context`,
-  //   {
-  //     params: {
-  //       trace: traceFilePath,
-  //     },
-  //     // transitional: {
-  //     //   // eslint-disable-next-line @typescript-eslint/naming-convention -- third-party API
-  //     //   silentJSONParsing: false, // Disables Object to string conversion if parsing fails
-  //     // },
-  //     responseType: "json",
-  //     validateStatus: () => true,
-  //   },
-  // );
-
-  // console.log({ data, rest });
-  // await sleep(100_000_000);
-  // const lastAction = traceContext.actions.at(-1);
-
-  // const { data: lastSnapshot } = await axios.get<string>(
-  //   `${traceServerPrefix}/trace/snapshot/${lastAction.pageId}`,
-  //   {
-  //     params: {
-  //       trace: traceFilePath,
-  //       name: lastAction.afterSnapshot,
-  //     },
-  //   },
-  // );
-
-  // console.log(lastSnapshot.slice(0, 2000));
-
-  // throw new Error("oops");
-
   const page = await createPage();
   page.setDefaultTimeout(120_000);
   page.setDefaultNavigationTimeout(120_000);
@@ -98,7 +60,6 @@ export const gotoAction = async (tracePage: Page, actionIndex: number) => {
     )
     .click();
 
-  await sleep(1000);
   await tracePage.waitForLoadState("networkidle");
 };
 
