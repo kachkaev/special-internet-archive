@@ -171,11 +171,11 @@ export const generateExtractSnapshotSummariesScript =
 
     process.off("SIGINT", handleSigint);
 
+    await finishExtractSnapshotSummaryDataBatch?.();
+
     if (abortController.signal.aborted) {
       throw new AbortError();
     }
-
-    await finishExtractSnapshotSummaryDataBatch?.();
 
     if (pagesWithoutSnapshotsFound as boolean) {
       output.write(

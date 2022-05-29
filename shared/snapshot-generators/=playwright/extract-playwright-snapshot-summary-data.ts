@@ -1,12 +1,12 @@
 import { TempRawVkPost } from "../../snapshot-summaries";
 import { ExtractSnapshotSummaryData } from "../types";
-import { evaluateSnapshot, gotoLastAction, openTrace } from "./traces";
+import { evaluateSnapshot, gotoAction, openTrace } from "./traces";
 
 export const extractPlaywrightSnapshotSummaryData: ExtractSnapshotSummaryData =
   async ({ snapshotFilePath }) => {
     const tracePage = await openTrace(snapshotFilePath);
 
-    await gotoLastAction(tracePage);
+    await gotoAction(tracePage, -1);
 
     const tempRawVkPosts = await evaluateSnapshot(tracePage, (body) => {
       const result: TempRawVkPost[] = [];

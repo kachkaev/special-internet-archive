@@ -8,8 +8,8 @@ import { createRequire } from "node:module";
 import path from "node:path";
 
 export interface TraceServer {
-  stopTraceServer: () => Promise<void>;
-  traceServerPrefix: string;
+  stop: () => Promise<void>;
+  urlPrefix: string;
 }
 
 export const startTraceServer = async (): Promise<TraceServer> => {
@@ -52,8 +52,8 @@ export const startTraceServer = async (): Promise<TraceServer> => {
   });
 
   return {
-    traceServerPrefix: await server.start(port),
-    stopTraceServer: async () => {
+    urlPrefix: await server.start(port),
+    stop: async () => {
       await server.stop();
     },
   };
