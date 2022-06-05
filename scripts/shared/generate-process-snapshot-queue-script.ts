@@ -39,12 +39,15 @@ export const generateProcessSnapshotQueueScript =
     snapshotGeneratorId: SnapshotGeneratorId;
   }) =>
   async () => {
-    await syncCollectionIfNeeded({
-      output,
-      mode: "preliminary",
-    });
-
     const snapshotGenerator = getSnapshotGenerator(snapshotGeneratorId);
+
+    if (snapshotGenerator.role === "local") {
+      await syncCollectionIfNeeded({
+        output,
+        mode: "preliminary",
+      });
+    }
+
     output.write(
       chalk.bold(`Processing ${snapshotGenerator.name} snapshot queue\n`),
     );
