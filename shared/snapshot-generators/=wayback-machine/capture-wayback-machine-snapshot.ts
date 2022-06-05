@@ -40,6 +40,9 @@ const mapRetryCountToDelay = (retryCount: number): number => {
   );
 };
 
+const ipAddressBlocked =
+  "Your IP address is blocked by Wayback Machine servers";
+
 const personalApiLimitsReachedMessage =
   "API limits reached. Try using another internet connection or continue tomorrow";
 
@@ -65,8 +68,9 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
     .map((failure) => failure.message)
     .find(
       (failureMessage) =>
-        failureMessage === personalApiLimitsReachedMessage ||
-        failureMessage === hostLimitsReachedMessage,
+        failureMessage === hostLimitsReachedMessage ||
+        failureMessage === ipAddressBlocked ||
+        failureMessage === personalApiLimitsReachedMessage,
     );
 
   if (previousFailureMessage) {
@@ -99,11 +103,21 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
 
       const html = res.data;
 
-      if (html.includes("The server encountered an internal error")) {
-        reportIssue?.(
-          "Wayback Machine server encountered an error (possible API rate limiting – this is OK)",
-        );
+      if (
+        html.includes("The server encountered an internal error") ||
+        html.includes("too many requests")
+      ) {
+        reportIssue?.("Hitting Wayback Machine request rate limits");
         continue;
+      }
+
+      // Your IP address is in our block list. Please email us at "info@archive.org"
+      // if you would like to discuss this more.
+      if (html.includes("Your IP address is in our block list")) {
+        return {
+          status: "failed",
+          message: ipAddressBlocked,
+        };
       }
 
       // This host has been already captured 500 times today by this
