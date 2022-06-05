@@ -105,7 +105,7 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
 
       if (
         html.includes("The server encountered an internal error") ||
-        html.includes("too many requests")
+        html.includes("Too Many Requests")
       ) {
         reportIssue?.("Hitting Wayback Machine request rate limits");
         continue;
