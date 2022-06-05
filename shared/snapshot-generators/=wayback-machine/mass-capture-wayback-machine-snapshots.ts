@@ -10,27 +10,20 @@ type Response =
   | { error: string }
   | { digest: string; project: string; submitter: string; uuid: string };
 
-// Wayback machine updates indexes faster if Isodos API is not used.
-// So it’s best to not mass-capture small numbers of snapshots.
-const minNumberOfUrls = 20;
-
 export const massCaptureWaybackMachineSnapshots: MassCaptureSnapshots = async ({
   abortSignal,
   webPagesUrls,
 }) => {
-  if (webPagesUrls.length < minNumberOfUrls) {
-    return {
-      status: "skipped",
-      message: `Number of snapshots is less than ${minNumberOfUrls}`,
-    };
-  }
-
   const env = cleanEnv({
+    // Wayback machine updates indexes faster if Isodos API is not used.
+    // So it’s best to not mass-capture small numbers of snapshots.
+    INTERNET_ARCHIVE_ISODOS_MIN_QUEUE_SIZE: envalid.num({ default: 20 }),
     INTERNET_ARCHIVE_ISODOS_PROJECT: envalid.str({ default: "" }),
     INTERNET_ARCHIVE_S3_ACCESS_KEY: envalid.str({ default: "" }),
     INTERNET_ARCHIVE_S3_SECRET_KEY: envalid.str({ default: "" }),
   });
 
+  const isodosMinQueueSize = env.INTERNET_ARCHIVE_ISODOS_MIN_QUEUE_SIZE;
   const isodosProject = env.INTERNET_ARCHIVE_ISODOS_PROJECT;
   const s3AccessKey = env.INTERNET_ARCHIVE_S3_ACCESS_KEY;
   const s3SecretKey = env.INTERNET_ARCHIVE_S3_SECRET_KEY;
@@ -39,6 +32,13 @@ export const massCaptureWaybackMachineSnapshots: MassCaptureSnapshots = async ({
     return {
       status: "skipped",
       message: "Auth credentials not configured",
+    };
+  }
+
+  if (isodosMinQueueSize <= 0 || webPagesUrls.length < isodosMinQueueSize) {
+    return {
+      status: "skipped",
+      message: `Number of snapshots is less than ${isodosMinQueueSize}`,
     };
   }
 
