@@ -1,11 +1,13 @@
 import * as envalid from "envalid";
+import RegexParser from "regex-parser";
 
 import { cleanEnv } from "../../clean-env";
 import { calculateDaysSince } from "../../time";
 import { CheckIfSnapshotIsDue } from "../types";
 import { categorizeVkUrl } from "./categorize-vk-url";
+import { extractPostSummaryFromFeedSummary } from "./extract-post-summary-from-feed-summary";
 
-export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = ({
+export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = async ({
   knownSnapshotTimesInAscOrder,
   snapshotGeneratorId,
   webPageDocument,
@@ -16,9 +18,16 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = ({
     VK_ACCOUNT_SNAPSHOT_FREQUENCY_IN_DAYS: envalid.num({
       default: 3,
     }),
+    SNAPSHOT_QUEUE_FILTER_CONTENT: envalid.str({
+      default: "",
+    }),
   });
 
-  const oldestSnapshotTime = knownSnapshotTimesInAscOrder.at(0);
+  const filterContent = env.SNAPSHOT_QUEUE_FILTER_CONTENT
+    ? RegexParser(env.SNAPSHOT_QUEUE_FILTER_CONTENT)
+    : undefined;
+
+  // const oldestSnapshotTime = knownSnapshotTimesInAscOrder.at(0);
   const newestSnapshotTime = knownSnapshotTimesInAscOrder.at(-1);
 
   // @todo Implement interaction on the post page and enable Playwright snapshots
@@ -31,15 +40,26 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = ({
     return false;
   }
 
-  if (!oldestSnapshotTime || !newestSnapshotTime) {
-    return true;
-  }
-
-  const daysSinceNewestSnapshot = calculateDaysSince(newestSnapshotTime);
-  // const daysSinceOldestSnapshot = calculateDaysSince(oldestSnapshotTime);
+  // const daysSinceOldestSnapshot = oldestSnapshotTime
+  //   ? calculateDaysSince(oldestSnapshotTime)
+  //   : Number.MAX_SAFE_INTEGER;
+  const daysSinceNewestSnapshot = newestSnapshotTime
+    ? calculateDaysSince(newestSnapshotTime)
+    : Number.MAX_SAFE_INTEGER;
 
   switch (categorizedVkUrl.vkPageType) {
     case "post": {
+      if (filterContent) {
+        const postSummaryInFeed = await extractPostSummaryFromFeedSummary(
+          webPageDocument.webPageUrl,
+        );
+
+        return (
+          // knownSnapshotTimesInAscOrder.length === 0 &&
+          Boolean(postSummaryInFeed?.text.match(filterContent))
+        );
+      }
+
       return knownSnapshotTimesInAscOrder.length === 0;
       // if (daysSinceOldestSnapshot <= 5) {
       //   return daysSinceNewestSnapshot > 2;
@@ -58,6 +78,7 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = ({
       // If there are time gaps, return true for Playwright because previous
       // snapshots could fail half-way.
       return (
+        !filterContent &&
         daysSinceNewestSnapshot > env.VK_ACCOUNT_SNAPSHOT_FREQUENCY_IN_DAYS
       );
   }

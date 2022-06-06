@@ -163,12 +163,12 @@ export const generateComposeSnapshotQueueScript =
 
         const snapshotIsDue =
           force ||
-          checkIfSnapshotIsDue({
+          (await checkIfSnapshotIsDue({
             knownSnapshotTimesInAscOrder,
             snapshotGeneratorId,
             webPageDirPath,
             webPageDocument,
-          });
+          }));
 
         if (snapshotIsDue) {
           const newQueueItem: SnapshotQueueItem = {
