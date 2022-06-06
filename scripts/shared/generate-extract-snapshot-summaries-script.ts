@@ -185,5 +185,8 @@ export const generateExtractSnapshotSummariesScript =
       );
     }
 
+    // @todo remove
+    return;
+
     throwExitCodeErrorIfOperationFailed(operationResult);
   };
