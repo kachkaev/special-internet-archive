@@ -16,10 +16,11 @@ import {
   generateSnapshotQueueDocumentPath,
   listKnownSnapshotTimesInAscOrder,
   readSnapshotQueueDocument,
+  SnapshotAttempt,
   SnapshotQueueItem,
   writeSnapshotQueueDocument,
 } from "../../shared/snapshot-queues";
-import { serializeTime, unserializeTime } from "../../shared/time";
+import { serializeTime } from "../../shared/time";
 import { processWebPages } from "../../shared/web-page-documents";
 import {
   calculateRelevantTimeMinForNewIncrementalSnapshot,
@@ -143,8 +144,9 @@ export const generateComposeSnapshotQueueScript =
             const succeededAttemptTime = item.attempts?.find(
               (attempt) =>
                 attempt.status === "succeeded" &&
-                -unserializeTime(attempt.startedAt).diffNow().as("seconds") <
-                  snapshotGenerator.snapshotQueueAttemptSuccessExpiryInSeconds,
+                snapshotGenerator.checkIfSucceededSnapshotAttemptExpired(
+                  attempt as SnapshotAttempt<"succeeded">, // @todo investigate the need for type casting
+                ),
             )?.startedAt;
 
             return (

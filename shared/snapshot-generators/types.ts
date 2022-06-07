@@ -2,6 +2,7 @@ import { WriteStream } from "node:tty";
 
 import { ReportIssue } from "../issues";
 import { OperationResult } from "../operations";
+import { SnapshotAttempt } from "../snapshot-queues";
 import { SnapshotSummaryData } from "../snapshot-summaries";
 import { SnapshotInventoryItem, WebPageDocument } from "../web-page-documents";
 
@@ -69,9 +70,14 @@ export type ExtractSnapshotSummaryData = (payload: {
 export type FinishCaptureSnapshotBatch = () => void | Promise<void>;
 export type FinishExtractSnapshotSummaryDataBatch = () => void | Promise<void>;
 
+export type CheckIfSucceededSnapshotAttemptExpired = (
+  attempt: SnapshotAttempt<"succeeded">,
+) => boolean;
+
 export interface SnapshotGenerator {
   aliasesSupported: boolean;
   captureSnapshot: CaptureSnapshot;
+  checkIfSucceededSnapshotAttemptExpired: CheckIfSucceededSnapshotAttemptExpired;
   downloadSnapshot?: DownloadSnapshot;
   extractSnapshotSummaryData?: ExtractSnapshotSummaryData;
   finishCaptureSnapshotBatch?: FinishCaptureSnapshotBatch;
@@ -82,6 +88,4 @@ export interface SnapshotGenerator {
   obtainSnapshotTimes: ObtainSnapshotTimes;
   role: "local" | "thirdParty";
   snapshotQueueAttemptTimeoutInSeconds: number;
-  /** time after which processed items are no longer accounted */
-  snapshotQueueAttemptSuccessExpiryInSeconds: number;
 }

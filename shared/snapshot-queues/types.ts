@@ -8,9 +8,11 @@ export type SnapshotAttemptStatus =
   | "succeeded"
   | "timedOut";
 
-export interface SnapshotAttempt {
+export interface SnapshotAttempt<
+  Status extends SnapshotAttemptStatus = SnapshotAttemptStatus,
+> {
   startedAt: string;
-  status: SnapshotAttemptStatus;
+  status: Status;
   message?: string;
 }
 

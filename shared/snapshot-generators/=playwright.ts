@@ -9,13 +9,13 @@ import { SnapshotGenerator } from "./types";
 export const playwrightSnapshotGenerator: SnapshotGenerator = {
   aliasesSupported: false,
   captureSnapshot: capturePlaywrightSnapshot,
-  finishExtractSnapshotSummaryDataBatch: ensureTraceViewerIsStopped,
+  checkIfSucceededSnapshotAttemptExpired: () => true,
+  extractSnapshotSummaryData: extractPlaywrightSnapshotSummaryData,
   finishCaptureSnapshotBatch: closePlaywrightBrowser,
+  finishExtractSnapshotSummaryDataBatch: ensureTraceViewerIsStopped,
   generateSnapshotFilePath: generatePlaywrightSnapshotFilePath,
   name: "Playwright",
   obtainSnapshotTimes: obtainPlaywrightSnapshotTimes,
-  extractSnapshotSummaryData: extractPlaywrightSnapshotSummaryData,
   role: "local",
   snapshotQueueAttemptTimeoutInSeconds: 120,
-  snapshotQueueAttemptSuccessExpiryInSeconds: 0,
 };
