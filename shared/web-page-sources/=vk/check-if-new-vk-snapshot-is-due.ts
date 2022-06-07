@@ -55,7 +55,7 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = async ({
         );
 
         return (
-          // knownSnapshotTimesInAscOrder.length === 0 &&
+          knownSnapshotTimesInAscOrder.length === 0 &&
           Boolean(postSummaryInFeed?.text.match(filterContent))
         );
       }
