@@ -180,11 +180,10 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
         });
 
         if (data["status"] === "error") {
-          throw new Error(
-            `Job ${watchJobUrl} failed in less than ${jobCheckDelayInSeconds} seconds: ${JSON.stringify(
-              data,
-            )}`,
-          );
+          return {
+            status: "failed",
+            message: `Job ${watchJobUrl} failed: ${JSON.stringify(data)}`,
+          };
         }
       }
 
