@@ -104,6 +104,7 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
       const html = res.data;
 
       if (
+        res.status === 429 ||
         html.includes("The server encountered an internal error") ||
         html.includes("Too Many Requests")
       ) {
