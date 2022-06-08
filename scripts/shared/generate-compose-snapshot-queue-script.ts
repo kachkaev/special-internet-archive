@@ -160,7 +160,7 @@ export const generateComposeSnapshotQueueScript =
 
         const knownSnapshotTimesInAscOrder = listKnownSnapshotTimesInAscOrder({
           webPageSnapshotInventory: snapshotInventory,
-          webPageSnapshotQueueItems: existingQueueItems,
+          webPageSnapshotQueueItems: queueItemsSucceededAfterInventoryUpdate,
         });
 
         const snapshotIsDue =
