@@ -1,3 +1,4 @@
+import axios from "axios";
 import fs from "fs-extra";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
@@ -25,16 +26,19 @@ const abortableSleep = async (
   }
 };
 
+const jobCheckDelayInSeconds: number = 3;
+
 const mapRetryCountToDelay = (retryCount: number): number => {
   return (
     {
       /* eslint-disable @typescript-eslint/naming-convention */
       0: 0,
-      1: 40_000,
+      1: 30_000,
       2: 5000,
       3: 5000,
       4: 5000,
       5: 5000,
+      6: 5000,
       /* eslint-enable @typescript-eslint/naming-convention */
     }[retryCount] ?? 60_000
   );
@@ -95,6 +99,9 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
         `https://web.archive.org/save/`,
         formData,
         {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          "axios-retry": { retries: 0 },
+          validateStatus: (status) => status === 200 || status === 429,
           responseType: "text",
           timeout: 20_000,
           ...(abortSignal ? { signal: abortSignal } : {}),
@@ -159,9 +166,31 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
         );
       }
 
+      const watchJobUrl = `https://web.archive.org/save/status/${watchJobId}`;
+
+      if (jobCheckDelayInSeconds > 0) {
+        await abortableSleep(jobCheckDelayInSeconds * 1000, abortSignal);
+
+        const { data } = await axios.get<Record<string, unknown>>(watchJobUrl, {
+          responseType: "json",
+          transitional: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention -- third-party API
+            silentJSONParsing: false, // Disables Object to string conversion if parsing fails
+          },
+        });
+
+        if (data["status"] === "error") {
+          throw new Error(
+            `Job ${watchJobUrl} failed in less than ${jobCheckDelayInSeconds} seconds: ${JSON.stringify(
+              data,
+            )}`,
+          );
+        }
+      }
+
       return {
         status: "processed",
-        message: `Status: https://web.archive.org/save/status/${watchJobId}`,
+        message: `Status: ${watchJobUrl}`,
       };
     } catch (error) {
       if (abortSignal?.aborted) {
