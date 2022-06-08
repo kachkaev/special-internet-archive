@@ -182,14 +182,16 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
         if (data["status"] === "error") {
           return {
             status: "failed",
-            message: `Job ${watchJobUrl} failed: ${JSON.stringify(data)}`,
+            message: `Status endpoint ${watchJobUrl} returned ${JSON.stringify(
+              data,
+            )}`,
           };
         }
       }
 
       return {
         status: "processed",
-        message: `Status: ${watchJobUrl}`,
+        message: `Status endpoint: ${watchJobUrl}`,
       };
     } catch (error) {
       if (abortSignal?.aborted) {
