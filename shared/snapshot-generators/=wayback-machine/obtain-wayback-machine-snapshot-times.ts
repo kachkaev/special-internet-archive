@@ -6,6 +6,7 @@ import { cleanEnv } from "../../clean-env";
 import { relevantTimeMin } from "../../collection";
 import { serializeTime, unserializeTime } from "../../time";
 import { ObtainSnapshotTimes } from "../types";
+import { checkIfUrlWasRecentlySubmitted } from "./obtain-wayback-machine-snapshot-times/check-if-url-was-recently-submitted";
 import { obtainFastSnapshotTimes } from "./obtain-wayback-machine-snapshot-times/obtain-fast-snapshot-times";
 import { createAxiosInstanceForWaybackMachine } from "./shared/create-axios-instance-for-wayback-machine";
 
@@ -94,7 +95,10 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
       result.push(serializedTime);
     }
   } else {
-    if (apiToUse === "fast-ajax") {
+    if (
+      apiToUse === "fast-ajax" &&
+      !(await checkIfUrlWasRecentlySubmitted(url))
+    ) {
       const fastSnapshotTimes = await obtainFastSnapshotTimes(
         url,
         axiosInstance,
@@ -126,6 +130,7 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
         encodedCaptureDate,
         captureStatusCode,
       ] of ajaxApiResponse.items ?? []) {
+        // @todo save 404
         if (captureStatusCode !== 200) {
           continue;
         }
