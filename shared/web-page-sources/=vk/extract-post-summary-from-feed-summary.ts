@@ -5,7 +5,6 @@ import { getWebPagesDirPath } from "../../collection";
 import { processFiles } from "../../process-files";
 import {
   readSnapshotSummaryCombinationDocument,
-  SnapshotSummaryCombinationDocument,
   TempRawVkPost,
 } from "../../snapshot-summaries";
 import { categorizeVkUrl } from "./categorize-vk-url";
@@ -25,16 +24,8 @@ const loadVkPostSummaryCombinationLookup = async (): Promise<
     fileSearchPattern: "**/snapshot-summary-combination.json",
 
     processFile: async (filePath) => {
-      let snapshotSummaryCombinationDocument:
-        | SnapshotSummaryCombinationDocument
-        | undefined;
-
-      try {
-        snapshotSummaryCombinationDocument =
-          await readSnapshotSummaryCombinationDocument(path.dirname(filePath));
-      } catch {
-        // noop: snapshot summary combination does not exist or cannot be parsed
-      }
+      const snapshotSummaryCombinationDocument =
+        await readSnapshotSummaryCombinationDocument(path.dirname(filePath));
 
       for (const postSummaryCombination of snapshotSummaryCombinationDocument?.tempRawVkPosts ??
         []) {

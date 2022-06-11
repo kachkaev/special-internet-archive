@@ -10,7 +10,6 @@ export interface SnapshotInventory {
 
 // @todo Specify real annotation structure
 export type WebPageAnnotation = {
-  tempRelevantLinks?: string[];
   [key: string]: unknown;
 };
 

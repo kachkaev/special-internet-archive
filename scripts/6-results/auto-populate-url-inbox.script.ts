@@ -21,10 +21,10 @@ const script = async () => {
 
   const operationResult = await processWebPages({
     output,
-    processWebPage: ({ webPageDirPath, webPageDocument }) => {
+    processWebPage: async ({ webPageDirPath, webPageDocument }) => {
       registeredWebPageUrlSet.add(webPageDocument.webPageUrl);
 
-      const relevantWebPageUrls = extractRelevantWebPageUrls({
+      const relevantWebPageUrls = await extractRelevantWebPageUrls({
         webPageDirPath,
         webPageDocument,
       });

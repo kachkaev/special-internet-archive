@@ -8,7 +8,6 @@ import {
   readSnapshotSummaryCombinationDocument,
   readSnapshotSummaryDocument,
   SnapshotSummaryCombinationData,
-  SnapshotSummaryCombinationDocument,
   snapshotSummaryCombinationStaleTime,
   SnapshotSummaryDocument,
   writeSnapshotSummaryCombinationDocument,
@@ -46,16 +45,8 @@ const script = async () => {
         );
       }
 
-      let snapshotSummaryCombinationDocument:
-        | SnapshotSummaryCombinationDocument
-        | undefined;
-
-      try {
-        snapshotSummaryCombinationDocument =
-          await readSnapshotSummaryCombinationDocument(webPageDirPath);
-      } catch {
-        // noop: snapshot summary combination does not exist or cannot be parsed
-      }
+      const snapshotSummaryCombinationDocument =
+        await readSnapshotSummaryCombinationDocument(webPageDirPath);
 
       if (snapshotSummaryCombinationDocument) {
         const newestSnapshotExtractedAt = _.max(

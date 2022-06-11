@@ -74,7 +74,14 @@ export const checkIfSnapshotSummaryCombinationDocumentExists = async (
 
 export const readSnapshotSummaryCombinationDocument = async (
   webPageDirPath: string,
-): Promise<SnapshotSummaryCombinationDocument> => {
+): Promise<SnapshotSummaryCombinationDocument | undefined> => {
+  const filePath =
+    generateSnapshotSummaryCombinationDocumentPath(webPageDirPath);
+
+  if (!(await fs.pathExists(filePath))) {
+    return undefined;
+  }
+
   return (await fs.readJson(
     generateSnapshotSummaryCombinationDocumentPath(webPageDirPath),
   )) as unknown as SnapshotSummaryCombinationDocument;

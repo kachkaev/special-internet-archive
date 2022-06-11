@@ -43,10 +43,12 @@ const script = async () => {
       const snapshotSummaryCombinationDocument =
         await readSnapshotSummaryCombinationDocument(webPageDirPath);
 
-      const updatedAnnotation = updateWebPageAnnotation({
-        webPageDocument,
-        snapshotSummaryCombinationDocument,
-      });
+      const updatedAnnotation = snapshotSummaryCombinationDocument
+        ? updateWebPageAnnotation({
+            webPageDocument,
+            snapshotSummaryCombinationDocument,
+          })
+        : webPageDocument.annotation;
 
       if (_.isEqual(updatedAnnotation, webPageDocument.annotation)) {
         output.write(chalk.gray("annotation has not changed"));

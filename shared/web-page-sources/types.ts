@@ -55,7 +55,7 @@ export type UpdateWebPageAnnotation = (payload: {
 export type ExtractRelevantWebPageUrls = (payload: {
   webPageDirPath: string;
   webPageDocument: WebPageDocument;
-}) => string[];
+}) => Promise<string[]>;
 
 export interface WebPageSource {
   assertWebPageUrl: AssertSourceUrl;

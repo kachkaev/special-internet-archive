@@ -4,7 +4,10 @@ import path from "node:path";
 import { checkIfTextIsRelevant } from "./check-if-text-is-relevant";
 import { getWebPagesDirPath, relevantTimeMin } from "./collection";
 import { UserFriendlyError } from "./errors";
-import { TempRawVkPost } from "./snapshot-summaries";
+import {
+  readSnapshotSummaryCombinationDocument,
+  TempRawVkPost,
+} from "./snapshot-summaries";
 import { vkWebPageSource } from "./web-page-sources/=vk";
 import { parseRawVkTime } from "./web-page-sources/=vk/parse-raw-vk-time";
 import {
@@ -20,19 +23,6 @@ import {
 
 export const webPageSourceLookup = {
   vk: vkWebPageSource,
-};
-
-const checkIfSetsAreEqual = (setA: Set<unknown>, setB: Set<unknown>) => {
-  if (setA.size !== setB.size) {
-    return false;
-  }
-  for (const a of setA) {
-    if (!setB.has(a)) {
-      return false;
-    }
-  }
-
-  return true;
 };
 
 type WebPageSourceId = keyof typeof webPageSourceLookup;
@@ -145,20 +135,29 @@ export const extractSnapshotSummaryCombinationData: ExtractSnapshotSummaryCombin
 
 export const updateWebPageAnnotation: UpdateWebPageAnnotation = ({
   webPageDocument,
-  snapshotSummaryCombinationDocument,
 }) => {
-  // @todo Implement proper logic and structure for web page annotations
+  // @todo Implement logic and structure for web page annotations
 
-  if (!snapshotSummaryCombinationDocument.tempRawVkPosts) {
-    return webPageDocument.annotation;
+  // Used before 2022-06-11
+  if (webPageDocument.annotation["tempRawVkPosts"]) {
+    return {};
   }
 
-  const existingLinkSet = new Set(
-    webPageDocument.annotation.tempRelevantLinks ?? [],
-  );
+  return webPageDocument.annotation;
+};
+
+export const extractRelevantWebPageUrls: ExtractRelevantWebPageUrls = async ({
+  webPageDirPath,
+}) => {
+  const snapshotSummaryCombinationDocument =
+    await readSnapshotSummaryCombinationDocument(webPageDirPath);
+  if (!snapshotSummaryCombinationDocument) {
+    return [];
+  }
 
   const newLinkSet = new Set<string>();
-  for (const tempRawVkPost of snapshotSummaryCombinationDocument.tempRawVkPosts) {
+  for (const tempRawVkPost of snapshotSummaryCombinationDocument.tempRawVkPosts ??
+    []) {
     if (
       checkIfTextIsRelevant(tempRawVkPost.text) &&
       tempRawVkPost.date >= relevantTimeMin
@@ -167,17 +166,7 @@ export const updateWebPageAnnotation: UpdateWebPageAnnotation = ({
     }
   }
 
-  if (checkIfSetsAreEqual(existingLinkSet, newLinkSet)) {
-    return webPageDocument.annotation;
-  }
-
-  return { tempRelevantLinks: _.orderBy([...newLinkSet]) };
-};
-
-export const extractRelevantWebPageUrls: ExtractRelevantWebPageUrls = ({
-  webPageDocument,
-}) => {
-  return webPageDocument.annotation.tempRelevantLinks ?? [];
+  return [...newLinkSet];
 };
 
 const listWebPageUrlExamples = (): string[] => {
