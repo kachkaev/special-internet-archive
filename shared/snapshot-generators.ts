@@ -34,15 +34,18 @@ export const assertSnapshotGeneratorMatchesFilter = ({
   const env = cleanEnv({
     FILTER_SNAPSHOT_GENERATOR_ID: envalid.str({
       desc: "Regex to filter snapshot generators",
-      default: ".*",
+      default: "",
     }),
   });
 
-  const filterSnapshotGeneratorIdRegex = RegexParser(
-    env.FILTER_SNAPSHOT_GENERATOR_ID,
-  );
+  const filterSnapshotGeneratorIdRegex = env.FILTER_SNAPSHOT_GENERATOR_ID
+    ? RegexParser(env.FILTER_SNAPSHOT_GENERATOR_ID)
+    : undefined;
 
-  if (!filterSnapshotGeneratorIdRegex.test(snapshotGeneratorId)) {
+  if (
+    filterSnapshotGeneratorIdRegex &&
+    !filterSnapshotGeneratorIdRegex.test(snapshotGeneratorId)
+  ) {
     output.write(
       chalk.gray(
         `Skipped because of FILTER_SNAPSHOT_GENERATOR_ID=${env.FILTER_SNAPSHOT_GENERATOR_ID}\n`,

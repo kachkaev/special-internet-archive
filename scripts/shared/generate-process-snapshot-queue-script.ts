@@ -60,12 +60,14 @@ export const generateProcessSnapshotQueueScript =
         desc: "Queue processing is terminated after this number of failures",
       }),
       FILTER_URL: envalid.str({
-        default: ".*",
+        default: "",
         desc: "Regex to filter web page URLs",
       }),
     });
     const maxNumberOfFailedAttempts = env.MAX_NUMBER_OF_FAILED_ATTEMPTS;
-    const filterUrlRegex = RegexParser(env.FILTER_URL);
+    const filterUrlRegex = env.FILTER_URL
+      ? RegexParser(env.FILTER_URL)
+      : undefined;
 
     if (
       maxNumberOfFailedAttempts < 0 ||
@@ -90,7 +92,7 @@ export const generateProcessSnapshotQueueScript =
 
     const itemsToProcess = snapshotQueueDocument.items.filter(
       (item) =>
-        item.webPageUrl.match(filterUrlRegex) &&
+        (!filterUrlRegex || item.webPageUrl.match(filterUrlRegex)) &&
         !item.attempts?.some((attempt) => attempt.status === "succeeded"),
     );
 
