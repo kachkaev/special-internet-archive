@@ -64,14 +64,6 @@ const generateSnapshotSummaryCombinationDocumentPath = (
   return path.resolve(webPageDirPath, "snapshot-summary-combination.json");
 };
 
-export const checkIfSnapshotSummaryCombinationDocumentExists = async (
-  webPageDirPath: string,
-): Promise<boolean> => {
-  return await fs.pathExists(
-    generateSnapshotSummaryCombinationDocumentPath(webPageDirPath),
-  );
-};
-
 export const readSnapshotSummaryCombinationDocument = async (
   webPageDirPath: string,
 ): Promise<SnapshotSummaryCombinationDocument | undefined> => {

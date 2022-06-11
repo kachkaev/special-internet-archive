@@ -139,7 +139,7 @@ export const updateWebPageAnnotation: UpdateWebPageAnnotation = ({
   // @todo Implement logic and structure for web page annotations
 
   // Used before 2022-06-11
-  if (webPageDocument.annotation["tempRawVkPosts"]) {
+  if (webPageDocument.annotation["tempRelevantLinks"]) {
     return {};
   }
 

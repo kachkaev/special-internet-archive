@@ -3,10 +3,7 @@ import _ from "lodash";
 
 import { syncCollectionIfNeeded } from "../../shared/collection-syncing";
 import { throwExitCodeErrorIfOperationFailed } from "../../shared/errors";
-import {
-  checkIfSnapshotSummaryCombinationDocumentExists,
-  readSnapshotSummaryCombinationDocument,
-} from "../../shared/snapshot-summaries";
+import { readSnapshotSummaryCombinationDocument } from "../../shared/snapshot-summaries";
 import {
   processWebPages,
   writeWebPageDocument,
@@ -31,25 +28,20 @@ const script = async () => {
   const operationResult = await processWebPages({
     output,
     processWebPage: async ({ webPageDirPath, webPageDocument }) => {
-      if (
-        !(await checkIfSnapshotSummaryCombinationDocumentExists(webPageDirPath))
-      ) {
+      const snapshotSummaryCombinationDocument =
+        await readSnapshotSummaryCombinationDocument(webPageDirPath);
+
+      if (!snapshotSummaryCombinationDocument) {
         output.write(chalk.yellow("snapshot summary combination not found"));
         pagesWithoutSnapshotSummaryCombination = true;
 
         return;
       }
 
-      const snapshotSummaryCombinationDocument =
-        await readSnapshotSummaryCombinationDocument(webPageDirPath);
-
-      const updatedAnnotation = snapshotSummaryCombinationDocument
-        ? updateWebPageAnnotation({
-            webPageDocument,
-            snapshotSummaryCombinationDocument,
-          })
-        : webPageDocument.annotation;
-
+      const updatedAnnotation = updateWebPageAnnotation({
+        webPageDocument,
+        snapshotSummaryCombinationDocument,
+      });
       if (_.isEqual(updatedAnnotation, webPageDocument.annotation)) {
         output.write(chalk.gray("annotation has not changed"));
 
