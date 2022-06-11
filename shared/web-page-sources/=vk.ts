@@ -2,6 +2,7 @@ import { assertVkUrl } from "./=vk/assert-vk-url";
 import { calculateRelevantTimeMinForNewIncrementalVkSnapshot } from "./=vk/calculate-relevant-time-min-for-mew-incremental-vk-snapshot";
 import { categorizeVkUrl } from "./=vk/categorize-vk-url";
 import { checkIfNewVkSnapshotIsDue } from "./=vk/check-if-new-vk-snapshot-is-due";
+import { checkVkContentMatch } from "./=vk/check-vk-content-match";
 import { interactWithVkPlaywrightPage } from "./=vk/interact-with-vk-playwright-page";
 import { WebPageSource } from "./types";
 
@@ -11,6 +12,7 @@ export const vkWebPageSource: WebPageSource = {
   calculateRelevantTimeMinForNewIncrementalSnapshot:
     calculateRelevantTimeMinForNewIncrementalVkSnapshot,
 
+  checkContentMatch: checkVkContentMatch,
   checkIfSnapshotIsDue: checkIfNewVkSnapshotIsDue,
 
   generateWebPageDirPathSegments: (webPageUrl) => {

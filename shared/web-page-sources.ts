@@ -9,6 +9,7 @@ import { vkWebPageSource } from "./web-page-sources/=vk";
 import { parseRawVkTime } from "./web-page-sources/=vk/parse-raw-vk-time";
 import {
   CalculateRelevantTimeMinForNewIncrementalSnapshot,
+  CheckContentMatch,
   CheckIfSnapshotIsDue,
   ExtractRelevantWebPageUrls,
   ExtractSnapshotSummaryCombinationData,
@@ -97,6 +98,12 @@ export const checkIfSnapshotIsDue: CheckIfSnapshotIsDue = (payload) => {
   return getWebPageSource(
     payload.webPageDocument.webPageUrl,
   ).checkIfSnapshotIsDue(payload);
+};
+
+export const checkContentMatch: CheckContentMatch = (payload) => {
+  return getWebPageSource(payload.webPageDocument.webPageUrl).checkContentMatch(
+    payload,
+  );
 };
 
 export const interactWithPlaywrightPage: InteractWithPlaywrightPage = async (

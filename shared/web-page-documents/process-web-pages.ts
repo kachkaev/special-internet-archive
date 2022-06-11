@@ -11,6 +11,7 @@ import { generateProgress } from "../generate-progress";
 import { listFilePaths } from "../list-file-paths";
 import { OperationResult } from "../operations";
 import { WebPageDocument } from "../web-page-documents";
+import { checkContentMatch } from "../web-page-sources";
 import { readWebPageDocument } from "./io";
 
 export type ProcessWebPage = (payload: {
@@ -31,12 +32,23 @@ export const processWebPages = async ({
   processWebPage: ProcessWebPage;
 }): Promise<OperationResult> => {
   const env = cleanEnv({
+    FILTER_CONTENT: envalid.str({
+      desc: "Regex to filter web page URLs",
+      default: "",
+    }),
     FILTER_URL: envalid.str({
       desc: "Regex to filter web page URLs",
-      default: ".*",
+      default: "",
     }),
   });
-  const filterUrlRegex = RegexParser(env.FILTER_URL);
+
+  const filterContentRegex = env.FILTER_CONTENT
+    ? RegexParser(env.FILTER_CONTENT)
+    : undefined;
+
+  const filterUrlRegex = env.FILTER_URL
+    ? RegexParser(env.FILTER_URL)
+    : undefined;
 
   let numberOfProcessed = 0;
   let numberOfErrors = 0;
@@ -79,9 +91,24 @@ export const processWebPages = async ({
 
     webPageUrlLookup[webPageDocument.webPageUrl] = true;
 
-    if (!filterUrlRegex.test(webPageDocument.webPageUrl)) {
+    let reasonToFilterOut: string | undefined;
+
+    if (filterUrlRegex && !filterUrlRegex.test(webPageDocument.webPageUrl)) {
+      reasonToFilterOut = `does not match FILTER_URL`;
+    } else if (
+      filterContentRegex &&
+      !(await checkContentMatch({
+        webPageDocument,
+        webPageDirPath,
+        contentRegex: filterContentRegex,
+      }))
+    ) {
+      reasonToFilterOut = `does not match FILTER_CONTENT`;
+    }
+
+    if (reasonToFilterOut) {
       numberOfFilteredOut += 1;
-      output?.write(chalk.gray(`does not match FILTER_URL`));
+      output?.write(chalk.gray(reasonToFilterOut));
       await handleSkippedWebPage?.({
         progressPrefix,
         webPageDirPath,

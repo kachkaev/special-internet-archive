@@ -26,6 +26,12 @@ export type CheckIfSnapshotIsDue = (payload: {
   webPageDocument: WebPageDocument;
 }) => boolean | Promise<boolean>;
 
+export type CheckContentMatch = (payload: {
+  contentRegex: RegExp;
+  webPageDirPath: string;
+  webPageDocument: WebPageDocument;
+}) => boolean | Promise<boolean>;
+
 export interface PlaywrightPageInteractionPayload {
   abortSignal?: AbortSignal | undefined;
   log?: (message: string) => void;
@@ -54,6 +60,7 @@ export type ExtractRelevantWebPageUrls = (payload: {
 export interface WebPageSource {
   assertWebPageUrl: AssertSourceUrl;
   calculateRelevantTimeMinForNewIncrementalSnapshot?: CalculateRelevantTimeMinForNewIncrementalSnapshot;
+  checkContentMatch: CheckContentMatch;
   checkIfSnapshotIsDue: CheckIfSnapshotIsDue;
   generateWebPageDirPathSegments: GenerateWebPageDirPathSegments;
   interactWithPlaywrightPage?: InteractWithPlaywrightPage;
