@@ -6,6 +6,10 @@ const testCases = [
     text: `Почём сахарок для народа?`,
   },
   {
+    relevant: true,
+    text: `Почём САХАРОК?`,
+  },
+  {
     relevant: false,
     text: `озверели совсем`,
   },
@@ -20,6 +24,18 @@ const testCases = [
   {
     relevant: false,
     text: "Мой твиттер: @azaza. Подписывайтесь!",
+  },
+  {
+    relevant: true,
+    text: "ё-самолёт",
+  },
+  {
+    relevant: true,
+    text: "ё-САМОЛЁТ",
+  },
+  {
+    relevant: false,
+    text: "ё-недолёт",
   },
   {
     relevant: false,
