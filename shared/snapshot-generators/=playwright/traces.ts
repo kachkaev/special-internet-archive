@@ -51,31 +51,35 @@ export const evaluateLastSnapshotInTrace = async <T>(
 
   await page.waitForLoadState("networkidle");
 
-  // When a large trace file is navigated via Playwright UI, the browser may crash.
-  // Making direct calls to the service worker and rendering the last snapshot
-  // without the iframe and its surrounding UI helps avoid crashes.
-  // Potential future improvement: https://github.com/microsoft/playwright/issues/9883
-  await page.goto(
-    `${traceServer.urlPrefix}/trace/context?trace=${encodedTraceFilePath}`,
-  );
+  try {
+    // When a large trace file is navigated via Playwright UI, the browser may crash.
+    // Making direct calls to the service worker and rendering the last snapshot
+    // without the iframe and its surrounding UI helps avoid crashes.
+    // Potential future improvement: https://github.com/microsoft/playwright/issues/9883
+    await page.goto(
+      `${traceServer.urlPrefix}/trace/context?trace=${encodedTraceFilePath}`,
+    );
 
-  const rawJson = await page.locator("pre").textContent();
+    const rawJson = await page.locator("pre").textContent();
 
-  const { actions } = JSON.parse(rawJson ?? "") as {
-    actions: Array<{ metadata: { id: string; pageId: string } }>;
-  };
-  const lastActionMetadata = actions.at(-1)?.metadata;
+    const { actions } = JSON.parse(rawJson ?? "") as {
+      actions: Array<{ metadata: { id: string; pageId: string } }>;
+    };
+    const lastActionMetadata = actions.at(-1)?.metadata;
 
-  if (!lastActionMetadata) {
-    throw new Error("Encountered empty lastActionMetadata");
+    if (!lastActionMetadata) {
+      throw new Error("Encountered empty lastActionMetadata");
+    }
+
+    await page.goto(
+      `${traceServer.urlPrefix}/trace/snapshot/${lastActionMetadata.pageId}?trace=${encodedTraceFilePath}&name=after@${lastActionMetadata.id}`,
+    );
+    await page.waitForLoadState("networkidle");
+
+    const snapshotBody = page.locator("body");
+
+    return snapshotBody.evaluate(evaluate);
+  } finally {
+    await page.close();
   }
-
-  await page.goto(
-    `${traceServer.urlPrefix}/trace/snapshot/${lastActionMetadata.pageId}?trace=${encodedTraceFilePath}&name=after@${lastActionMetadata.id}`,
-  );
-  await page.waitForLoadState("networkidle");
-
-  const snapshotBody = page.locator("body");
-
-  return snapshotBody.evaluate(evaluate);
 };
