@@ -27,7 +27,10 @@ export const ensureTraceViewerIsStopped = async () => {
 
 const timeoutThatToleratesEvenVeryLargeSnapshots = 5 * 60 * 1000;
 
-export const openTrace = async (traceFilePath: string): Promise<Page> => {
+export const evaluateLastSnapshotInTrace = async <T>(
+  traceFilePath: string,
+  evaluate: (body: HTMLBodyElement) => T | Promise<T>,
+): Promise<T> => {
   await traceServer?.stop();
   traceServer = await startTraceServer();
 
@@ -35,37 +38,39 @@ export const openTrace = async (traceFilePath: string): Promise<Page> => {
   page.setDefaultTimeout(timeoutThatToleratesEvenVeryLargeSnapshots);
   page.setDefaultNavigationTimeout(timeoutThatToleratesEvenVeryLargeSnapshots);
 
+  const encodedTraceFilePath = encodeURIComponent(traceFilePath);
+
   await page.goto(
-    `${traceServer.urlPrefix}/trace/index.html?trace=${encodeURIComponent(
-      traceFilePath,
-    )}`,
+    `${traceServer.urlPrefix}/trace/index.html?trace=${encodedTraceFilePath}`,
   );
 
   await page.waitForLoadState("networkidle");
 
-  return page;
-};
+  // When a large trace file is navigated via Playwright UI, the browser may crash.
+  // Making direct calls to the service worker and rendering the last snapshot
+  // without the iframe and its surrounding UI helps avoid crashes.
+  // Potential future improvement: https://github.com/microsoft/playwright/issues/9883
+  await page.goto(
+    `${traceServer.urlPrefix}/trace/context?trace=${encodedTraceFilePath}`,
+  );
 
-export const gotoAction = async (tracePage: Page, actionIndex: number) => {
-  await tracePage
-    .locator(
-      `.tabbed-pane .action-entry:${
-        actionIndex > 0
-          ? `nth-child(${actionIndex})`
-          : `nth-last-child(${-actionIndex})`
-      }`,
-    )
-    .click();
+  const rawJson = await page.locator("pre").textContent();
 
-  await tracePage.waitForLoadState("networkidle");
-};
+  const { actions } = JSON.parse(rawJson ?? "") as {
+    actions: Array<{ metadata: { id: string; pageId: string } }>;
+  };
+  const lastActionMetadata = actions.at(-1)?.metadata;
 
-export const evaluateSnapshot = async <T>(
-  tracePage: Page,
-  evaluate: (body: HTMLBodyElement) => T | Promise<T>,
-): Promise<T> => {
-  const snapshotBody = tracePage.frameLocator("#snapshot").locator("body");
-  await snapshotBody.waitFor({ state: "attached" });
+  if (!lastActionMetadata) {
+    throw new Error("Encountered empty lastActionMetadata");
+  }
+
+  await page.goto(
+    `${traceServer.urlPrefix}/trace/snapshot/${lastActionMetadata.pageId}?trace=${encodedTraceFilePath}&name=after@${lastActionMetadata.id}`,
+  );
+  await page.waitForLoadState("networkidle");
+
+  const snapshotBody = page.locator("body");
 
   return snapshotBody.evaluate(evaluate);
 };
