@@ -1,4 +1,4 @@
-import { Browser, BrowserContext, chromium, Page } from "playwright";
+import { Browser, BrowserContext, Page, webkit } from "playwright";
 
 import { startTraceServer, TraceServer } from "./traces/trace-server";
 
@@ -9,8 +9,13 @@ let traceBrowserContext: BrowserContext | undefined;
 
 const createPage = async (): Promise<Page> => {
   if (!traceBrowserContext) {
-    traceBrowser = await chromium.launch({
-      args: ["--blink-settings=imagesEnabled=false"], // Reduces chances of crashing
+    // Chromium has been crashing for large traces (approx > 500 MB), so using webkit instead
+    // traceBrowser = await chromium.launch({
+    //   args: ["--blink-settings=imagesEnabled=false"], // Reduces chances of crashing
+    // });
+
+    traceBrowser = await webkit.launch({
+      headless: true,
     });
 
     traceBrowserContext = await traceBrowser.newContext();
