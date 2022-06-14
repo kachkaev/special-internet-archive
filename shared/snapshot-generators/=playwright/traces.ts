@@ -78,7 +78,7 @@ export const evaluateLastSnapshotInTrace = async <T>(
 
     const snapshotBody = page.locator("body");
 
-    return snapshotBody.evaluate(evaluate);
+    return await snapshotBody.evaluate(evaluate);
   } finally {
     await page.close();
   }
