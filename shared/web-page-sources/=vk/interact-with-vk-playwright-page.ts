@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention,unicorn/consistent-function-scoping -- needed for playwrightPage.evaluate() */
 
+import { DateTime } from "luxon";
+
 import { AbortError } from "../../errors";
 import { calculateDaysBetween, unserializeTime } from "../../time";
 import {
@@ -82,6 +84,7 @@ const listRawDatesToScrollPast = ({
 const scrollPosts = async (
   payload: PlaywrightPageInteractionPayload,
 ): Promise<void> => {
+  const dateTimeAtScrollIterationStart = DateTime.local();
   const {
     abortSignal,
     playwrightPage,
@@ -203,7 +206,11 @@ const scrollPosts = async (
     }
     lastSeenBottomPostTime = bottomPostTime;
 
-    log?.(`Scrolled to ${bottomPostTime}`);
+    const serializedDuration = DateTime.local()
+      .diff(dateTimeAtScrollIterationStart)
+      .toFormat("hh:mm:ss");
+
+    log?.(`Scrolled to ${bottomPostTime} in ${serializedDuration}`);
 
     if (bottomPostTime < relevantTimeMin) {
       break;
