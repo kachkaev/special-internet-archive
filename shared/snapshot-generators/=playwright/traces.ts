@@ -1,4 +1,5 @@
-import { Browser, BrowserContext, Page, webkit } from "playwright";
+import { JSDOM } from "jsdom";
+import { Browser, BrowserContext, chromium, Page } from "playwright";
 
 import { startTraceServer, TraceServer } from "./traces/trace-server";
 
@@ -9,13 +10,8 @@ let traceBrowserContext: BrowserContext | undefined;
 
 const createPage = async (): Promise<Page> => {
   if (!traceBrowserContext) {
-    // Chromium has been crashing for large traces (approx > 500 MB), so using webkit instead
-    // traceBrowser = await chromium.launch({
-    //   args: ["--blink-settings=imagesEnabled=false"], // Reduces chances of crashing
-    // });
-
-    traceBrowser = await webkit.launch({
-      headless: true,
+    traceBrowser = await chromium.launch({
+      args: ["--blink-settings=imagesEnabled=false"], // Reduces chances of crashing
     });
 
     traceBrowserContext = await traceBrowser.newContext();
@@ -54,31 +50,50 @@ export const evaluateLastSnapshotInTrace = async <T>(
   try {
     // When a large trace file is navigated via Playwright UI, the browser may crash.
     // Making direct calls to the service worker and rendering the last snapshot
-    // without the iframe and its surrounding UI helps avoid crashes.
+    // outside the browser helps avoid crashes.
     // Potential future improvement: https://github.com/microsoft/playwright/issues/9883
-    await page.goto(
-      `${traceServer.urlPrefix}/trace/context?trace=${encodedTraceFilePath}`,
-    );
 
-    const rawJson = await page.locator("pre").textContent();
+    const { html, url } = await page.evaluate<
+      { html: string; url: string | undefined },
+      string
+    >(async (encodedTraceFilePathInEvaluate) => {
+      const contextResponse = await fetch(
+        `/trace/context?trace=${encodedTraceFilePathInEvaluate}`,
+      );
+      const { actions, events } = (await contextResponse.json()) as {
+        actions: Array<{ metadata: { id: string; pageId: string } }>;
+        events: Array<{
+          metadata?: {
+            method: "navigated";
+            params?: { url: string };
+          };
+        }>;
+      };
 
-    const { actions } = JSON.parse(rawJson ?? "") as {
-      actions: Array<{ metadata: { id: string; pageId: string } }>;
-    };
-    const lastActionMetadata = actions.at(-1)?.metadata;
+      const lastActionMetadata = actions.at(-1)?.metadata;
+      const lastNavigationMetadata = events.find(
+        (event) =>
+          event.metadata?.method === "navigated" &&
+          event.metadata.params?.url !== "about:blank",
+      );
 
-    if (!lastActionMetadata) {
-      throw new Error("Encountered empty lastActionMetadata");
-    }
+      if (!lastActionMetadata) {
+        throw new Error("Encountered empty lastActionMetadata");
+      }
 
-    await page.goto(
-      `${traceServer.urlPrefix}/trace/snapshot/${lastActionMetadata.pageId}?trace=${encodedTraceFilePath}&name=after@${lastActionMetadata.id}`,
-    );
-    await page.waitForLoadState("networkidle");
+      const htmlResponse = await fetch(
+        `/trace/snapshot/${lastActionMetadata.pageId}?trace=${encodedTraceFilePathInEvaluate}&name=after@${lastActionMetadata.id}`,
+      );
 
-    const snapshotBody = page.locator("body");
+      return {
+        html: await htmlResponse.text(),
+        url: lastNavigationMetadata?.metadata?.params?.url,
+      };
+    }, encodedTraceFilePath);
 
-    return await snapshotBody.evaluate(evaluate);
+    const dom = new JSDOM(html, { url, contentType: "text/html" });
+
+    return await evaluate(dom.window.document.body as HTMLBodyElement);
   } finally {
     await page.close();
   }
