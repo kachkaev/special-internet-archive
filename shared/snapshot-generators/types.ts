@@ -11,7 +11,7 @@ export type ObtainSnapshotTimes = (payload: {
   aliasUrl?: string | undefined;
   webPageDirPath: string;
   webPageUrl: string;
-}) => Promise<string[]>;
+}) => Promise<SnapshotInventoryItem[]>;
 
 export interface SnapshotContext {
   relevantTimeMin: string;

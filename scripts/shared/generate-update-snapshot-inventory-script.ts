@@ -256,9 +256,7 @@ export const generateUpdateInventoryScript =
           webPageUrl: webPageDocument.webPageUrl,
         });
 
-        for (const snapshotTime of snapshotTimes) {
-          snapshotInventoryItems.push({ capturedAt: snapshotTime });
-        }
+        snapshotInventoryItems.push(...snapshotTimes);
 
         reportUpdateInSnapshots(
           output,
@@ -301,8 +299,8 @@ export const generateUpdateInventoryScript =
 
             for (const aliasSnapshotTime of aliasSnapshotTimes) {
               snapshotInventoryItems.push({
-                capturedAt: aliasSnapshotTime,
                 aliasUrl,
+                ...aliasSnapshotTime,
               });
             }
 

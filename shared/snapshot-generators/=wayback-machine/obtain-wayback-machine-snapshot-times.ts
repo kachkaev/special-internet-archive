@@ -5,6 +5,7 @@ import { DateTime } from "luxon";
 import { cleanEnv } from "../../clean-env";
 import { relevantTimeMin } from "../../collection";
 import { serializeTime, unserializeTime } from "../../time";
+import { SnapshotInventoryItem } from "../../web-page-documents";
 import { ObtainSnapshotTimes } from "../types";
 import { checkIfUrlWasRecentlySubmitted } from "./obtain-wayback-machine-snapshot-times/check-if-url-was-recently-submitted";
 import { obtainFastSnapshotTimes } from "./obtain-wayback-machine-snapshot-times/obtain-fast-snapshot-times";
@@ -27,7 +28,7 @@ type AjaxApiResponse = {
   items?: Array<
     [
       encodedCaptureDate: number,
-      captureStatusCode: number,
+      captureStatusCode: number | "-",
       somethingUnknown: number,
     ]
   >;
@@ -41,7 +42,7 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
   aliasUrl,
 }) => {
   const url = aliasUrl ?? webPageUrl;
-  const result: string[] = [];
+  const result: SnapshotInventoryItem[] = [];
 
   const env = cleanEnv({
     WAYBACK_MACHINE_SNAPSHOT_INVENTORY_API: envalid.str({
@@ -80,19 +81,22 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
     }
 
     for (const cells of csvRows) {
-      const statusCode = cells[4];
+      const rawStatusCode = cells[4];
 
-      if (statusCode !== "200" && statusCode !== "404") {
+      if (rawStatusCode !== "200" && rawStatusCode !== "404") {
         continue;
       }
 
       const timestamp = cells[1];
-      const serializedTime = serializeTime(timestamp);
-      if (serializedTime < relevantTimeMin) {
+      const capturedAt = serializeTime(timestamp);
+      if (capturedAt < relevantTimeMin) {
         continue;
       }
 
-      result.push(serializedTime);
+      result.push({
+        capturedAt,
+        ...(rawStatusCode === "404" ? { statusCode: 404 } : {}),
+      });
     }
   } else {
     if (
@@ -126,31 +130,37 @@ export const obtainWaybackMachineSnapshotTimes: ObtainSnapshotTimes = async ({
           },
         );
 
-      for (const [
-        encodedCaptureDate,
-        captureStatusCode,
-      ] of ajaxApiResponse.items ?? []) {
-        // @todo save 404
-        if (captureStatusCode !== 200) {
+      for (const [encodedCaptureDate, rawStatusCode] of ajaxApiResponse.items ??
+        []) {
+        // 404 is sometimes returned as "-", e.g.
+        // https://web.archive.org/__wb/calendarcaptures/2?url=https://vk.com/gagarinlife&date=2022
+        const statusCode = rawStatusCode === "-" ? 404 : rawStatusCode;
+        if (statusCode !== 200 && statusCode !== 404) {
           continue;
         }
 
-        const serializedTime = serializeTime(
+        const capturedAt = serializeTime(
           `${year}${`${encodedCaptureDate}`.padStart(
             "MMDDHHMMSS".length,
             "0",
           )}`,
         );
 
-        if (serializedTime < relevantTimeMin) {
+        if (capturedAt < relevantTimeMin) {
           continue;
         }
 
-        result.push(serializedTime);
+        result.push({
+          capturedAt,
+          ...(statusCode === 404 ? { statusCode: 404 } : {}),
+        });
       }
     }
   }
 
   // Wayback Machine sometimes reports duplicate timestamps
-  return _.uniq(result);
+  return _.orderBy(
+    _.uniqBy(result, (item) => item.capturedAt),
+    (item) => item.capturedAt,
+  );
 };

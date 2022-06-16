@@ -3,6 +3,7 @@ import _ from "lodash";
 import LRU from "lru-cache";
 
 import { serializeTime } from "../../../time";
+import { SnapshotInventoryItem } from "../../../web-page-documents";
 
 const extractUrlPrefix = (url: string): string | undefined => {
   return (
@@ -11,10 +12,11 @@ const extractUrlPrefix = (url: string): string | undefined => {
   );
 };
 
-type ApiResponse = Array<[string, string]>;
-type TimestampsByUrl = Record<string, string[]>;
+type TimeRecord = Pick<SnapshotInventoryItem, "capturedAt" | "statusCode">;
+type ApiResponse = Array<[string, string, string]>;
+type TimeRecordsByUrl = Record<string, TimeRecord[]>;
 
-const cache = new LRU<string, TimestampsByUrl | Error>({ max: 5 });
+const cache = new LRU<string, TimeRecordsByUrl | Error>({ max: 5 });
 
 /**
  * Method idea:
@@ -28,7 +30,7 @@ const cache = new LRU<string, TimestampsByUrl | Error>({ max: 5 });
 export const obtainFastSnapshotTimes = async (
   url: string,
   axiosInstance: Axios,
-): Promise<string[] | undefined> => {
+): Promise<TimeRecord[] | undefined> => {
   const urlPrefix = extractUrlPrefix(url);
   if (!urlPrefix) {
     return;
@@ -43,8 +45,8 @@ export const obtainFastSnapshotTimes = async (
             url: urlPrefix,
             matchType: "prefix",
             output: "json",
-            fl: "original,timestamp",
-            filter: "statuscode:200",
+            fl: "original,timestamp,statuscode",
+            filter: "statuscode:200|404",
             limit: "1000000",
           },
           transitional: {
@@ -53,12 +55,18 @@ export const obtainFastSnapshotTimes = async (
           },
         },
       );
-      const timestampsByUrl: TimestampsByUrl = {};
-      for (const [currentUrl, timestamp] of data.slice(1) /* header */) {
-        timestampsByUrl[currentUrl] ??= [];
-        timestampsByUrl[currentUrl]?.push(timestamp);
+      const timeRecordsByUrl: TimeRecordsByUrl = {};
+      for (const [currentUrl, timestamp, rawStatusCode] of data.slice(
+        1,
+      ) /* header */) {
+        const timeRecord: TimeRecord = { capturedAt: serializeTime(timestamp) };
+        if (rawStatusCode === "404") {
+          timeRecord.statusCode = 404;
+        }
+        timeRecordsByUrl[currentUrl] ??= [];
+        timeRecordsByUrl[currentUrl]?.push(timeRecord);
       }
-      cache.set(urlPrefix, timestampsByUrl);
+      cache.set(urlPrefix, timeRecordsByUrl);
     } catch (error) {
       cache.set(urlPrefix, error as Error);
     }
@@ -70,9 +78,7 @@ export const obtainFastSnapshotTimes = async (
     return undefined;
   }
 
-  return _.orderBy(
-    (urlGroupInventory?.[url] ?? []).map((timestamp) =>
-      serializeTime(timestamp),
-    ),
-  );
+  return _.orderBy(urlGroupInventory?.[url] ?? [], [
+    (record) => record.capturedAt,
+  ]);
 };

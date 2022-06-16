@@ -1,6 +1,7 @@
 export interface SnapshotInventoryItem {
   capturedAt: string;
   aliasUrl?: string;
+  statusCode?: 404; // property not set for 200 to reduce document size
 }
 
 export interface SnapshotInventory {
