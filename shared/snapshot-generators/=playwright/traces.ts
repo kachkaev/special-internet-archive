@@ -61,24 +61,32 @@ export const evaluateLastSnapshotInTrace = async <T>(
         `/trace/context?trace=${encodedTraceFilePathInEvaluate}`,
       );
       const { actions, events } = (await contextResponse.json()) as {
-        actions: Array<{ metadata: { id: string; pageId: string } }>;
+        actions: Array<{
+          metadata?: { apiName: "page.evaluate"; id: string; pageId: string };
+        }>;
         events: Array<{
-          metadata?: {
-            method: "navigated";
-            params?: { url: string };
-          };
+          metadata?: { method: "navigated"; params?: { url: string } };
         }>;
       };
 
-      const lastActionMetadata = actions.at(-1)?.metadata;
+      const lastActionMetadata = [...actions]
+        .reverse()
+        .find(
+          (action) => action.metadata?.apiName === "page.evaluate",
+        )?.metadata;
+
+      if (!lastActionMetadata) {
+        throw new Error("Encountered empty lastActionMetadata");
+      }
+
       const lastNavigationMetadata = events.find(
         (event) =>
           event.metadata?.method === "navigated" &&
           event.metadata.params?.url !== "about:blank",
-      );
+      )?.metadata;
 
-      if (!lastActionMetadata) {
-        throw new Error("Encountered empty lastActionMetadata");
+      if (!lastNavigationMetadata) {
+        throw new Error("Encountered empty lastNavigationMetadata");
       }
 
       const htmlResponse = await fetch(
@@ -87,7 +95,7 @@ export const evaluateLastSnapshotInTrace = async <T>(
 
       return {
         html: await htmlResponse.text(),
-        url: lastNavigationMetadata?.metadata?.params?.url,
+        url: lastNavigationMetadata.params?.url,
       };
     }, encodedTraceFilePath);
 
