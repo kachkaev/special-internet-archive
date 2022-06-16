@@ -17,6 +17,7 @@ const checkIfCollectionHasUncommittedChanges = async (): Promise<boolean> => {
     const { stdout } = await execa("git", ["status", "--short"], {
       cwd: collectionDirPath,
       stdio: "pipe",
+      timeout: 60_000, // 1 minute
     });
 
     return Boolean(stdout);
@@ -100,6 +101,7 @@ export const syncCollectionIfNeeded = async ({
   const execaOptions: Options = {
     cwd: collectionDirPath,
     stdio: "inherit",
+    timeout: 3_600_000, // 1 hour
   };
 
   if (!(await checkIfCollectionHasUncommittedChanges())) {
