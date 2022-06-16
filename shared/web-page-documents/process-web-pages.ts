@@ -1,55 +1,33 @@
 import chalk from "chalk";
-import * as envalid from "envalid";
 import path from "node:path";
 import { WriteStream } from "node:tty";
-import RegexParser from "regex-parser";
 
-import { cleanEnv } from "../clean-env";
 import { getWebPagesDirPath } from "../collection";
 import { AbortError, getErrorMessage } from "../errors";
 import { generateProgress } from "../generate-progress";
 import { listFilePaths } from "../list-file-paths";
 import { OperationResult } from "../operations";
-import { WebPageDocument } from "../web-page-documents";
-import { checkContentMatch } from "../web-page-sources";
+import { findReasonToSkipWebPageBasedOnEnv } from "./find-reason-to-skip-web-page-based-on-env";
 import { readWebPageDocument } from "./io";
+import { FindReasonToSkipWebPage, ProcessWebPagePayload } from "./types";
 
-export type ProcessWebPage = (payload: {
-  progressPrefix: string;
-  webPageDirPath: string;
-  webPageDocument: WebPageDocument;
-}) => void | Promise<void>;
+export type ProcessWebPage = (
+  payload: ProcessWebPagePayload,
+) => void | Promise<void>;
 
 export type HandleSkippedWebPage = ProcessWebPage;
 
 export const processWebPages = async ({
-  output,
+  findReasonToSkipWebPage = findReasonToSkipWebPageBasedOnEnv,
   handleSkippedWebPage,
+  output,
   processWebPage,
 }: {
-  output?: WriteStream | undefined;
+  findReasonToSkipWebPage?: FindReasonToSkipWebPage;
   handleSkippedWebPage?: ProcessWebPage;
+  output?: WriteStream | undefined;
   processWebPage: ProcessWebPage;
 }): Promise<OperationResult> => {
-  const env = cleanEnv({
-    FILTER_CONTENT: envalid.str({
-      desc: "Regex to filter web page URLs",
-      default: "",
-    }),
-    FILTER_URL: envalid.str({
-      desc: "Regex to filter web page URLs",
-      default: "",
-    }),
-  });
-
-  const filterContentRegex = env.FILTER_CONTENT
-    ? RegexParser(env.FILTER_CONTENT)
-    : undefined;
-
-  const filterUrlRegex = env.FILTER_URL
-    ? RegexParser(env.FILTER_URL)
-    : undefined;
-
   let numberOfProcessed = 0;
   let numberOfErrors = 0;
   let numberOfFilteredOut = 0;
@@ -91,24 +69,15 @@ export const processWebPages = async ({
 
     webPageUrlLookup[webPageDocument.webPageUrl] = true;
 
-    let reasonToFilterOut: string | undefined;
+    const reasonToSkipWebPage = await findReasonToSkipWebPage({
+      progressPrefix,
+      webPageDirPath,
+      webPageDocument,
+    });
 
-    if (filterUrlRegex && !filterUrlRegex.test(webPageDocument.webPageUrl)) {
-      reasonToFilterOut = `does not match FILTER_URL`;
-    } else if (
-      filterContentRegex &&
-      !(await checkContentMatch({
-        webPageDocument,
-        webPageDirPath,
-        contentRegex: filterContentRegex,
-      }))
-    ) {
-      reasonToFilterOut = `does not match FILTER_CONTENT`;
-    }
-
-    if (reasonToFilterOut) {
+    if (reasonToSkipWebPage) {
       numberOfFilteredOut += 1;
-      output?.write(chalk.gray(reasonToFilterOut));
+      output?.write(chalk.gray(reasonToSkipWebPage));
       await handleSkippedWebPage?.({
         progressPrefix,
         webPageDirPath,

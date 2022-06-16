@@ -22,3 +22,16 @@ export interface WebPageDocument {
   annotation: WebPageAnnotation;
   snapshotInventoryLookup: Record<string, SnapshotInventory>;
 }
+
+export type ProcessWebPagePayload = {
+  progressPrefix: string;
+  webPageDirPath: string;
+  webPageDocument: WebPageDocument;
+};
+
+/**
+ * @returns reason for skipping (undefined means that the page should not be skipped)
+ */
+export type FindReasonToSkipWebPage = (
+  payload: ProcessWebPagePayload,
+) => string | undefined | Promise<string | undefined>;
