@@ -15,6 +15,7 @@ export type ObtainSnapshotTimes = (payload: {
 
 export interface SnapshotContext {
   relevantTimeMin: string;
+  completeness?: "noImages";
 }
 
 export interface PreviousFailuresInSnapshotQueue {

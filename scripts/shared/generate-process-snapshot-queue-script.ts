@@ -19,7 +19,10 @@ import {
   assertSnapshotGeneratorMatchesFilter,
   getSnapshotGenerator,
 } from "../../shared/snapshot-generators";
-import { PreviousFailuresInSnapshotQueue } from "../../shared/snapshot-generators/types";
+import {
+  PreviousFailuresInSnapshotQueue,
+  SnapshotContext,
+} from "../../shared/snapshot-generators/types";
 import {
   generateSnapshotQueueDocumentPath,
   readSnapshotQueueDocument,
@@ -221,7 +224,14 @@ export const generateProcessSnapshotQueueScript =
 
         const operationResult = await snapshotGenerator.captureSnapshot({
           abortSignal: abortController.signal,
-          snapshotContext: _.defaults({}, item.context, { relevantTimeMin }),
+          snapshotContext: _.defaults<
+            Partial<SnapshotContext>,
+            Partial<SnapshotContext> | undefined,
+            SnapshotContext
+          >({}, item.context, {
+            relevantTimeMin,
+            completeness: "noImages",
+          }),
           webPageDirPath,
           reportIssue: (message) =>
             output.write(chalk.yellow(`\n${progressPrefix}${message}`)),

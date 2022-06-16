@@ -21,7 +21,11 @@ export const getPlaywrightBrowser = async (): Promise<Browser> => {
   const headless = env.HEADLESS;
 
   playwrightBrowser = "launching";
-  playwrightBrowser = await chromium.launch({ headless });
+  playwrightBrowser = await chromium.launch({
+    headless,
+    // @todo link to snapshotContext → completeness
+    args: ["--blink-settings=imagesEnabled=false"],
+  });
 
   return playwrightBrowser;
 };

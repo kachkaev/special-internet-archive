@@ -54,7 +54,9 @@ export const capturePlaywrightSnapshot: CaptureSnapshot = async ({
       throw new AbortError();
     }
 
-    await tryLoadingAllImages(playwrightPage);
+    if (snapshotContext.completeness !== "noImages") {
+      await tryLoadingAllImages(playwrightPage);
+    }
 
     if (abortSignal?.aborted) {
       throw new AbortError();
