@@ -1,3 +1,5 @@
+import fs from "fs-extra";
+
 import { getErrorMessage } from "../errors";
 import { OperationResult } from "../operations";
 import { serializeTime } from "../time";
@@ -25,6 +27,14 @@ export const registerWebPage = async (
     return {
       status: "failed",
       message: getErrorMessage(error),
+    };
+  }
+
+  const documentPath = generateWebPageDocumentPath(webPageDirPath);
+  if (await fs.pathExists(documentPath)) {
+    return {
+      status: "failed",
+      message: `Document already exists: ${documentPath}`,
     };
   }
 
