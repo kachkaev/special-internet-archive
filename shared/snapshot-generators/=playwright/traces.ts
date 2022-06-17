@@ -62,7 +62,7 @@ export const evaluateLastSnapshotInTrace = async <T>(
       );
       const { actions, events } = (await contextResponse.json()) as {
         actions: Array<{
-          metadata?: { apiName: "page.evaluate"; id: string; pageId: string };
+          metadata: { frameId?: string; id: string; pageId: string };
         }>;
         events: Array<{
           metadata?: { method: "navigated"; params?: { url: string } };
@@ -71,9 +71,7 @@ export const evaluateLastSnapshotInTrace = async <T>(
 
       const lastActionMetadata = [...actions]
         .reverse()
-        .find(
-          (action) => action.metadata?.apiName === "page.evaluate",
-        )?.metadata;
+        .find((action) => action.metadata.frameId)?.metadata;
 
       if (!lastActionMetadata) {
         throw new Error("Encountered empty lastActionMetadata");
