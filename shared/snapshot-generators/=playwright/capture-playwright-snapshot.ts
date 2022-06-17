@@ -34,7 +34,10 @@ export const capturePlaywrightSnapshot: CaptureSnapshot = async ({
   });
 
   try {
-    await playwrightContext.tracing.start({ snapshots: true });
+    await playwrightContext.tracing.start({
+      snapshots: true,
+      title: JSON.stringify({ snapshotContext }),
+    });
     const playwrightPage = await playwrightContext.newPage();
     await playwrightPage.goto(webPageUrl);
     await playwrightPage.waitForLoadState("networkidle");
