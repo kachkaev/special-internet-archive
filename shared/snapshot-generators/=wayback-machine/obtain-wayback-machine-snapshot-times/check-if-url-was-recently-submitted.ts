@@ -1,7 +1,10 @@
 import sleep from "sleep-promise";
 
-import { readSnapshotQueueDocument } from "../../../snapshot-queues";
-import { calculateDaysSince } from "../../../time";
+import {
+  readSnapshotQueueDocument,
+  SnapshotAttempt,
+} from "../../../snapshot-queues";
+import { checkIfWaybackMachineSucceededSnapshotAttemptExpired } from "./check-if-wayback-machine-succeeded-attempt-expired";
 
 let lookup: Record<string, boolean> | "loading" | undefined;
 
@@ -17,13 +20,17 @@ export const checkIfUrlWasRecentlySubmitted = async (
 
     lookup = {};
     for (const item of snapshotQueueDocument.items) {
-      const succeededAttemptStartedAt = item.attempts?.find(
-        (attempt) => attempt.status === "succeeded",
-      )?.startedAt;
+      const succeededAttempt = item.attempts?.find(
+        (attempt): attempt is SnapshotAttempt<"succeeded"> =>
+          attempt.status === "succeeded",
+      );
+
+      if (!succeededAttempt) {
+        continue;
+      }
 
       if (
-        succeededAttemptStartedAt &&
-        calculateDaysSince(succeededAttemptStartedAt) < 3
+        !checkIfWaybackMachineSucceededSnapshotAttemptExpired(succeededAttempt)
       ) {
         lookup[item.webPageUrl] = true;
       }
