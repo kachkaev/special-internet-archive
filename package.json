@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "yarn exe scripts/1-chores/launch-next-js-dev-server.script.ts",
-    "exe": "node --max-old-space-size=8192 --experimental-loader ts-node/esm/transpile-only --es-module-specifier-resolution=node --require=./suppress-experimental-warnings.cjs",
+    "exe": "node --max-old-space-size=16384 --experimental-loader ts-node/esm/transpile-only --es-module-specifier-resolution=node --require=./suppress-experimental-warnings.cjs",
     "fix": "npm-run-all --continue-on-error \"fix:*\"",
     "fix:eslint": "next lint --fix --report-unused-disable-directives=error",
     "fix:markdownlint": "markdownlint --fix \"**/*\"",
