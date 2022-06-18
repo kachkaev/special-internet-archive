@@ -1,9 +1,10 @@
 const relevantTerms = [
   " it", // avoid confusion with twitter
+  " obi", // avoid confusion with “sdobin”
+  " нко", // avoid confusion with “энковский”
   "chess",
   "covid",
   "ikea",
-  "obi",
   "v",
   "z",
   "авиа",
@@ -95,7 +96,6 @@ const relevantTerms = [
   "мыработаем",
   "налог",
   "наци",
-  "нко",
   "оборон",
   "образован",
   "обстрел",
