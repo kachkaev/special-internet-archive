@@ -113,23 +113,42 @@ export const generateProcessSnapshotQueueScript =
     );
 
     if (snapshotGenerator.massCaptureSnapshots) {
-      output.write(chalk.green(`Attempting to mass-capture all snapshots... `));
+      output.write(chalk.green(`Attempting to mass-capture snapshots... `));
       const attemptStartedAt = serializeTime();
 
-      const snapshotQueueItemIds = orderedItemsToProcess.map((item) => item.id);
+      // @todo Remove or generalize chunking. Isodos requests were capped at 100 links
+      // on 2022-06-22 to avoid queue crashing on the server while the bug is investigated.
+      const chunkedItemsToProcess = _.chunk(orderedItemsToProcess, 100);
+      let wasSkipped = false;
 
-      await reportSnapshotQueueAttempts({
-        attemptStartedAt,
-        attemptStatus: "started",
-        snapshotGeneratorId,
-        snapshotQueueItemIds,
-      });
+      for (const currentItemsToProcess of chunkedItemsToProcess) {
+        const snapshotQueueItemIds = currentItemsToProcess.map(
+          (item) => item.id,
+        );
 
-      const operationResult = await snapshotGenerator.massCaptureSnapshots({
-        webPagesUrls: orderedItemsToProcess.map((item) => item.webPageUrl),
-      });
+        await reportSnapshotQueueAttempts({
+          attemptStartedAt,
+          attemptStatus: "started",
+          snapshotGeneratorId,
+          snapshotQueueItemIds,
+        });
 
-      if (operationResult.status !== "skipped") {
+        const operationResult = await snapshotGenerator.massCaptureSnapshots({
+          webPagesUrls: currentItemsToProcess.map((item) => item.webPageUrl),
+        });
+
+        if (operationResult.status === "skipped") {
+          output.write(
+            chalk.gray(
+              `Skipped.${
+                operationResult.message ? ` ${operationResult.message}` : ""
+              }\n`,
+            ),
+          );
+          wasSkipped = true;
+          break;
+        }
+
         await reportSnapshotQueueAttempts({
           attemptMessage: operationResult.message,
           attemptStartedAt,
@@ -146,17 +165,11 @@ export const generateProcessSnapshotQueueScript =
             }`,
           ),
         );
-
-        return;
       }
 
-      output.write(
-        chalk.gray(
-          `Skipped.${
-            operationResult.message ? ` ${operationResult.message}` : ""
-          }\n`,
-        ),
-      );
+      if (!wasSkipped) {
+        return;
+      }
     }
 
     let numberOfAttempts = 0;
