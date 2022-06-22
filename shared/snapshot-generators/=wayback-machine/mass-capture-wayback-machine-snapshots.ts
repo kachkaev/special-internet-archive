@@ -35,7 +35,7 @@ export const massCaptureWaybackMachineSnapshots: MassCaptureSnapshots = async ({
     };
   }
 
-  if (isodosMinQueueSize <= 0 || webPagesUrls.length < isodosMinQueueSize) {
+  if (webPagesUrls.length < isodosMinQueueSize && isodosMinQueueSize > 0) {
     return {
       status: "skipped",
       message: `Number of snapshots is less than ${isodosMinQueueSize}`,
