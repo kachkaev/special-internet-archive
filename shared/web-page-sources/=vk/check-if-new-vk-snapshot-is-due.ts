@@ -14,7 +14,7 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = ({
 
   const env = cleanEnv({
     VK_ACCOUNT_SNAPSHOT_FREQUENCY_IN_DAYS: envalid.num({
-      default: 3,
+      default: 0.8,
     }),
   });
 
