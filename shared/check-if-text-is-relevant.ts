@@ -2,6 +2,7 @@ const relevantTerms = [
   " it", // avoid confusion with twitter
   " obi", // avoid confusion with “sdobin”
   " нко", // avoid confusion with “энковский”
+  " цен ", // avoid confusion with «цена» in ads
   "chess",
   "covid",
   "ikea",
@@ -25,7 +26,7 @@ const relevantTerms = [
   "бессмерт",
   "боев",
   "боец",
-  "бойцов",
+  "бойц",
   "бригад",
   "валют",
   "вертолет",
@@ -37,7 +38,9 @@ const relevantTerms = [
   "войн",
   "генерал",
   "георгиев",
-  "глав",
+  "глава",
+  "главе",
+  "главнокоманд",
   "граждан",
   "границ",
   "гранич",
@@ -165,7 +168,8 @@ const relevantTerms = [
   "флот",
   "херсон",
   "хлопок",
-  "цен",
+  "ценов",
+  "цены",
   "школ",
   "шойг",
   "эваку",
