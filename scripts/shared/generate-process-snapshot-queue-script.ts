@@ -118,7 +118,7 @@ export const generateProcessSnapshotQueueScript =
 
       // @todo Remove or generalize chunking. Isodos requests were capped at 100 links
       // on 2022-06-22 to avoid queue crashing on the server while the bug is investigated.
-      const chunkedItemsToProcess = _.chunk(orderedItemsToProcess, 5);
+      const chunkedItemsToProcess = _.chunk(orderedItemsToProcess, 100);
       let wasSkipped = false;
 
       for (const currentItemsToProcess of chunkedItemsToProcess) {
@@ -160,9 +160,7 @@ export const generateProcessSnapshotQueueScript =
 
         output.write(
           (operationResult.status === "processed" ? chalk.magenta : chalk.red)(
-            `Done${
-              operationResult.message ? `. ${operationResult.message}` : ""
-            }`,
+            `${operationResult.message ?? "Done"}\n`,
           ),
         );
       }
