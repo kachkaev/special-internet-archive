@@ -50,6 +50,9 @@ const ipAddressBlocked =
 const personalApiLimitsReachedMessage =
   "API limits reached. Try using another internet connection or continue tomorrow";
 
+const urlLimitsReachedMessage =
+  "Wayback Machine servers stopped crawling this URL for today. Try again tomorrow";
+
 const hostLimitsReachedMessage =
   "Wayback Machine servers stopped crawling this host for today. Try again tomorrow";
 
@@ -138,10 +141,20 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
         };
       }
 
+      // This URL has been already captured 10 times today. Please try
+      // again tomorrow. Please email us at "info@archive.org" if you
+      // would like to discuss this more.
+      if (html.includes("This URL has been already captured")) {
+        return {
+          status: "failed",
+          message: urlLimitsReachedMessage,
+        };
+      }
+
       // This host has been already captured N00,000.0 times today. Please
       // try again tomorrow. Please email us at "info@archive.org" if you
       // would like to discuss this more.
-      if (html.includes("Please try again tomorrow")) {
+      if (html.includes("This host has been already captured")) {
         return {
           status: "failed",
           message: hostLimitsReachedMessage,
