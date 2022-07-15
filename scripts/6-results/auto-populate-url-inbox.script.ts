@@ -9,6 +9,7 @@ import {
 import { throwExitCodeErrorIfOperationFailed } from "../../shared/errors";
 import { serializeTime } from "../../shared/time";
 import { processWebPages } from "../../shared/web-page-documents";
+import { skipWebPageBasedOnEnv } from "../../shared/web-page-documents/skip-web-page-based-on-env";
 import { extractRelevantWebPageUrls } from "../../shared/web-page-sources";
 
 const output = process.stdout;
@@ -22,6 +23,15 @@ const script = async () => {
   const operationResult = await processWebPages({
     output,
     processWebPage: async ({ webPageDirPath, webPageDocument }) => {
+      const earlyResult = await skipWebPageBasedOnEnv({
+        webPageDirPath,
+        webPageDocument,
+      });
+
+      if (earlyResult) {
+        return earlyResult;
+      }
+
       registeredWebPageUrlSet.add(webPageDocument.webPageUrl);
 
       const relevantWebPageUrls = await extractRelevantWebPageUrls({
@@ -33,13 +43,10 @@ const script = async () => {
         relevantWebPageUrlSet.add(relevantWebPageUrl);
       }
 
-      output.write(
-        `relevant web page URLs: ${
-          relevantWebPageUrls.length > 0
-            ? chalk.blue(relevantWebPageUrls.length)
-            : "0"
-        }`,
-      );
+      return {
+        status: relevantWebPageUrls.length > 0 ? "processed" : "skipped",
+        message: `relevant web page URLs: ${relevantWebPageUrls.length}`,
+      };
     },
   });
 

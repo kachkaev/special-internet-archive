@@ -22,6 +22,7 @@ import {
 } from "../../shared/snapshot-queues";
 import { serializeTime } from "../../shared/time";
 import { processWebPages } from "../../shared/web-page-documents";
+import { skipWebPageBasedOnEnv } from "../../shared/web-page-documents/skip-web-page-based-on-env";
 import {
   calculateRelevantTimeMinForNewIncrementalSnapshot,
   checkIfSnapshotIsDue,
@@ -110,13 +111,21 @@ export const generateComposeSnapshotQueueScript =
 
     const operationResult = await processWebPages({
       output,
-      handleSkippedWebPage: ({ webPageDocument }) => {
-        const existingQueueItems = allExistingQueueItems.filter(
-          (item) => item.webPageUrl === webPageDocument.webPageUrl,
-        );
-        allNewQueueItems.push(...existingQueueItems);
-      },
       processWebPage: async ({ webPageDirPath, webPageDocument }) => {
+        const earlyResult = await skipWebPageBasedOnEnv({
+          webPageDirPath,
+          webPageDocument,
+        });
+
+        if (earlyResult) {
+          const existingQueueItems = allExistingQueueItems.filter(
+            (item) => item.webPageUrl === webPageDocument.webPageUrl,
+          );
+          allNewQueueItems.push(...existingQueueItems);
+
+          return earlyResult;
+        }
+
         const existingQueueItems = allExistingQueueItems.filter(
           (item) => item.webPageUrl === webPageDocument.webPageUrl,
         );
@@ -126,12 +135,12 @@ export const generateComposeSnapshotQueueScript =
             item.attempts?.find((attempt) => attempt.status === "started"),
           )
         ) {
-          output.write(
-            chalk.gray("skipping because there is a started snapshot attempt"),
-          );
           allNewQueueItems.push(...existingQueueItems);
 
-          return;
+          return {
+            status: "skipped",
+            message: "there is a started snapshot attempt",
+          };
         }
 
         const snapshotInventory =
@@ -196,9 +205,18 @@ export const generateComposeSnapshotQueueScript =
             };
           }
 
-          output.write(chalk.magenta("new snapshot is due"));
           allNewQueueItems.push(newQueueItem);
+
+          return {
+            status: "processed",
+            message: "new snapshot is due",
+          };
         }
+
+        return {
+          status: "skipped",
+          message: "new snapshot is not due",
+        };
       },
     });
 

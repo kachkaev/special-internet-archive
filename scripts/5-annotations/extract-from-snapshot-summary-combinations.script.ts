@@ -8,6 +8,7 @@ import {
   processWebPages,
   writeWebPageDocument,
 } from "../../shared/web-page-documents";
+import { skipWebPageBasedOnEnv } from "../../shared/web-page-documents/skip-web-page-based-on-env";
 import { updateWebPageAnnotation } from "../../shared/web-page-sources";
 
 const output = process.stdout;
@@ -28,14 +29,25 @@ const script = async () => {
   const operationResult = await processWebPages({
     output,
     processWebPage: async ({ webPageDirPath, webPageDocument }) => {
+      const earlyResult = await skipWebPageBasedOnEnv({
+        webPageDirPath,
+        webPageDocument,
+      });
+
+      if (earlyResult) {
+        return earlyResult;
+      }
+
       const snapshotSummaryCombinationDocument =
         await readSnapshotSummaryCombinationDocument(webPageDirPath);
 
       if (!snapshotSummaryCombinationDocument) {
-        output.write(chalk.yellow("snapshot summary combination not found"));
         pagesWithoutSnapshotSummaryCombination = true;
 
-        return;
+        return {
+          status: "skipped",
+          message: "snapshot summary combination not found",
+        };
       }
 
       const updatedAnnotation = updateWebPageAnnotation({
@@ -43,9 +55,10 @@ const script = async () => {
         snapshotSummaryCombinationDocument,
       });
       if (_.isEqual(updatedAnnotation, webPageDocument.annotation)) {
-        output.write(chalk.gray("annotation has not changed"));
-
-        return;
+        return {
+          status: "skipped",
+          message: "annotation has not changed",
+        };
       }
 
       const updatedWebPageDocument = _.clone(webPageDocument);
@@ -53,7 +66,10 @@ const script = async () => {
 
       await writeWebPageDocument(webPageDirPath, updatedWebPageDocument);
 
-      output.write(chalk.magenta("annotation was changed"));
+      return {
+        status: "processed",
+        message: "annotation was changed",
+      };
     },
   });
 

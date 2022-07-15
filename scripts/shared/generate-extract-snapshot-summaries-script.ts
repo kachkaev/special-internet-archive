@@ -21,6 +21,7 @@ import {
 } from "../../shared/snapshot-summaries";
 import { serializeTime } from "../../shared/time";
 import { processWebPages } from "../../shared/web-page-documents";
+import { skipWebPageBasedOnEnv } from "../../shared/web-page-documents/skip-web-page-based-on-env";
 
 export const generateExtractSnapshotSummariesScript =
   ({
@@ -74,6 +75,15 @@ export const generateExtractSnapshotSummariesScript =
         webPageDirPath,
         webPageDocument,
       }) => {
+        const earlyResult = await skipWebPageBasedOnEnv({
+          webPageDirPath,
+          webPageDocument,
+        });
+
+        if (earlyResult) {
+          return earlyResult;
+        }
+
         if (abortController.signal.aborted) {
           throw new AbortError();
         }
@@ -83,10 +93,12 @@ export const generateExtractSnapshotSummariesScript =
           [];
 
         if (snapshotInventoryItems.length === 0) {
-          output.write(chalk.yellow(`no snapshots found`));
           pagesWithoutSnapshotsFound = true;
 
-          return;
+          return {
+            status: "skipped",
+            message: "no snapshots found",
+          };
         }
 
         output.write(`snapshot count: ${snapshotInventoryItems.length}`);
@@ -166,6 +178,10 @@ export const generateExtractSnapshotSummariesScript =
 
           output.write(chalk.magenta("done"));
         }
+
+        return {
+          status: "processed",
+        };
       },
     });
 

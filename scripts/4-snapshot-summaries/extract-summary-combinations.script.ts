@@ -14,6 +14,7 @@ import {
 } from "../../shared/snapshot-summaries";
 import { serializeTime } from "../../shared/time";
 import { processWebPages } from "../../shared/web-page-documents";
+import { skipWebPageBasedOnEnv } from "../../shared/web-page-documents/skip-web-page-based-on-env";
 import { extractSnapshotSummaryCombinationData } from "../../shared/web-page-sources";
 
 const output = process.stdout;
@@ -26,16 +27,27 @@ const script = async () => {
   const operationResult = await processWebPages({
     output,
     processWebPage: async ({ webPageDirPath, webPageDocument }) => {
+      const earlyResult = await skipWebPageBasedOnEnv({
+        webPageDirPath,
+        webPageDocument,
+      });
+
+      if (earlyResult) {
+        return earlyResult;
+      }
+
       const snapshotSummaryFilePaths = await listFilePaths({
         fileSearchDirPath: path.resolve(webPageDirPath, "snapshots"),
         fileSearchPattern: "*.summary.json",
       });
 
       if (snapshotSummaryFilePaths.length === 0) {
-        output.write(chalk.yellow(`snapshot summaries not found`));
         pagesWithoutSnapshotSummariesFound = true;
 
-        return;
+        return {
+          status: "skipped",
+          message: "snapshot summaries not found",
+        };
       }
 
       const snapshotSummaryDocuments: SnapshotSummaryDocument[] = [];
@@ -61,11 +73,10 @@ const script = async () => {
           snapshotSummaryCombinationDocument.combinedAt >
             snapshotSummaryCombinationStaleTime
         ) {
-          output.write(
-            chalk.gray("snapshot summary combination is up to date"),
-          );
-
-          return;
+          return {
+            status: "skipped",
+            message: "snapshot summary combination is up to date",
+          };
         }
       }
 
@@ -89,7 +100,9 @@ const script = async () => {
         ...snapshotSummaryCombinationData,
       });
 
-      output.write(chalk.magenta("done"));
+      return {
+        status: "processed",
+      };
     },
   });
 

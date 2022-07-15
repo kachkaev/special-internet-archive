@@ -53,7 +53,11 @@ export const massCaptureWaybackMachineSnapshots: MassCaptureSnapshots = async ({
         Authorization: `LOW ${s3AccessKey}:${s3SecretKey}`,
         "Content-Type": "application/json; charset=utf-8",
       },
-      "axios-retry": { retries: 0 },
+      "axios-retry": {
+        retries: 3,
+        retryCondition: (error) => error.response?.status === 502,
+        retryDelay: () => 5000,
+      },
       timeout: 60_000,
       ...(abortSignal ? { signal: abortSignal } : {}),
       /* eslint-enable @typescript-eslint/naming-convention */

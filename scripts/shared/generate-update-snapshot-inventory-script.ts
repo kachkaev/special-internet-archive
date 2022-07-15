@@ -12,6 +12,7 @@ import {
   throwExitCodeErrorIfOperationFailed,
   UserFriendlyError,
 } from "../../shared/errors";
+import { OperationResult } from "../../shared/operations";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
 import {
   assertSnapshotGeneratorMatchesFilter,
@@ -28,6 +29,7 @@ import {
   SnapshotInventoryItem,
   writeWebPageDocument,
 } from "../../shared/web-page-documents";
+import { skipWebPageBasedOnEnv } from "../../shared/web-page-documents/skip-web-page-based-on-env";
 import {
   checkIfSnapshotIsDue,
   listWebPageAliases,
@@ -79,14 +81,19 @@ const reportSkippedFetching = ({
   output: WriteStream;
   progressPrefix: string;
   reason: string;
-}) => {
-  output.write(
-    chalk.gray(
-      `snapshot count: ${calculateSnapshotCount(
-        existingSnapshotInventory.items,
-      )} - ${reason}`,
-    ),
-  );
+}): OperationResult => {
+  const mainUrlMessage = `snapshot count: ${calculateSnapshotCount(
+    existingSnapshotInventory.items,
+  )} - ${reason}`;
+
+  if (aliasUrls.length === 0) {
+    return {
+      status: "skipped",
+      message: mainUrlMessage,
+    };
+  }
+
+  output.write(chalk.gray(mainUrlMessage));
 
   for (const aliasUrl of aliasUrls) {
     const aliasSnapshotCount = calculateSnapshotCount(
@@ -103,6 +110,10 @@ const reportSkippedFetching = ({
       );
     }
   }
+
+  return {
+    status: "skipped",
+  };
 };
 
 export const generateUpdateInventoryScript =
@@ -179,6 +190,15 @@ export const generateUpdateInventoryScript =
         webPageDirPath,
         webPageDocument,
       }) => {
+        const earlyResult = await skipWebPageBasedOnEnv({
+          webPageDirPath,
+          webPageDocument,
+        });
+
+        if (earlyResult) {
+          return earlyResult;
+        }
+
         const updatedWebPageDocument = _.cloneDeep(webPageDocument);
         const aliasUrls = snapshotGenerator.aliasesSupported
           ? listWebPageAliases(webPageDocument.webPageUrl)
@@ -198,15 +218,13 @@ export const generateUpdateInventoryScript =
           if (
             existingSnapshotInventory.updatedAt > minSerializedTimeToRefetch
           ) {
-            reportSkippedFetching({
+            return reportSkippedFetching({
               aliasUrls,
               existingSnapshotInventory,
               output,
               progressPrefix,
               reason: `updated less than ${inventoryDurabilityInMinutes} min ago`,
             });
-
-            return;
           }
         }
 
@@ -237,15 +255,13 @@ export const generateUpdateInventoryScript =
               webPageDocument,
             }))
           ) {
-            reportSkippedFetching({
+            return reportSkippedFetching({
               aliasUrls,
               existingSnapshotInventory,
               output,
               progressPrefix,
               reason: `snapshot is not due`,
             });
-
-            return;
           }
         }
 
@@ -349,6 +365,10 @@ export const generateUpdateInventoryScript =
           mode: "intermediate",
           message: `Update inventory (${snapshotGenerator.name}, intermediate)`,
         });
+
+        return {
+          status: "processed",
+        };
       },
     });
 

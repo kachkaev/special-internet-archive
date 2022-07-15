@@ -1,3 +1,5 @@
+import { OperationResult } from "../operations";
+
 export interface SnapshotInventoryItem {
   capturedAt: string;
   aliasUrl?: string;
@@ -29,9 +31,6 @@ export type ProcessWebPagePayload = {
   webPageDocument: WebPageDocument;
 };
 
-/**
- * @returns reason for skipping (undefined means that the page should not be skipped)
- */
-export type FindReasonToSkipWebPage = (
+export type ProcessWebPage = (
   payload: ProcessWebPagePayload,
-) => string | undefined | Promise<string | undefined>;
+) => OperationResult | Promise<OperationResult>;
