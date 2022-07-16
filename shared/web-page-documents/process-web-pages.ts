@@ -58,11 +58,15 @@ export const processWebPages = async ({
   };
 
   const outputOperationResult = (operationResult: OperationResult) => {
+    if (!operationResult.message) {
+      return;
+    }
+
     let color;
     if (operationResult.status === "failed") {
       color = chalk.red;
     } else if (operationResult.status === "processed") {
-      color = chalk;
+      color = chalk.magenta;
     } else {
       color = chalk.gray;
     }
