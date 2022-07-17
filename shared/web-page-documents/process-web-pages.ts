@@ -82,7 +82,9 @@ export const processWebPages = async ({
       ) {
         if (index === 1) {
           originalBoundOutputWrite?.(
-            `\n${" ".repeat(backlogItem.progress.length)}...`,
+            `\n${" ".repeat(backlogItem.progress.length - 4)}... ${
+              backlogItems.length - 2
+            } more`,
           );
         }
       } else {
