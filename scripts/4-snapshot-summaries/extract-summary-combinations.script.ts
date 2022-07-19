@@ -102,6 +102,7 @@ const script = async () => {
 
       return {
         status: "processed",
+        message: "done",
       };
     },
   });
