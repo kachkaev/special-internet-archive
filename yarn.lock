@@ -5889,23 +5889,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.23.4":
-  version: 1.23.4
-  resolution: "playwright-core@npm:1.23.4"
+"playwright-core@npm:1.24.1":
+  version: 1.24.1
+  resolution: "playwright-core@npm:1.24.1"
   bin:
     playwright: cli.js
-  checksum: 347a40f2fbcc9ee896c5cf8d8211ffa7a200e22f154e879d9e829ee6bd365acc1c69c8b11a64a96a9d2fae9c85e859c995680be1a15b5e74c367ffa53425c9c9
+  checksum: cad6a43ebb12c99e13c8f5a105ba558cfdd8e5e72e36e2afe47e9f834abd42eab04beb0a73ffcbff28bf0d0ae95e59dc005bc123f6eb562c6f1866cc90f3ed76
   languageName: node
   linkType: hard
 
-"playwright@npm:^1.23.4":
-  version: 1.23.4
-  resolution: "playwright@npm:1.23.4"
+"playwright@npm:^1.24.1":
+  version: 1.24.1
+  resolution: "playwright@npm:1.24.1"
   dependencies:
-    playwright-core: 1.23.4
+    playwright-core: 1.24.1
   bin:
     playwright: cli.js
-  checksum: a646b08ceecba56b1bb69125e26dc487260fb1ccbb32e516451b0e85387e3118fd38d68d9c43abe8a81558be992cf86a2f652e926a534e8f42ca0a11dd626918
+  checksum: b8931abb7fc39845a3be6ba118abb36f0e294275c62e50d65f67695c2b8ef8b9f6d9a94fad30c76fb9025f13c6fd44a7acfca8e957f35fd574b93bc26dfc3024
   languageName: node
   linkType: hard
 
@@ -6393,7 +6393,7 @@ __metadata:
     next-remote-watch: ^1.0.0
     npm-run-all: ^4.1.5
     object-hash: ^3.0.0
-    playwright: ^1.23.4
+    playwright: ^1.24.1
     prettier: ^2.7.1
     react: ^18.2.0
     react-dom: ^18.2.0
