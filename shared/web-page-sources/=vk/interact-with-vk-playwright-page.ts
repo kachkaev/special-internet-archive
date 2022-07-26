@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention,unicorn/consistent-function-scoping -- needed for playwrightPage.evaluate() */
 
 import { DateTime } from "luxon";
+import sleep from "sleep-promise";
 
 import { AbortError } from "../../errors";
 import { calculateDaysBetween, unserializeTime } from "../../time";
@@ -228,7 +229,10 @@ export const interactWithVkPlaywrightPage: InteractWithPlaywrightPage = async (
       .isVisible()
   ) {
     await closeAgeRestrictionModalIfPreset(payload);
-    await scrollPosts(payload);
+    await Promise.any([
+      scrollPosts(payload),
+      sleep(60 * 60 * 1000), // @fixme consider fixing this inside scrollPosts (via max number of posts?)
+    ]);
 
     return;
   }
