@@ -3,6 +3,7 @@ import _ from "lodash";
 import path from "node:path";
 
 import { throwExitCodeErrorIfOperationFailed } from "../../shared/errors";
+import { reportGithubMessageIfNeeded } from "../../shared/github";
 import { listFilePaths } from "../../shared/list-file-paths";
 import {
   readSnapshotSummaryCombinationDocument,
@@ -99,6 +100,23 @@ const script = async () => {
         combinedAt: serializeTime(),
         ...snapshotSummaryCombinationData,
       });
+
+      if (snapshotSummaryCombinationData.tempPageNotFound) {
+        const lastTempRawVkPost =
+          snapshotSummaryCombinationData.tempRawVkPosts?.at(-1);
+
+        reportGithubMessageIfNeeded({
+          message: `${
+            webPageDocument.webPageUrl
+          } is reported as not found. Page was moved?${
+            lastTempRawVkPost
+              ? ` Most recent post URL: ${lastTempRawVkPost.url}`
+              : ""
+          }`,
+          messageType: "warning",
+          output,
+        });
+      }
 
       return {
         status: "processed",

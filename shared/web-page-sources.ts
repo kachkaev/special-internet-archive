@@ -125,11 +125,22 @@ export const extractSnapshotSummaryCombinationData: ExtractSnapshotSummaryCombin
       }
     }
 
+    const tempRawVkPosts = _.orderBy(
+      Object.values(tempRawVkPostByUrl),
+      (tempRawVkPost) => tempRawVkPost.url,
+    );
+
+    const tempPageNotFound = snapshotSummaryDocuments.some(
+      (snapshotSummaryDocument) => snapshotSummaryDocument.tempPageNotFound,
+    );
+    const tempPageVerified = snapshotSummaryDocuments.some(
+      (snapshotSummaryDocument) => snapshotSummaryDocument.tempPageVerified,
+    );
+
     return {
-      tempRawVkPosts: _.orderBy(
-        Object.values(tempRawVkPostByUrl),
-        (tempRawVkPost) => tempRawVkPost.url,
-      ),
+      ...(tempPageNotFound ? { tempPageNotFound: true } : {}),
+      ...(tempPageVerified ? { tempPageVerified: true } : {}),
+      tempRawVkPosts,
     };
   };
 
@@ -159,8 +170,9 @@ export const extractRelevantWebPageUrls: ExtractRelevantWebPageUrls = async ({
   for (const tempRawVkPost of snapshotSummaryCombinationDocument.tempRawVkPosts ??
     []) {
     if (
-      checkIfTextIsRelevant(tempRawVkPost.text) &&
-      tempRawVkPost.date >= relevantTimeMin
+      tempRawVkPost.date >= relevantTimeMin &&
+      (snapshotSummaryCombinationDocument.tempPageVerified ||
+        checkIfTextIsRelevant(tempRawVkPost.text))
     ) {
       newLinkSet.add(tempRawVkPost.url);
     }
