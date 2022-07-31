@@ -9,13 +9,15 @@ let traceBrowser: Browser | undefined;
 let traceBrowserContext: BrowserContext | undefined;
 
 const createPage = async (): Promise<Page> => {
-  if (!traceBrowserContext) {
+  if (!traceBrowser) {
     traceBrowser = await chromium.launch({
       args: ["--blink-settings=imagesEnabled=false"], // Reduces chances of crashing
     });
-
-    traceBrowserContext = await traceBrowser.newContext();
   }
+  if (traceBrowserContext) {
+    await traceBrowserContext.close();
+  }
+  traceBrowserContext = await traceBrowser.newContext();
 
   return traceBrowserContext.newPage();
 };
