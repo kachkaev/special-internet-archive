@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention,unicorn/consistent-function-scoping -- needed for playwrightPage.evaluate() */
 
 import { DateTime } from "luxon";
-import sleep from "sleep-promise";
 
 import { AbortError } from "../../errors";
 import { calculateDaysBetween, unserializeTime } from "../../time";
@@ -11,6 +10,8 @@ import {
 } from "../types";
 import { parseRawVkTime } from "./parse-raw-vk-time";
 import { serializeVkDate } from "./serialize-vk-date";
+
+const maxNumberOfPosts = 4000;
 
 const closeAuthModalIfPresent = async ({
   playwrightPage,
@@ -107,85 +108,106 @@ const scrollPosts = async (
 
     // All interactions are placed inside a single evaluate call to reduce the number of
     // Playwright actions in the trace. This speeds up page capturing and reduces trace size.
-    const bottomPostRawTime = await playwrightPage.evaluate<
-      string | undefined,
-      string[]
-    >(async (_rawDatesToScrollPast) => {
-      /** @returns "1 марта в 04:42" or "сегодня в 04:42"  */
-      const _extractRawTime = (dateElement: Element): string => {
-        return (
-          dateElement.getAttribute("abs_time") ?? dateElement.textContent ?? ""
+    const [bottomPostRawTime, numberOfPosts] = await playwrightPage.evaluate<
+      [string | undefined, number],
+      [string[], number]
+    >(
+      async ([_rawDatesToScrollPast, _maxNumberOfPosts]) => {
+        /** @returns "1 марта в 04:42" or "сегодня в 04:42"  */
+        const _extractRawTime = (dateElement: Element): string => {
+          return (
+            dateElement.getAttribute("abs_time") ??
+            dateElement.textContent ??
+            ""
+          );
+        };
+
+        const _listPostDateElements = (): NodeListOf<Element> => {
+          return document.body.querySelectorAll(".post_date .rel_date");
+        };
+
+        const _extractBottomPostRawTime = (
+          postDateElements: NodeListOf<Element>,
+        ): string | undefined => {
+          const bottomPostDateElement = [...postDateElements].pop();
+
+          return bottomPostDateElement
+            ? _extractRawTime(bottomPostDateElement)
+            : undefined;
+        };
+
+        const _extractRawDate = (rawTime: string): string =>
+          (rawTime.match(/^(\d+\s)?\p{L}+(\s\d{4})?/u)?.[0] ?? "").replace(
+            /\s/g,
+            " ",
+          );
+
+        const _sleep = (timeout: number) =>
+          new Promise((resolve) => setTimeout(resolve, timeout));
+
+        const initialBottomPostRawTime = _extractBottomPostRawTime(
+          _listPostDateElements(),
         );
-      };
-
-      const _extractBottomPostRawTime = (): string | undefined => {
-        const bottomPostDateElement = [
-          ...document.body.querySelectorAll(".post_date .rel_date"),
-        ].pop();
-
-        return bottomPostDateElement
-          ? _extractRawTime(bottomPostDateElement)
-          : undefined;
-      };
-
-      const _extractRawDate = (rawTime: string): string =>
-        (rawTime.match(/^(\d+\s)?\p{L}+(\s\d{4})?/u)?.[0] ?? "").replace(
-          /\s/g,
-          " ",
-        );
-
-      const _sleep = (timeout: number) =>
-        new Promise((resolve) => setTimeout(resolve, timeout));
-
-      const initialBottomPostRawTime = _extractBottomPostRawTime();
-      if (!initialBottomPostRawTime) {
-        return;
-      }
-      let previousBottomPostDate = _extractRawDate(initialBottomPostRawTime);
-      let previousBottomPostRawTime = initialBottomPostRawTime;
-      for (;;) {
-        // Scroll to bottom
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Wait for posts to load
-        do {
-          await _sleep(100);
-        } while (document.body.querySelector("#wall_more_link #btn_lock"));
-        await _sleep(100);
-
-        // Expand all visible posts
+        if (!initialBottomPostRawTime) {
+          return [undefined, 0];
+        }
+        let previousBottomPostDate = _extractRawDate(initialBottomPostRawTime);
+        let previousBottomPostRawTime = initialBottomPostRawTime;
         for (;;) {
-          const expandPostLink = [
-            ...document.body.querySelectorAll(".wall_post_more"),
-          ].find((element) => element.clientHeight > 0);
+          // Scroll to bottom
+          window.scrollTo(0, document.body.scrollHeight);
 
-          if (!expandPostLink) {
-            break;
+          // Wait for posts to load
+          do {
+            await _sleep(100);
+          } while (document.body.querySelector("#wall_more_link #btn_lock"));
+          await _sleep(100);
+
+          // Expand all visible posts
+          for (;;) {
+            const expandPostLink = [
+              ...document.body.querySelectorAll(".wall_post_more"),
+            ].find((element) => element.clientHeight > 0);
+
+            if (!expandPostLink) {
+              break;
+            }
+
+            expandPostLink.dispatchEvent(new MouseEvent("click"));
+            await _sleep(50);
           }
 
-          expandPostLink.dispatchEvent(new MouseEvent("click"));
-          await _sleep(50);
-        }
+          // Find last loaded post time
+          const postDateElements = _listPostDateElements();
+          const currentBottomPostRawTime =
+            _extractBottomPostRawTime(postDateElements)!;
+          const currentNumberOfPosts = postDateElements.length;
 
-        // Find last loaded post time
-        const currentBottomPostRawTime = _extractBottomPostRawTime()!;
-
-        // Stop scrolling if no new posts have been loaded
-        if (previousBottomPostRawTime === currentBottomPostRawTime) {
-          return currentBottomPostRawTime;
-        }
-        previousBottomPostRawTime = currentBottomPostRawTime;
-
-        // Stop scrolling when seeing a new date (unless we should scroll past it)
-        const currentBottomPostDate = _extractRawDate(currentBottomPostRawTime);
-        if (previousBottomPostDate !== currentBottomPostDate) {
-          if (!_rawDatesToScrollPast.includes(currentBottomPostDate)) {
-            return currentBottomPostRawTime;
+          // Stop scrolling if no new posts have been loaded
+          if (previousBottomPostRawTime === currentBottomPostRawTime) {
+            return [currentBottomPostRawTime, currentNumberOfPosts];
           }
-          previousBottomPostDate = currentBottomPostDate;
+          previousBottomPostRawTime = currentBottomPostRawTime;
+
+          // Stop scrolling when seeing a new date (unless we should scroll past it)
+          const currentBottomPostDate = _extractRawDate(
+            currentBottomPostRawTime,
+          );
+          if (previousBottomPostDate !== currentBottomPostDate) {
+            if (!_rawDatesToScrollPast.includes(currentBottomPostDate)) {
+              return [currentBottomPostRawTime, currentNumberOfPosts];
+            }
+            previousBottomPostDate = currentBottomPostDate;
+          }
+
+          // Stop scrolling if reached max number of posts
+          if (currentNumberOfPosts > _maxNumberOfPosts) {
+            return [currentBottomPostRawTime, currentNumberOfPosts];
+          }
         }
-      }
-    }, rawDatesToScrollPast);
+      },
+      [rawDatesToScrollPast, maxNumberOfPosts],
+    );
 
     if (abortSignal?.aborted) {
       throw new AbortError();
@@ -213,6 +235,13 @@ const scrollPosts = async (
 
     log?.(`Scrolled to ${bottomPostTime} in ${serializedDuration}`);
 
+    // Early exit if the wall contains too many posts
+    if (numberOfPosts > maxNumberOfPosts) {
+      log?.(
+        `Stopped scrolling after loading ${numberOfPosts} posts (> ${maxNumberOfPosts})`,
+      );
+    }
+
     if (bottomPostTime < relevantTimeMin) {
       break;
     }
@@ -229,10 +258,7 @@ export const interactWithVkPlaywrightPage: InteractWithPlaywrightPage = async (
       .isVisible()
   ) {
     await closeAgeRestrictionModalIfPreset(payload);
-    await Promise.any([
-      scrollPosts(payload),
-      sleep(60 * 60 * 1000), // @fixme consider fixing this inside scrollPosts (via max number of posts?)
-    ]);
+    await scrollPosts(payload);
 
     return;
   }
