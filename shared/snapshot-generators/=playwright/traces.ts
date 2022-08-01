@@ -1,5 +1,5 @@
 import { JSDOM } from "jsdom";
-import { Browser, BrowserContext, chromium, Page } from "playwright";
+import { Browser, BrowserContext, firefox, Page } from "playwright";
 import sleep from "sleep-promise";
 
 import { startTraceServer, TraceServer } from "./traces/trace-server";
@@ -11,9 +11,12 @@ let traceBrowserContext: BrowserContext | undefined;
 
 const createPage = async (): Promise<Page> => {
   if (!traceBrowser) {
-    traceBrowser = await chromium.launch({
-      args: ["--blink-settings=imagesEnabled=false"], // Reduces chances of crashing
-      headless: false,
+    // Using firefox instead of chromium to avoid crashes for large snapshots
+    traceBrowser = await firefox.launch({
+      firefoxUserPrefs: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention -- https://support.mozilla.org/en-US/questions/981640#answer-516383
+        "permissions.default.image": 2,
+      },
     });
   }
   if (traceBrowserContext) {
