@@ -1,5 +1,6 @@
 import { JSDOM } from "jsdom";
 import { Browser, BrowserContext, chromium, Page } from "playwright";
+import sleep from "sleep-promise";
 
 import { startTraceServer, TraceServer } from "./traces/trace-server";
 
@@ -12,6 +13,7 @@ const createPage = async (): Promise<Page> => {
   if (!traceBrowser) {
     traceBrowser = await chromium.launch({
       args: ["--blink-settings=imagesEnabled=false"], // Reduces chances of crashing
+      headless: false,
     });
   }
   if (traceBrowserContext) {
@@ -55,51 +57,62 @@ export const evaluateLastSnapshotInTrace = async <T>(
     // outside the browser helps avoid crashes.
     // Potential future improvement: https://github.com/microsoft/playwright/issues/9883
 
-    const { html, url } = await page.evaluate<
-      { html: string; url: string | undefined },
-      string
-    >(async (encodedTraceFilePathInEvaluate) => {
-      const contextResponse = await fetch(
-        `/trace/context?trace=${encodedTraceFilePathInEvaluate}`,
-      );
-      const { actions, events } = (await contextResponse.json()) as {
-        actions: Array<{
-          metadata: { frameId?: string; id: string; pageId: string };
-        }>;
-        events: Array<{
-          metadata?: { method: "navigated"; params?: { url: string } };
-        }>;
-      };
+    const result = await Promise.race([
+      sleep(15_000) as Promise<void>,
+      page.evaluate<{ html: string; url: string | undefined }, string>(
+        async (encodedTraceFilePathInEvaluate) => {
+          const contextResponse = await fetch(
+            `/trace/context?trace=${encodedTraceFilePathInEvaluate}`,
+          );
 
-      const lastActionMetadata = [...actions]
-        .reverse()
-        .find((action) => action.metadata.frameId)?.metadata;
+          const { actions, events } = (await contextResponse.json()) as {
+            actions: Array<{
+              metadata: { frameId?: string; id: string; pageId: string };
+            }>;
+            events: Array<{
+              metadata?: { method: "navigated"; params?: { url: string } };
+            }>;
+          };
 
-      if (!lastActionMetadata) {
-        throw new Error("Encountered empty lastActionMetadata");
-      }
+          const lastActionMetadata = [...actions]
+            .reverse()
+            .find((action) => action.metadata.frameId)?.metadata;
 
-      const lastNavigationMetadata = events.find(
-        (event) =>
-          event.metadata?.method === "navigated" &&
-          event.metadata.params?.url !== "about:blank",
-      )?.metadata;
+          if (!lastActionMetadata) {
+            throw new Error("Encountered empty lastActionMetadata");
+          }
 
-      if (!lastNavigationMetadata) {
-        throw new Error("Encountered empty lastNavigationMetadata");
-      }
+          const lastNavigationMetadata = events.find(
+            (event) =>
+              event.metadata?.method === "navigated" &&
+              event.metadata.params?.url !== "about:blank",
+          )?.metadata;
 
-      const htmlResponse = await fetch(
-        `/trace/snapshot/${lastActionMetadata.pageId}?trace=${encodedTraceFilePathInEvaluate}&name=after@${lastActionMetadata.id}`,
-      );
+          if (!lastNavigationMetadata) {
+            throw new Error("Encountered empty lastNavigationMetadata");
+          }
 
-      return {
-        html: await htmlResponse.text(),
-        url: lastNavigationMetadata.params?.url,
-      };
-    }, encodedTraceFilePath);
+          const htmlResponse = await fetch(
+            `/trace/snapshot/${lastActionMetadata.pageId}?trace=${encodedTraceFilePathInEvaluate}&name=after@${lastActionMetadata.id}`,
+          );
 
-    const dom = new JSDOM(html, { url, contentType: "text/html" });
+          return {
+            html: await htmlResponse.text(),
+            url: lastNavigationMetadata.params?.url,
+          };
+        },
+        encodedTraceFilePath,
+      ),
+    ]);
+
+    if (!result) {
+      throw new Error("Trace page crashed (needs fixing)");
+    }
+
+    const dom = new JSDOM(result.html, {
+      url: result.url,
+      contentType: "text/html",
+    });
 
     return await evaluate(dom.window.document.body as HTMLBodyElement);
   } finally {
