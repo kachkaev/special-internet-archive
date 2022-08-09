@@ -47,9 +47,17 @@ export const checkIfSnapshotSummaryDocumentExists = async (
 export const readSnapshotSummaryDocument = async (
   snapshotOrSnapshotSummaryFilePath: string,
 ): Promise<SnapshotSummaryDocument> => {
-  return (await fs.readJson(
+  const rawJson = await fs.readFile(
     generateSnapshotSummaryDocumentPath(snapshotOrSnapshotSummaryFilePath),
-  )) as unknown as SnapshotSummaryDocument;
+    "utf8",
+  );
+
+  // https://github.com/microsoft/playwright/issues/16367
+  if (rawJson.includes("�")) {
+    throw new Error("Unexpected character � found in the summary");
+  }
+
+  return JSON.parse(rawJson) as SnapshotSummaryDocument;
 };
 
 export const writeSnapshotSummaryDocument = async (
