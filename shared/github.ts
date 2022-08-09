@@ -15,7 +15,7 @@ export const reportGithubMessageIfNeeded = ({
     return false;
   }
 
-  output.write(`::${messageType}::${message}\n`);
+  output.write(`\n::${messageType}::${message}\n`);
 
   return true;
 };
