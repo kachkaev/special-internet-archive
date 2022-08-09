@@ -27,7 +27,7 @@ export const ensureTraceViewerIsStopped = async () => {
   await traceBrowserContext?.close();
 };
 
-const timeoutThatToleratesEvenVeryLargeSnapshots = 5 * 60 * 1000;
+const timeoutThatToleratesEvenVeryLargeSnapshots = 30 * 1000;
 
 export const evaluateLastSnapshotInTrace = async <T>(
   traceFilePath: string,
@@ -55,7 +55,9 @@ export const evaluateLastSnapshotInTrace = async <T>(
     // Potential future improvement: https://github.com/microsoft/playwright/issues/9883
 
     const result = await Promise.race([
-      sleep(15_000) as Promise<void>,
+      // Promise.race can be removed when page.evaluate() supports timeout option
+      // https://github.com/microsoft/playwright/issues/13253
+      sleep(timeoutThatToleratesEvenVeryLargeSnapshots) as Promise<void>,
       page.evaluate<{ html: string; url: string | undefined }, string>(
         async (encodedTraceFilePathInEvaluate) => {
           const contextResponse = await fetch(
