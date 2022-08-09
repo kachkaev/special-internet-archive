@@ -1,5 +1,5 @@
 import { JSDOM } from "jsdom";
-import { Browser, BrowserContext, chromium, Page } from "playwright";
+import { Browser, BrowserContext, Page, webkit } from "playwright";
 import sleep from "sleep-promise";
 
 import { startTraceServer, TraceServer } from "./traces/trace-server";
@@ -11,9 +11,7 @@ let traceBrowserContext: BrowserContext | undefined;
 
 const createPage = async (): Promise<Page> => {
   if (!traceBrowser) {
-    traceBrowser = await chromium.launch({
-      args: ["--blink-settings=imagesEnabled=false"], // Reduces chances of crashing
-    });
+    traceBrowser = await webkit.launch();
   }
   if (traceBrowserContext) {
     await traceBrowserContext.close();
