@@ -13,7 +13,6 @@ const createPage = async (): Promise<Page> => {
   if (!traceBrowser) {
     traceBrowser = await chromium.launch({
       args: ["--blink-settings=imagesEnabled=false"], // Reduces chances of crashing
-      headless: false,
     });
   }
   if (traceBrowserContext) {
