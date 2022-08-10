@@ -5,11 +5,13 @@ import { OperationResult } from "../operations";
 import { serializeTime } from "../time";
 import { generateWebPageDirPath } from "../web-page-sources";
 import { generateWebPageDocumentPath, writeWebPageDocument } from "./io";
+import { WebPageAnnotation } from "./types";
 
 export const registerWebPage = async (
   webPageUrl: string,
   via: string,
   webPageDirPathLookup: Record<string, string>,
+  annotation: WebPageAnnotation = {},
 ): Promise<OperationResult> => {
   let webPageDirPath: string;
 
@@ -43,7 +45,7 @@ export const registerWebPage = async (
     webPageUrl,
     registeredAt: serializeTime(),
     registeredVia: via,
-    annotation: {},
+    annotation,
     snapshotInventoryLookup: {},
   });
 
