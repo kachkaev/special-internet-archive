@@ -21,7 +21,7 @@ export const startTraceServer = async (): Promise<TraceServer> => {
     "lib/utils/httpServer.js",
   );
 
-  const webpackTraceViewerFolderPath = path.resolve(
+  const webpackTraceViewerDirPath = path.resolve(
     path.dirname(require.resolve("playwright-core")),
     "lib/webpack/traceViewer",
   );
@@ -44,7 +44,7 @@ export const startTraceServer = async (): Promise<TraceServer> => {
       }
     }
     const absolutePath = path.join(
-      webpackTraceViewerFolderPath,
+      webpackTraceViewerDirPath,
       ...relativePath.split("/"),
     );
 
