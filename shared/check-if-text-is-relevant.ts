@@ -3,7 +3,6 @@ const relevantTerms = [
   " obi", // avoid confusion with “sdobin”
   " всу ", // avoid confusion with misс words
   " нко", // avoid confusion with “энковский”
-  " рф", // avoid confusion with misc words
   " цен ", // avoid confusion with «цена» in ads
   "chess",
   "covid",
