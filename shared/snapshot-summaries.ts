@@ -11,7 +11,7 @@ export type SnapshotSummaryData = {
 export type SnapshotSummaryCombinationData = SnapshotSummaryData;
 
 export const snapshotSummaryStaleTime = "2022-07-31T13:30:00Z";
-export const snapshotSummaryCombinationStaleTime = "2022-07-31T13:30:00Z";
+export const snapshotSummaryCombinationStaleTime = "2022-08-11T00:00:00Z";
 
 export interface SnapshotSummaryDocument extends SnapshotSummaryData {
   documentType: "snapshotSummary";

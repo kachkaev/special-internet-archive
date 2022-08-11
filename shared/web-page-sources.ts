@@ -130,12 +130,8 @@ export const extractSnapshotSummaryCombinationData: ExtractSnapshotSummaryCombin
       (tempRawVkPost) => tempRawVkPost.url,
     );
 
-    const tempPageNotFound = snapshotSummaryDocuments.some(
-      (snapshotSummaryDocument) => snapshotSummaryDocument.tempPageNotFound,
-    );
-    const tempPageVerified = snapshotSummaryDocuments.some(
-      (snapshotSummaryDocument) => snapshotSummaryDocument.tempPageVerified,
-    );
+    const tempPageNotFound = snapshotSummaryDocuments.at(-1)?.tempPageNotFound;
+    const tempPageVerified = snapshotSummaryDocuments.at(-1)?.tempPageVerified;
 
     return {
       ...(tempPageNotFound ? { tempPageNotFound: true } : {}),
