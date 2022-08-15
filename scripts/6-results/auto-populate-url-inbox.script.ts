@@ -23,6 +23,8 @@ const script = async () => {
   const operationResult = await processWebPages({
     output,
     processWebPage: async ({ webPageDirPath, webPageDocument }) => {
+      registeredWebPageUrlSet.add(webPageDocument.webPageUrl);
+
       const earlyResult = await skipWebPageBasedOnEnv({
         webPageDirPath,
         webPageDocument,
@@ -31,8 +33,6 @@ const script = async () => {
       if (earlyResult) {
         return earlyResult;
       }
-
-      registeredWebPageUrlSet.add(webPageDocument.webPageUrl);
 
       const relevantWebPageUrls = await extractRelevantWebPageUrls({
         webPageDirPath,
