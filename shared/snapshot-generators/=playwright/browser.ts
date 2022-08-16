@@ -1,5 +1,5 @@
 import * as envalid from "envalid";
-import { Browser, chromium } from "playwright";
+import { Browser, firefox } from "playwright";
 import sleep from "sleep-promise";
 
 import { cleanEnv } from "../../clean-env";
@@ -21,10 +21,12 @@ export const getPlaywrightBrowser = async (): Promise<Browser> => {
   const headless = env.HEADLESS;
 
   playwrightBrowser = "launching";
-  playwrightBrowser = await chromium.launch({
+  playwrightBrowser = await firefox.launch({
+    firefoxUserPrefs: {
+      // eslint-disable-next-line @typescript-eslint/naming-convention -- https://support.mozilla.org/en-US/questions/981640#answer-516383
+      "permissions.default.image": 2,
+    },
     headless,
-    // @todo link to snapshotContext → completeness
-    args: ["--blink-settings=imagesEnabled=false"],
   });
 
   return playwrightBrowser;
