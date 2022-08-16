@@ -240,6 +240,7 @@ const scrollPosts = async (
       log?.(
         `Stopped scrolling after loading ${numberOfPosts} posts (> ${maxNumberOfPosts})`,
       );
+      break;
     }
 
     if (bottomPostTime < relevantTimeMin) {
