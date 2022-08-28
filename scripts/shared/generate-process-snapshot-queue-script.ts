@@ -219,15 +219,15 @@ export const generateProcessSnapshotQueueScript =
           });
         };
 
-        const webPageDirPath = webPageDirPathByUrl[item.webPageUrl];
-        if (!webPageDirPath) {
-          output.write(
-            chalk.yellow(
-              `\n${progressPrefix}unable locate ${item.webPageUrl} in your collection. Did you delete a previously registered page? Skipping`,
-            ),
-          );
-          continue;
-        }
+        const webPageDirPath = webPageDirPathByUrl[item.webPageUrl] ?? "";
+        // if (!webPageDirPath) {
+        //   output.write(
+        //     chalk.yellow(
+        //       `\n${progressPrefix}unable to locate ${item.webPageUrl} in your collection. Did you delete a previously registered page? Skipping`,
+        //     ),
+        //   );
+        //   continue;
+        // }
 
         abortController.signal.addEventListener("abort", abortHandler);
 
