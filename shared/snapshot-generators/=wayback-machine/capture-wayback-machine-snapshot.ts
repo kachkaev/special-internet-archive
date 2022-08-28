@@ -44,8 +44,12 @@ const mapRetryCountToDelay = (retryCount: number): number => {
   );
 };
 
+const cannotResolveHostMessage = "Cannot resolve host";
+
 const ipAddressBlocked =
   "Your IP address is blocked by Wayback Machine servers";
+
+const urlBlocked = "URL is in the Save Page Now service block list";
 
 const personalApiLimitsReachedMessage =
   "API limits reached. Try using another internet connection or continue tomorrow";
@@ -67,18 +71,24 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
 }) => {
   const webPageUrlObject = new URL(webPageUrl);
 
-  const previousFailureMessage = previousFailuresInSnapshotQueue
-    .filter(
-      (failure) =>
-        webPageUrlObject.hostname === new URL(failure.webPageUrl).hostname,
-    )
-    .map((failure) => failure.message)
-    .find(
-      (failureMessage) =>
-        failureMessage === hostLimitsReachedMessage ||
-        failureMessage === ipAddressBlocked ||
-        failureMessage === personalApiLimitsReachedMessage,
-    );
+  const previousFailureMessage =
+    previousFailuresInSnapshotQueue
+      .filter(
+        (failure) =>
+          webPageUrlObject.hostname === new URL(failure.webPageUrl).hostname,
+      )
+      .map((failure) => failure.message)
+      .find(
+        (failureMessage) =>
+          failureMessage === cannotResolveHostMessage ||
+          failureMessage === hostLimitsReachedMessage ||
+          failureMessage === ipAddressBlocked ||
+          failureMessage === personalApiLimitsReachedMessage,
+      ) ??
+    previousFailuresInSnapshotQueue
+      .filter((failure) => webPageUrl === failure.webPageUrl)
+      .map((failure) => failure.message)
+      .find((failureMessage) => failureMessage === urlBlocked);
 
   if (previousFailureMessage) {
     return { status: "skipped", message: previousFailureMessage };
@@ -128,6 +138,23 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
         return {
           status: "failed",
           message: ipAddressBlocked,
+        };
+      }
+
+      // This URL is in the Save Page Now service block list and cannot be captured.
+      // Please email us at "info@archive.org" if you would like to discuss this more.
+      if (html.includes("Save Page Now service block list")) {
+        return {
+          status: "failed",
+          message: urlBlocked,
+        };
+      }
+
+      // Cannot resolve host %HOSTNAME%.
+      if (html.includes("Cannot resolve host")) {
+        return {
+          status: "failed",
+          message: cannotResolveHostMessage,
         };
       }
 
