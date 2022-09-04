@@ -30,22 +30,22 @@ const script = async () => {
   output.write(chalk.bold(`Selecting VK posts\n`));
 
   const env = cleanEnv({
-    FILTER_CONTENT: envalid.str({
+    VK_POST_SELECTION_FILTER_CONTENT: envalid.str({
       desc: "Regex to filter web page URLs",
     }),
-    VK_POST_SELECTION_FILE_PATH: envalid.str(),
-    SNAPSHOT_SUMMARY_COMBINATION_SEARCH_DIR: envalid.str(),
+    VK_POST_SELECTION_INPUT_DIR_PATH: envalid.str(),
+    VK_POST_SELECTION_OUTPUT_FILE_PATH: envalid.str(),
   });
 
-  const filterContentRegex = RegexParser(env.FILTER_CONTENT);
-  const vkPostSelectionFilePath = path.resolve(env.VK_POST_SELECTION_FILE_PATH);
+  const filterContentRegex = RegexParser(env.VK_POST_SELECTION_FILTER_CONTENT);
+  const outputFilePath = path.resolve(env.VK_POST_SELECTION_OUTPUT_FILE_PATH);
 
   output.write(
     chalk.green("Looking for snapshot summary combination files..."),
   );
   const filePaths = await globby(
     "**/vk/accounts/*/snapshot-summary-combination.json",
-    { absolute: true, cwd: env.SNAPSHOT_SUMMARY_COMBINATION_SEARCH_DIR },
+    { absolute: true, cwd: env.VK_POST_SELECTION_INPUT_DIR_PATH },
   );
 
   const numberOfScannedAccounts = filePaths.length;
@@ -71,7 +71,7 @@ const script = async () => {
 
   const vkPostSelection: VkPostSelection = {
     generatedAt: serializeTime(),
-    filter: env.FILTER_CONTENT,
+    filter: env.VK_POST_SELECTION_FILTER_CONTENT,
     numberOfScannedAccounts,
     numberOfScannedPosts,
     numberOfSelectedPosts: selectedPosts.length,
@@ -98,8 +98,8 @@ const script = async () => {
   );
 
   output.write(chalk.green("Saving result..."));
-  await writeFormattedJson(vkPostSelectionFilePath, vkPostSelection);
-  output.write(` Done: ${chalk.magenta(vkPostSelectionFilePath)}\n`);
+  await writeFormattedJson(outputFilePath, vkPostSelection);
+  output.write(` Done: ${chalk.magenta(outputFilePath)}\n`);
 };
 
 await script();
