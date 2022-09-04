@@ -2368,6 +2368,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"csv-stringify@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "csv-stringify@npm:6.2.0"
+  checksum: c2fa074fbf2bcb8cea966c1bdf89d377f1f79bbd33e13092131cac511363479a4e7a923f26fe741e2ef5bad479a400c72e18ceb4b7c33e1f0a60cf33f5c31f1c
+  languageName: node
+  linkType: hard
+
 "data-urls@npm:^3.0.2":
   version: 3.0.2
   resolution: "data-urls@npm:3.0.2"
@@ -6529,6 +6536,7 @@ __metadata:
     axios-retry: ^3.3.1
     chalk: ^5.0.1
     csv-parse: ^5.3.0
+    csv-stringify: ^6.2.0
     dotenv-flow: ^3.2.0
     envalid: ^7.3.1
     eslint: ^8.23.0
