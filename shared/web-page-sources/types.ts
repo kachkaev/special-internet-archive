@@ -9,6 +9,9 @@ import {
 } from "../snapshot-summaries";
 import { WebPageAnnotation, WebPageDocument } from "../web-page-documents";
 
+export type GetWebPageCreationTime = (
+  webPageUrl: string,
+) => Promise<string | undefined>;
 export type GenerateWebPageDirPathSegments = (webPageUrl: string) => string[];
 export type AssertSourceUrl = (webPageUrl: string) => void;
 
@@ -62,6 +65,7 @@ export interface WebPageSource {
   calculateRelevantTimeMinForNewIncrementalSnapshot?: CalculateRelevantTimeMinForNewIncrementalSnapshot;
   checkContentMatch: CheckContentMatch;
   checkIfSnapshotIsDue: CheckIfSnapshotIsDue;
+  getWebPageCreationTime: GetWebPageCreationTime;
   generateWebPageDirPathSegments: GenerateWebPageDirPathSegments;
   interactWithPlaywrightPage?: InteractWithPlaywrightPage;
   listUrlExamples: () => string[];

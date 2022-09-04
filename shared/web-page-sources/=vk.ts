@@ -3,6 +3,7 @@ import { calculateRelevantTimeMinForNewIncrementalVkSnapshot } from "./=vk/calcu
 import { categorizeVkUrl } from "./=vk/categorize-vk-url";
 import { checkIfNewVkSnapshotIsDue } from "./=vk/check-if-new-vk-snapshot-is-due";
 import { checkVkContentMatch } from "./=vk/check-vk-content-match";
+import { getVkWebPageCreationTime } from "./=vk/get-vk-web-page-creation-time";
 import { interactWithVkPlaywrightPage } from "./=vk/interact-with-vk-playwright-page";
 import { WebPageSource } from "./types";
 
@@ -35,6 +36,8 @@ export const vkWebPageSource: WebPageSource = {
 
     return ["vk", ...pathSegments];
   },
+
+  getWebPageCreationTime: getVkWebPageCreationTime,
 
   interactWithPlaywrightPage: interactWithVkPlaywrightPage,
 

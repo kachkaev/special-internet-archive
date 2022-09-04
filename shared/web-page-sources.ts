@@ -16,6 +16,7 @@ import {
   CheckIfSnapshotIsDue,
   ExtractRelevantWebPageUrls,
   ExtractSnapshotSummaryCombinationData,
+  GetWebPageCreationTime,
   InteractWithPlaywrightPage,
   UpdateWebPageAnnotation,
   WebPageSource,
@@ -94,6 +95,10 @@ export const checkContentMatch: CheckContentMatch = (payload) => {
   return getWebPageSource(payload.webPageDocument.webPageUrl).checkContentMatch(
     payload,
   );
+};
+
+export const getWebPageCreationTime: GetWebPageCreationTime = (webPageUrl) => {
+  return getWebPageSource(webPageUrl).getWebPageCreationTime(webPageUrl);
 };
 
 export const interactWithPlaywrightPage: InteractWithPlaywrightPage = async (

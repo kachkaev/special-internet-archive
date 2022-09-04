@@ -1,11 +1,12 @@
 import * as envalid from "envalid";
 
 import { cleanEnv } from "../../clean-env";
-import { calculateDaysSince } from "../../time";
+import { calculateDaysSince, serializeTime, unserializeTime } from "../../time";
 import { CheckIfSnapshotIsDue } from "../types";
 import { categorizeVkUrl } from "./categorize-vk-url";
+import { getVkWebPageCreationTime } from "./get-vk-web-page-creation-time";
 
-export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = ({
+export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = async ({
   knownSnapshotTimesInAscOrder,
   snapshotGeneratorId,
   webPageDocument,
@@ -16,10 +17,35 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = ({
     VK_ACCOUNT_SNAPSHOT_FREQUENCY_IN_DAYS: envalid.num({
       default: 0.8,
     }),
+    MIN_WEB_PAGE_AGE_IN_DAYS: envalid.num({
+      default: 0,
+    }),
   });
 
+  let knownSnapshotTimesToUse = knownSnapshotTimesInAscOrder;
+  const minWebPageAgeInDays = env.MIN_WEB_PAGE_AGE_IN_DAYS;
+  if (minWebPageAgeInDays > 0) {
+    const webPageCreationTime = await getVkWebPageCreationTime(
+      webPageDocument.webPageUrl,
+    );
+    if (webPageCreationTime) {
+      const cutOffTime = serializeTime(
+        unserializeTime(webPageCreationTime).plus({
+          days: minWebPageAgeInDays,
+        }),
+      );
+      if (cutOffTime > serializeTime()) {
+        return false;
+      }
+
+      knownSnapshotTimesToUse = knownSnapshotTimesInAscOrder.filter(
+        (time) => time >= cutOffTime,
+      );
+    }
+  }
+
   // const oldestSnapshotTime = knownSnapshotTimesInAscOrder.at(0);
-  const newestSnapshotTime = knownSnapshotTimesInAscOrder.at(-1);
+  const newestSnapshotTime = knownSnapshotTimesToUse.at(-1);
 
   // @todo Implement interaction on the post page and enable Playwright snapshots
   // In the meantime, Playwright snapshots do not collect any extra information
@@ -40,7 +66,7 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = ({
 
   switch (categorizedVkUrl.vkPageType) {
     case "post": {
-      return knownSnapshotTimesInAscOrder.length === 0;
+      return knownSnapshotTimesToUse.length === 0;
       // if (daysSinceOldestSnapshot <= 5) {
       //   return daysSinceNewestSnapshot > 2;
       // } else if (daysSinceOldestSnapshot <= 14) {
