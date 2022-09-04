@@ -47,7 +47,11 @@ const script = async () => {
   );
   const filePaths = await globby(
     "**/vk/accounts/*/snapshot-summary-combination.json",
-    { absolute: true, cwd: env.VK_POST_SELECTION_INPUT_DIR_PATH },
+    {
+      absolute: true,
+      cwd: env.VK_POST_SELECTION_INPUT_DIR_PATH,
+      ignore: ["**/posts/**"],
+    },
   );
 
   const numberOfScannedAccounts = filePaths.length;
