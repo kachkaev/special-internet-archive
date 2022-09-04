@@ -4,12 +4,12 @@ import { assertVkUrl } from "./assert-vk-url";
 export type CategorizedVkUrl =
   | {
       vkPageType: "account";
-      accountId: string;
+      accountSlug: string;
     }
   | {
       vkPageType: "post";
-      accountId: string;
-      postId: string;
+      accountId: number;
+      postId: number;
     };
 
 export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
@@ -18,15 +18,19 @@ export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
   const slug = webPageUrl.match(/^https:\/\/vk.com\/([\d._a-z-]+)$/)?.[1];
 
   if (slug) {
-    const [, accountId, postId] = slug.match(/^wall(-?\d+)_(\d+)$/) ?? [];
+    const [, rawAccountId, rawPostId] = slug.match(/^wall(-?\d+)_(\d+)$/) ?? [];
 
-    if (accountId && postId) {
-      return { vkPageType: "post", accountId, postId };
+    if (rawAccountId && rawPostId) {
+      return {
+        vkPageType: "post",
+        accountId: Number.parseInt(rawAccountId),
+        postId: Number.parseInt(rawPostId),
+      };
     }
 
     // @todo Improve slug check via https://vk.com/faq18038
     if (!/^(album|photo|video|event)-?\d/.test(slug)) {
-      return { vkPageType: "account", accountId: slug };
+      return { vkPageType: "account", accountSlug: slug };
     }
   }
 

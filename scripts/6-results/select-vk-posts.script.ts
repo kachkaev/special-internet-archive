@@ -19,7 +19,7 @@ const output = process.stdout;
 
 interface VkPostSelection {
   generatedAt: string;
-  filter: string;
+  filterContent: string;
   numberOfScannedAccounts: number;
   numberOfScannedPosts: number;
   numberOfSelectedPosts: number;
@@ -37,9 +37,11 @@ const script = async () => {
     VK_POST_SELECTION_OUTPUT_FILE_PATH: envalid.str(),
   });
 
-  const filterContentRegex = RegexParser(env.VK_POST_SELECTION_FILTER_CONTENT);
+  const filterContent = env.VK_POST_SELECTION_FILTER_CONTENT;
+  const filterContentRegex = RegexParser(filterContent);
   const outputFilePath = path.resolve(env.VK_POST_SELECTION_OUTPUT_FILE_PATH);
 
+  output.write(chalk.green(`Filter: ${chalk.blue(filterContent)}\n`));
   output.write(
     chalk.green("Looking for snapshot summary combination files..."),
   );
@@ -71,24 +73,25 @@ const script = async () => {
 
   const vkPostSelection: VkPostSelection = {
     generatedAt: serializeTime(),
-    filter: env.VK_POST_SELECTION_FILTER_CONTENT,
+    filterContent,
     numberOfScannedAccounts,
     numberOfScannedPosts,
     numberOfSelectedPosts: selectedPosts.length,
-    selectedPosts: _.orderBy(selectedPosts, [
-      (post) => {
-        const urlPayload = categorizeVkUrl(post.url);
-        if (urlPayload.vkPageType !== "post") {
-          throw new Error(`Unexpected vkPageType ${urlPayload.vkPageType}`);
-        }
+    selectedPosts: _.uniqBy(
+      _.orderBy(selectedPosts, [
+        (post) => {
+          const urlPayload = categorizeVkUrl(post.url);
+          if (urlPayload.vkPageType !== "post") {
+            throw new Error(`Unexpected vkPageType ${urlPayload.vkPageType}`);
+          }
 
-        return `${
-          urlPayload.accountId.padStart(10, "0") //
-        }${
-          urlPayload.postId.padStart(10, "0") //
-        }`;
-      },
-    ]),
+          return `${urlPayload.accountId < 0 ? "1" : "2"}${
+            Math.abs(urlPayload.accountId) + 1_000_000_000 + urlPayload.postId
+          }`;
+        },
+      ]),
+      (post) => post.url,
+    ),
   };
 
   output.write(

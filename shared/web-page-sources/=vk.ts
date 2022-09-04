@@ -22,14 +22,14 @@ export const vkWebPageSource: WebPageSource = {
     let pathSegments: string[];
     switch (categorizedVkUrl.vkPageType) {
       case "account":
-        pathSegments = ["accounts", categorizedVkUrl.accountId];
+        pathSegments = ["accounts", categorizedVkUrl.accountSlug];
         break;
 
       case "post":
         pathSegments = [
           "posts",
-          categorizedVkUrl.accountId,
-          categorizedVkUrl.postId,
+          `${categorizedVkUrl.accountId}`,
+          `${categorizedVkUrl.postId}`,
         ];
         break;
     }
