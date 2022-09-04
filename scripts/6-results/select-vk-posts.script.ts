@@ -58,7 +58,7 @@ const script = async () => {
   output.write(` Accounts scanned: ${chalk.blue(numberOfScannedAccounts)}\n`);
 
   let numberOfScannedPosts = 0;
-  const selectedPosts: TempRawVkPost[] = [];
+  const rawSelectedPosts: TempRawVkPost[] = [];
 
   output.write(chalk.green(`Reading snapshot summary combination files...`));
   for (const filePath of filePaths) {
@@ -70,10 +70,25 @@ const script = async () => {
       []) {
       numberOfScannedPosts += 1;
       if (filterContentRegex.test(post.text)) {
-        selectedPosts.push(post);
+        rawSelectedPosts.push(post);
       }
     }
   }
+  const selectedPosts = _.uniqBy(
+    _.orderBy(rawSelectedPosts, [
+      (post) => {
+        const urlPayload = categorizeVkUrl(post.url);
+        if (urlPayload.vkPageType !== "post") {
+          throw new Error(`Unexpected vkPageType ${urlPayload.vkPageType}`);
+        }
+
+        return `${urlPayload.accountId < 0 ? "1" : "2"}${
+          Math.abs(urlPayload.accountId) + 1_000_000_000 + urlPayload.postId
+        }`;
+      },
+    ]),
+    (post) => post.url,
+  );
 
   const vkPostSelection: VkPostSelection = {
     generatedAt: serializeTime(),
@@ -81,21 +96,7 @@ const script = async () => {
     numberOfScannedAccounts,
     numberOfScannedPosts,
     numberOfSelectedPosts: selectedPosts.length,
-    selectedPosts: _.uniqBy(
-      _.orderBy(selectedPosts, [
-        (post) => {
-          const urlPayload = categorizeVkUrl(post.url);
-          if (urlPayload.vkPageType !== "post") {
-            throw new Error(`Unexpected vkPageType ${urlPayload.vkPageType}`);
-          }
-
-          return `${urlPayload.accountId < 0 ? "1" : "2"}${
-            Math.abs(urlPayload.accountId) + 1_000_000_000 + urlPayload.postId
-          }`;
-        },
-      ]),
-      (post) => post.url,
-    ),
+    selectedPosts,
   };
 
   output.write(
