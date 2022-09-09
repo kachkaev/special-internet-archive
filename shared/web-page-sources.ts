@@ -173,6 +173,7 @@ export const extractRelevantWebPageUrls: ExtractRelevantWebPageUrls = async ({
     if (
       tempRawVkPost.date >= relevantTimeMin &&
       (snapshotSummaryCombinationDocument.tempPageVerified ||
+        tempRawVkPost.text.trim() === "" ||
         checkIfTextIsRelevant(tempRawVkPost.text))
     ) {
       newLinkSet.add(tempRawVkPost.url);
