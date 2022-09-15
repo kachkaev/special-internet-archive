@@ -14,7 +14,10 @@ export const extractPlaywrightSnapshotSummaryData: ExtractSnapshotSummaryData =
         const postLinkNode = post.querySelector(".post_link");
         const localUrl = postLinkNode?.getAttribute("href");
         const date = postLinkNode?.textContent;
-        const text = post.querySelector(".wall_post_text")?.textContent ?? "";
+        const text = [...post.querySelectorAll(".wall_post_text")]
+          .map((node) => node.textContent)
+          .join("\n")
+          .trim();
         const ad = Boolean(post.querySelector(".wall_marked_as_ads"));
 
         if (localUrl && date) {

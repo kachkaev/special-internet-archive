@@ -13,8 +13,8 @@ export type SnapshotSummaryData = {
 };
 export type SnapshotSummaryCombinationData = SnapshotSummaryData;
 
-export const snapshotSummaryStaleTime = "2022-09-15T08:50:00Z";
-export const snapshotSummaryCombinationStaleTime = "2022-09-15T08:50:00Z";
+export const snapshotSummaryStaleTime = "2022-09-15T10:10:00Z";
+export const snapshotSummaryCombinationStaleTime = "2022-09-15T10:10:00Z";
 
 export interface SnapshotSummaryDocument extends SnapshotSummaryData {
   documentType: "snapshotSummary";
