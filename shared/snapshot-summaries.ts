@@ -4,14 +4,17 @@ import path from "node:path";
 import { writeFormattedJson } from "./json-formatting";
 
 export type SnapshotSummaryData = {
+  tempPageDescription?: string;
   tempPageNotFound?: true;
+  tempPageTitle?: string;
+  tempPageTitleInfo?: string;
   tempPageVerified?: true;
   tempRawVkPosts?: TempRawVkPost[];
 };
 export type SnapshotSummaryCombinationData = SnapshotSummaryData;
 
-export const snapshotSummaryStaleTime = "2022-07-31T13:30:00Z";
-export const snapshotSummaryCombinationStaleTime = "2022-08-11T00:00:00Z";
+export const snapshotSummaryStaleTime = "2022-09-15T08:50:00Z";
+export const snapshotSummaryCombinationStaleTime = "2022-09-15T08:50:00Z";
 
 export interface SnapshotSummaryDocument extends SnapshotSummaryData {
   documentType: "snapshotSummary";
@@ -102,6 +105,7 @@ export const writeSnapshotSummaryCombinationDocument = async (
 };
 
 export interface TempRawVkPost {
+  ad?: true;
   url: string;
   date: string;
   text: string;

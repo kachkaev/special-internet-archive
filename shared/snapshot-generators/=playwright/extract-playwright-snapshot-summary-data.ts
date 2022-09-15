@@ -14,17 +14,36 @@ export const extractPlaywrightSnapshotSummaryData: ExtractSnapshotSummaryData =
         const postLinkNode = post.querySelector(".post_link");
         const localUrl = postLinkNode?.getAttribute("href");
         const date = postLinkNode?.textContent;
-        const text = post.querySelector(".wall_post_text")?.textContent;
+        const text = post.querySelector(".wall_post_text")?.textContent ?? "";
+        const ad = Boolean(post.querySelector(".wall_marked_as_ads"));
 
-        if (localUrl && date && text) {
-          tempRawVkPosts.push({ url: `https://vk.com${localUrl}`, date, text });
+        if (localUrl && date) {
+          tempRawVkPosts.push({
+            url: `https://vk.com${localUrl}`,
+            date,
+            text,
+            ...(ad ? { ad } : undefined),
+          });
         }
       }
 
+      const tempPageDescription = body
+        .querySelector(".group_info_row.info")
+        ?.textContent?.trim();
+
+      const tempPageVerified = Boolean(body.querySelector("h1 .page_verified"));
+
+      const tempPageTitle = body.querySelector("h1")?.textContent?.trim();
+
+      const tempPageTitleInfo = body
+        .querySelector("#page_current_info")
+        ?.textContent?.trim();
+
       return {
-        ...(body.querySelector("h1 .page_verified")
-          ? { tempPageVerified: true }
-          : {}),
+        ...(tempPageVerified ? { tempPageVerified } : {}),
+        ...(tempPageDescription ? { tempPageDescription } : {}),
+        ...(tempPageTitle ? { tempPageTitle } : {}),
+        ...(tempPageTitleInfo ? { tempPageTitleInfo } : {}),
         tempRawVkPosts,
       };
     });

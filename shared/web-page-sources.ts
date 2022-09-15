@@ -135,12 +135,19 @@ export const extractSnapshotSummaryCombinationData: ExtractSnapshotSummaryCombin
       (tempRawVkPost) => tempRawVkPost.url,
     );
 
-    const tempPageNotFound = snapshotSummaryDocuments.at(-1)?.tempPageNotFound;
-    const tempPageVerified = snapshotSummaryDocuments.at(-1)?.tempPageVerified;
+    const mostRecentDocument = snapshotSummaryDocuments.at(-1);
+    const tempPageDescription = mostRecentDocument?.tempPageDescription;
+    const tempPageNotFound = mostRecentDocument?.tempPageNotFound;
+    const tempPageTitle = mostRecentDocument?.tempPageTitle;
+    const tempPageTitleInfo = mostRecentDocument?.tempPageTitleInfo;
+    const tempPageVerified = mostRecentDocument?.tempPageVerified;
 
     return {
-      ...(tempPageNotFound ? { tempPageNotFound: true } : {}),
-      ...(tempPageVerified ? { tempPageVerified: true } : {}),
+      ...(tempPageDescription ? { tempPageDescription } : {}),
+      ...(tempPageNotFound ? { tempPageNotFound } : {}),
+      ...(tempPageTitle ? { tempPageTitle } : {}),
+      ...(tempPageTitleInfo ? { tempPageTitleInfo } : {}),
+      ...(tempPageVerified ? { tempPageVerified } : {}),
       tempRawVkPosts,
     };
   };
