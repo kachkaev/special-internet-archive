@@ -76,7 +76,7 @@ const script = async () => {
 
   const urlInboxLookup: Record<string, true> = {};
   const urlInboxRows = (await readUrlInboxRows()) ?? [];
-  const linesToWrite: string[] = [];
+  let linesToWrite: string[] = [];
   for (const urlInboxRow of urlInboxRows) {
     linesToWrite.push(urlInboxRow.text);
     if (urlInboxRow.type === "url") {
@@ -111,11 +111,14 @@ const script = async () => {
   if (linesToWrite.at(-1)?.trim() !== "") {
     linesToWrite.push("");
   }
-  linesToWrite.push(
+
+  // Avoids ‘RangeError: Maximum call stack size exceeded’ when using `Array#push`
+  linesToWrite = [
+    ...linesToWrite,
     `## ↓ appended by auto-populate-url-inbox script at ${serializedTime} ##`,
     ...urlsToAppend,
     `## ↑ appended by auto-populate-url-inbox script at ${serializedTime} ##`,
-  );
+  ];
 
   output.write(chalk.green("Updating URL inbox..."));
   await writeUrlInbox(linesToWrite);
