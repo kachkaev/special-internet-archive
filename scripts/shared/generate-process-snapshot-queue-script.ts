@@ -14,6 +14,7 @@ import {
   UserFriendlyError,
 } from "../../shared/errors";
 import { generateProgress } from "../../shared/generate-progress";
+import { reportGithubMessageIfNeeded } from "../../shared/github";
 import { SnapshotGeneratorId } from "../../shared/snapshot-generator-id";
 import {
   assertSnapshotGeneratorMatchesFilter,
@@ -326,6 +327,12 @@ export const generateProcessSnapshotQueueScript =
       output.write(
         `\nDone. Attempts: ${numberOfAttempts} (${numberOfSucceededAttempts} succeeded, ${numberOfFailedAttempts} failed)\n`,
       );
+      reportGithubMessageIfNeeded({
+        message: `Snapshot queue attempts for ${snapshotGenerator.name}: ${numberOfAttempts} (${numberOfSucceededAttempts} succeeded, ${numberOfFailedAttempts} failed)`,
+        messageType: numberOfFailedAttempts ? "error" : "notice",
+        output,
+      });
+
       if (
         maxNumberOfFailedAttempts &&
         maxNumberOfFailedAttempts === numberOfFailedAttempts

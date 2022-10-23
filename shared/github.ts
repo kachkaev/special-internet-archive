@@ -7,7 +7,7 @@ export const reportGithubMessageIfNeeded = ({
   output,
   message,
 }: {
-  messageType: "warning" | "error";
+  messageType: "warning" | "error" | "notice";
   output: WriteStream;
   message: string;
 }): boolean => {
