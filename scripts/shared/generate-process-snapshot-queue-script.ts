@@ -121,6 +121,8 @@ export const generateProcessSnapshotQueueScript =
       // on 2022-06-22 to avoid queue crashing on the server while the bug is investigated.
       const chunkedItemsToProcess = _.chunk(orderedItemsToProcess, 100);
       let wasSkipped = false;
+      let numberOfSucceededAttempts = 0;
+      let numberOfFailedAttempts = 0;
 
       for (const currentItemsToProcess of chunkedItemsToProcess) {
         const snapshotQueueItemIds = currentItemsToProcess.map(
@@ -159,6 +161,12 @@ export const generateProcessSnapshotQueueScript =
           snapshotQueueItemIds,
         });
 
+        if (operationResult.status === "processed") {
+          numberOfSucceededAttempts += currentItemsToProcess.length;
+        } else {
+          numberOfFailedAttempts += currentItemsToProcess.length;
+        }
+
         output.write(
           (operationResult.status === "processed" ? chalk.magenta : chalk.red)(
             `${operationResult.message ?? "Done"}\n`,
@@ -167,6 +175,15 @@ export const generateProcessSnapshotQueueScript =
       }
 
       if (!wasSkipped) {
+        const numberOfAttempts =
+          numberOfSucceededAttempts + numberOfFailedAttempts;
+
+        reportGithubMessageIfNeeded({
+          message: `${snapshotGenerator.name} snapshot queue attempts mass-captured: ${numberOfAttempts} (succeeded: ${numberOfSucceededAttempts}, failed: ${numberOfFailedAttempts})`,
+          messageType: numberOfFailedAttempts ? "error" : "notice",
+          output,
+        });
+
         return;
       }
     }
@@ -328,7 +345,7 @@ export const generateProcessSnapshotQueueScript =
         `\nDone. Attempts: ${numberOfAttempts} (${numberOfSucceededAttempts} succeeded, ${numberOfFailedAttempts} failed)\n`,
       );
       reportGithubMessageIfNeeded({
-        message: `Snapshot queue attempts for ${snapshotGenerator.name}: ${numberOfAttempts} (${numberOfSucceededAttempts} succeeded, ${numberOfFailedAttempts} failed)`,
+        message: `${snapshotGenerator.name} snapshot queue attempts: ${numberOfAttempts} (${numberOfSucceededAttempts} succeeded, ${numberOfFailedAttempts} failed)`,
         messageType: numberOfFailedAttempts ? "error" : "notice",
         output,
       });
