@@ -19,3 +19,4 @@ tsconfig.tsbuildinfo
 .DS_Store
 .env*.local
 *.log
+coverage
