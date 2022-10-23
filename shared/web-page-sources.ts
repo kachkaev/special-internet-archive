@@ -2,6 +2,7 @@ import _ from "lodash";
 import path from "node:path";
 
 import { checkIfTextIsRelevant } from "./check-if-text-is-relevant";
+import { checkIfVkAccountIsOfficial } from "./check-if-vk-page-is-official";
 import { getWebPagesDirPath, relevantTimeMin } from "./collection";
 import { UserFriendlyError } from "./errors";
 import {
@@ -174,12 +175,16 @@ export const extractRelevantWebPageUrls: ExtractRelevantWebPageUrls = async ({
     return [];
   }
 
+  const vkAccountIsOfficial = checkIfVkAccountIsOfficial(
+    snapshotSummaryCombinationDocument,
+  );
+
   const newLinkSet = new Set<string>();
   for (const tempRawVkPost of snapshotSummaryCombinationDocument.tempRawVkPosts ??
     []) {
     if (
       tempRawVkPost.date >= relevantTimeMin &&
-      (snapshotSummaryCombinationDocument.tempPageVerified ||
+      (vkAccountIsOfficial ||
         tempRawVkPost.text.trim() === "" ||
         checkIfTextIsRelevant(tempRawVkPost.text))
     ) {
