@@ -1,8 +1,16 @@
+import _ from "lodash";
+
+import { readSnapshotSummaryCombinationDocument } from "../../snapshot-summaries";
 import { CalculateRelevantTimeMinForNewIncrementalSnapshot } from "../types";
 import { categorizeVkUrl } from "./categorize-vk-url";
 
 export const calculateRelevantTimeMinForNewIncrementalVkSnapshot: CalculateRelevantTimeMinForNewIncrementalSnapshot =
-  ({ webPageDocument, mostRecentSnapshotTime, snapshotGeneratorId }) => {
+  async ({
+    mostRecentSnapshotTime,
+    snapshotGeneratorId,
+    webPageDirPath,
+    webPageDocument,
+  }) => {
     const categorizedVkUrl = categorizeVkUrl(webPageDocument.webPageUrl);
 
     if (
@@ -12,8 +20,19 @@ export const calculateRelevantTimeMinForNewIncrementalVkSnapshot: CalculateRelev
       // There is no point scrolling through the whole wall again if a recent
       // snapshot contains all posts anyway
 
-      // @todo Look at the distribution of wall posts rather than just at
-      // mostRecentSnapshotTime. It is possible that previous snapshots were incomplete
+      const snapshotSummaryCombinationDocument =
+        await readSnapshotSummaryCombinationDocument(webPageDirPath);
+
+      if (snapshotSummaryCombinationDocument) {
+        const mostRecentWallPostTime = _.max(
+          snapshotSummaryCombinationDocument.tempRawVkPosts?.map(
+            (post) => post.date,
+          ) ?? [],
+        );
+        if (mostRecentWallPostTime) {
+          return mostRecentWallPostTime;
+        }
+      }
 
       return mostRecentSnapshotTime;
     }
