@@ -1,9 +1,9 @@
-import { checkIfVkAccountIsOfficial } from "./check-if-vk-page-is-official";
+import { checkIfVkAccountIsSignificant } from "./check-if-vk-page-is-significant";
 import { SnapshotSummaryCombinationDocument } from "./snapshot-summaries";
 
 const testCases: Array<{
   document: SnapshotSummaryCombinationDocument;
-  official: boolean;
+  significant: boolean;
 }> = [
   {
     document: {
@@ -12,7 +12,7 @@ const testCases: Array<{
       combinedAt: "2022-01-01T00:00:00.000Z",
       tempPageTitle: "Администрация города Энск",
     },
-    official: true,
+    significant: true,
   },
   {
     document: {
@@ -21,7 +21,7 @@ const testCases: Array<{
       combinedAt: "2022-01-01T00:00:00.000Z",
       tempPageTitle: "ЛолГУ",
     },
-    official: true,
+    significant: true,
   },
   {
     document: {
@@ -30,7 +30,7 @@ const testCases: Array<{
       combinedAt: "2022-01-01T00:00:00.000Z",
       tempPageTitle: "гулаг",
     },
-    official: false,
+    significant: false,
   },
   {
     document: {
@@ -40,7 +40,7 @@ const testCases: Array<{
       tempPageVerified: true,
       tempPageTitle: "гулаг",
     },
-    official: true,
+    significant: true,
   },
   {
     document: {
@@ -49,7 +49,7 @@ const testCases: Array<{
       combinedAt: "2022-01-01T00:00:00.000Z",
       tempPageTitle: "библиотека имени Гриба",
     },
-    official: true,
+    significant: true,
   },
   {
     document: {
@@ -58,7 +58,7 @@ const testCases: Array<{
       combinedAt: "2022-01-01T00:00:00.000Z",
       tempPageTitle: "блаблатека имени Гриба",
     },
-    official: false,
+    significant: false,
   },
   {
     document: {
@@ -66,14 +66,14 @@ const testCases: Array<{
       webPageUrl: "https://vk.com/case6",
       combinedAt: "2022-01-01T00:00:00.000Z",
     },
-    official: false,
+    significant: false,
   },
 ];
 
-describe("checkIfVkAccountIsOfficial()", () => {
-  for (const { document, official } of testCases) {
-    it(`Returns ${String(official)} for ${document.webPageUrl}`, () => {
-      expect(checkIfVkAccountIsOfficial(document)).toBe(official);
+describe("checkIfVkAccountIsSignificant()", () => {
+  for (const { document, significant } of testCases) {
+    it(`Returns ${String(significant)} for ${document.webPageUrl}`, () => {
+      expect(checkIfVkAccountIsSignificant(document)).toBe(significant);
     });
   }
 });

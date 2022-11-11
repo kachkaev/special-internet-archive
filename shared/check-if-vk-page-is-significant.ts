@@ -1,17 +1,18 @@
 import { SnapshotSummaryCombinationDocument } from "./snapshot-summaries";
 
-const officialTitleMatches: Array<string | RegExp> = [
+const significantTitleMatches: Array<string | RegExp> = [
   "администрация",
-  "муниципальный район",
-  "министерство",
-  "правительство",
+  "больница",
   "департамент",
   "дума",
   "законодательное собрание",
   "заксобр",
-  "цур ",
-  " цур",
+  "министерство",
+  "муниципальный район",
   "объясняем",
+  "правительство",
+  " цур",
+  "цур ",
   /^мин/,
   /^деп/,
   /^дом (офицеров|культуры|молодежи)/,
@@ -29,24 +30,59 @@ const officialTitleMatches: Array<string | RegExp> = [
   "навальн",
   //
   /г?трк/,
-  "известия",
+  "24",
   "вести",
   "вестник",
   "газета",
+  "известия",
   "информ",
-  "телеканал",
   "радио",
+  "телеканал",
   //
-  "университет",
   "институт",
-  "факультет",
   "колледж",
+  "техникум",
+  "университет",
+  "факультет",
   "школа",
   /гу$/,
   /гу /,
+  //
+  "типичн",
+  "культур",
+  //
+  // "live",
+  // "online",
+  // "говорит",
+  // "знаком",
+  // "инцидент",
+  // "лайв",
+  // "лайф",
+  // "лютая",
+  // "лютое",
+  // "лютый",
+  // "наш ",
+  // "новости",
+  // "объявления",
+  // "говорящ",
+  // "дежурн",
+  // "чс ",
+  // "афиша",
+  // "сейчас",
+  // "злой",
+  // "интересн",
+  // "онлайн",
+  // "подслушано",
+  // " инфо",
+  // "эхо ",
+  // "работа",
+  // "события",
+  // "тревожн",
+  // "черный список",
+  // "чп ",
 ];
 
-export const checkIfVkAccountIsOfficial = (
+export const checkIfVkAccountIsSignificant = (
   snapshotSummaryCombinationDocument: SnapshotSummaryCombinationDocument,
 ): boolean => {
   if (snapshotSummaryCombinationDocument.tempPageVerified) {
@@ -61,7 +97,7 @@ export const checkIfVkAccountIsOfficial = (
     .toLowerCase()
     .replace(/ё/g, "е");
 
-  for (const match of officialTitleMatches) {
+  for (const match of significantTitleMatches) {
     if (typeof match === "string") {
       if (normalizedTitle.includes(match)) {
         return true;
