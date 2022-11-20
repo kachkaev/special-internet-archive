@@ -84,7 +84,7 @@ const script = async () => {
         }
 
         return `${urlPayload.accountId < 0 ? "1" : "2"}${
-          Math.abs(urlPayload.accountId) + 1_000_000_000 + urlPayload.postId
+          Math.abs(urlPayload.accountId) + 1_000_000_000 + urlPayload.itemId
         }`;
       },
     ]),

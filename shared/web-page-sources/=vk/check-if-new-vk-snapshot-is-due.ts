@@ -65,6 +65,8 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = async ({
     : Number.MAX_SAFE_INTEGER;
 
   switch (categorizedVkUrl.vkPageType) {
+    case "album":
+    case "photo":
     case "post": {
       return knownSnapshotTimesToUse.length === 0;
       // if (daysSinceOldestSnapshot <= 5) {

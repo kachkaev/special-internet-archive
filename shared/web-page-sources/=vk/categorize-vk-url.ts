@@ -7,9 +7,9 @@ export type CategorizedVkUrl =
       accountSlug: string;
     }
   | {
-      vkPageType: "post";
+      vkPageType: "album" | "photo" | "post";
       accountId: number;
-      postId: number;
+      itemId: number;
     };
 
 export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
@@ -18,14 +18,30 @@ export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
   const slug = webPageUrl.match(/^https:\/\/vk.com\/([\d._a-z-]+)$/)?.[1];
 
   if (slug) {
-    const [, rawAccountId, rawPostId] = slug.match(/^wall(-?\d+)_(\d+)$/) ?? [];
+    const [, prefix, rawAccountId, rawResourceId] =
+      slug.match(/^(album|photo|wall)(-?\d+)_(\d+)$/) ?? [];
 
-    if (rawAccountId && rawPostId) {
-      return {
-        vkPageType: "post",
-        accountId: Number.parseInt(rawAccountId),
-        postId: Number.parseInt(rawPostId),
-      };
+    if (prefix && rawAccountId && rawResourceId) {
+      const accountId = Number.parseInt(rawAccountId);
+      const resourceId = Number.parseInt(rawResourceId);
+
+      switch (prefix) {
+        case "album":
+        case "photo":
+          return {
+            vkPageType: prefix,
+            accountId,
+            itemId: resourceId,
+          };
+        case "wall":
+          return {
+            vkPageType: "post",
+            accountId,
+            itemId: resourceId,
+          };
+        default:
+          throw new Error(`Unexpected prefix: ${prefix}`);
+      }
     }
 
     // @todo Improve slug check via https://vk.com/faq18038

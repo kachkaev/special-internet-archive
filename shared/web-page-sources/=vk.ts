@@ -26,11 +26,13 @@ export const vkWebPageSource: WebPageSource = {
         break;
       }
 
+      case "album":
+      case "photo":
       case "post": {
         pathSegments = [
-          "posts",
+          `${categorizedVkUrl.vkPageType}s`,
           `${categorizedVkUrl.accountId}`,
-          `${categorizedVkUrl.postId}`,
+          `${categorizedVkUrl.itemId}`,
         ];
         break;
       }
@@ -48,6 +50,8 @@ export const vkWebPageSource: WebPageSource = {
     "https://vk.com/id123",
     "https://vk.com/public123",
     "https://vk.com/something",
+    "https://vk.com/album-123-456",
+    "https://vk.com/photo-123-456",
     "https://vk.com/wall-123-456",
   ],
 
