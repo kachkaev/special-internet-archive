@@ -1,6 +1,7 @@
+import path from "node:path";
+
 import fs from "fs-extra";
 import _ from "lodash";
-import path from "node:path";
 
 import { getCollectionDirPath } from "../collection";
 import { writeFormattedJson } from "../json-formatting";

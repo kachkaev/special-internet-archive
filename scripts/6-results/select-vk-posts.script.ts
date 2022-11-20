@@ -1,9 +1,10 @@
+import path from "node:path";
+
 import chalk from "chalk";
 import * as envalid from "envalid";
 import fs from "fs-extra";
 import { globby } from "globby";
 import _ from "lodash";
-import path from "node:path";
 import RegexParser from "regex-parser";
 
 import { cleanEnv } from "../../shared/clean-env";

@@ -1,8 +1,9 @@
+import { WriteStream } from "node:tty";
+
 import chalk from "chalk";
 import * as envalid from "envalid";
 import _ from "lodash";
 import { DateTime } from "luxon";
-import { WriteStream } from "node:tty";
 import RegexParser from "regex-parser";
 
 import { cleanEnv } from "../../shared/clean-env";

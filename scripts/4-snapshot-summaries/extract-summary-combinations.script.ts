@@ -1,6 +1,7 @@
+import path from "node:path";
+
 import chalk from "chalk";
 import _ from "lodash";
-import path from "node:path";
 
 import { throwExitCodeErrorIfOperationFailed } from "../../shared/errors";
 import { reportGithubMessageIfNeeded } from "../../shared/github";

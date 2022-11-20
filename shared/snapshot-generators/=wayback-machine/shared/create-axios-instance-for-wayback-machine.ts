@@ -1,7 +1,8 @@
-import axios, { AxiosInstance } from "axios";
-import axiosRetry from "axios-retry";
 import http from "node:http";
 import https from "node:https";
+
+import axios, { AxiosInstance } from "axios";
+import axiosRetry from "axios-retry";
 
 export const createAxiosInstanceForWaybackMachine = (): AxiosInstance => {
   const axiosInstance = axios.create({

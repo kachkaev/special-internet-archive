@@ -1,7 +1,8 @@
+import path from "node:path";
+
 import chalk from "chalk";
 import * as envalid from "envalid";
 import fs from "fs-extra";
-import path from "node:path";
 
 import { cleanEnv } from "../../shared/clean-env";
 import { getCollectionDirPath } from "../../shared/collection";

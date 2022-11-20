@@ -1,5 +1,6 @@
-import fs from "fs-extra";
 import path from "node:path";
+
+import fs from "fs-extra";
 import sleep from "sleep-promise";
 
 export const formatJson = (object: unknown): string => {

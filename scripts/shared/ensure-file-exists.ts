@@ -1,7 +1,8 @@
-import chalk from "chalk";
-import fs from "fs-extra";
 import path from "node:path";
 import { WriteStream } from "node:tty";
+
+import chalk from "chalk";
+import fs from "fs-extra";
 
 export const ensureFileExists = async (
   rawFilePath: string,

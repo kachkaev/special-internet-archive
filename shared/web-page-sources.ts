@@ -1,5 +1,6 @@
-import _ from "lodash";
 import path from "node:path";
+
+import _ from "lodash";
 
 import { checkIfTextIsRelevant } from "./check-if-text-is-relevant";
 import { checkIfVkAccountIsSignificant } from "./check-if-vk-page-is-significant";

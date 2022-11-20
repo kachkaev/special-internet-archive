@@ -1,8 +1,9 @@
+import { WriteStream } from "node:tty";
+
 import chalk from "chalk";
 import { execa } from "execa";
 import fs from "fs-extra";
 import { DateTime } from "luxon";
-import { WriteStream } from "node:tty";
 
 import { AbortError, ExitCodeError } from "./errors";
 

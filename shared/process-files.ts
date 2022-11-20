@@ -1,5 +1,6 @@
-import chalk from "chalk";
 import { WriteStream } from "node:tty";
+
+import chalk from "chalk";
 
 import { generateProgress } from "./generate-progress";
 import { listFilePaths } from "./list-file-paths";

@@ -330,7 +330,7 @@ This repository can be used globally to create structured archive collections wi
 
     ```ini
     COLLECTION_DIR_PATH=[project-dir-path]/data/collections/[collection-id]
-    
+
     ## пример:
     ## COLLECTION_DIR_PATH=/Users/bob/projects/special-internet-archive/data/collections/my-collection
     ```

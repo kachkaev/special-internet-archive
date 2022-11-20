@@ -1,6 +1,7 @@
+import path from "node:path";
+
 import * as envalid from "envalid";
 import fs from "fs-extra";
-import path from "node:path";
 
 import { cleanEnv } from "./clean-env";
 import { UserFriendlyError } from "./errors";

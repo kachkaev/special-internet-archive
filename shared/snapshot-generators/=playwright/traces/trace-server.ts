@@ -3,9 +3,10 @@
 // Context: https://github.com/microsoft/playwright/issues/9883
 // Based on: https://github.com/microsoft/playwright/blob/abced7223c5fc724615ca9410896fe5874552f08/packages/playwright-core/src/server/trace/viewer/traceViewer.ts#L37-L52
 
-import getPort from "get-port";
 import { createRequire } from "node:module";
 import path from "node:path";
+
+import getPort from "get-port";
 
 export interface TraceServer {
   stop: () => Promise<void>;

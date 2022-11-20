@@ -1,10 +1,11 @@
+import path from "node:path";
+import { WriteStream } from "node:tty";
+
 import chalk from "chalk";
 import * as envalid from "envalid";
 import { execa, Options } from "execa";
 import fs from "fs-extra";
 import { DateTime } from "luxon";
-import path from "node:path";
-import { WriteStream } from "node:tty";
 
 import { cleanEnv } from "./clean-env";
 import { getCollectionDirPath } from "./collection";

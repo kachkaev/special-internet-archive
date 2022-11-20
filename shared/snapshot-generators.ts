@@ -1,6 +1,7 @@
+import { WriteStream } from "node:tty";
+
 import chalk from "chalk";
 import * as envalid from "envalid";
-import { WriteStream } from "node:tty";
 import RegexParser from "regex-parser";
 
 import { cleanEnv } from "./clean-env";

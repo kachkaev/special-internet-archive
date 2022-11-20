@@ -1,5 +1,6 @@
-import { globby } from "globby";
 import path from "node:path";
+
+import { globby } from "globby";
 
 import { serializeTime } from "../../time";
 import { SnapshotInventoryItem } from "../../web-page-documents";

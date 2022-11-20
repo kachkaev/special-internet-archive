@@ -1,6 +1,7 @@
+import { WriteStream } from "node:tty";
+
 import chalk from "chalk";
 import fs from "fs-extra";
-import { WriteStream } from "node:tty";
 
 import {
   AbortError,

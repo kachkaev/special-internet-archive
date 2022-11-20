@@ -1,9 +1,10 @@
+import { randomUUID } from "node:crypto";
+import { WriteStream } from "node:tty";
+
 import chalk from "chalk";
 import * as envalid from "envalid";
 import _ from "lodash";
 import { DateTime } from "luxon";
-import { randomUUID } from "node:crypto";
-import { WriteStream } from "node:tty";
 
 import { cleanEnv } from "../../shared/clean-env";
 import { throwExitCodeErrorIfOperationFailed } from "../../shared/errors";
