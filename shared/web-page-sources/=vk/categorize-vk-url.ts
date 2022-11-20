@@ -8,8 +8,8 @@ export type CategorizedVkUrl =
     }
   | {
       vkPageType: "album" | "photo" | "post";
-      accountId: number;
-      itemId: number;
+      accountId: string;
+      itemId: string; // can be 00, e.g. in https://vk.com/albumNNN_00 for all wall post photos
     };
 
 export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
@@ -18,26 +18,23 @@ export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
   const slug = webPageUrl.match(/^https:\/\/vk.com\/([\d._a-z-]+)$/)?.[1];
 
   if (slug) {
-    const [, prefix, rawAccountId, rawResourceId] =
+    const [, prefix, accountId, itemId] =
       slug.match(/^(album|photo|wall)(-?\d+)_(\d+)$/) ?? [];
 
-    if (prefix && rawAccountId && rawResourceId) {
-      const accountId = Number.parseInt(rawAccountId);
-      const resourceId = Number.parseInt(rawResourceId);
-
+    if (prefix && accountId && itemId) {
       switch (prefix) {
         case "album":
         case "photo":
           return {
             vkPageType: prefix,
             accountId,
-            itemId: resourceId,
+            itemId,
           };
         case "wall":
           return {
             vkPageType: "post",
             accountId,
-            itemId: resourceId,
+            itemId,
           };
         default:
           throw new Error(`Unexpected prefix: ${prefix}`);
