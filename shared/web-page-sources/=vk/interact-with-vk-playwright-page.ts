@@ -354,8 +354,7 @@ export const interactWithVkPlaywrightPage: InteractWithPlaywrightPage = async (
       await captureLikes(payload);
       break;
     }
-    default: {
-      // Any other page – no interaction
-    }
+    default:
+    // Any other page – no interaction
   }
 };

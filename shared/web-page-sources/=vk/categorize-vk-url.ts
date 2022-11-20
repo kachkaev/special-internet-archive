@@ -24,20 +24,23 @@ export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
     if (prefix && accountId && itemId) {
       switch (prefix) {
         case "album":
-        case "photo":
+        case "photo": {
           return {
             vkPageType: prefix,
             accountId,
             itemId,
           };
-        case "wall":
+        }
+        case "wall": {
           return {
             vkPageType: "post",
             accountId,
             itemId,
           };
-        default:
+        }
+        default: {
           throw new Error(`Unexpected prefix: ${prefix}`);
+        }
       }
     }
 
