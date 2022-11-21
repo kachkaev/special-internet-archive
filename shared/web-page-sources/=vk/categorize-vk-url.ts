@@ -7,13 +7,27 @@ export type CategorizedVkUrl =
       accountSlug: string;
     }
   | {
-      vkPageType: "album" | "photo" | "post";
+      vkPageType: "album" | "albumComments" | "photo" | "post";
       accountId: string;
       itemId: string; // can be 00, e.g. in https://vk.com/albumNNN_00 for all wall post photos
     };
 
 export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
   assertVkUrl(webPageUrl);
+
+  {
+    const [, accountId, itemId] =
+      webPageUrl.match(
+        /^https:\/\/vk.com\/album(-?\d+)_(\d+)\?act=comments$/,
+      ) ?? [];
+    if (accountId && itemId) {
+      return {
+        vkPageType: "albumComments",
+        accountId,
+        itemId,
+      };
+    }
+  }
 
   const slug = webPageUrl.match(/^https:\/\/vk.com\/([\d._a-z-]+)$/)?.[1];
 
@@ -45,7 +59,7 @@ export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
     }
 
     // @todo Improve slug check via https://vk.com/faq18038
-    if (!/^(album|photo|video|event)-?\d/.test(slug)) {
+    if (!/^(video|event)-?\d/.test(slug)) {
       return { vkPageType: "account", accountSlug: slug };
     }
   }

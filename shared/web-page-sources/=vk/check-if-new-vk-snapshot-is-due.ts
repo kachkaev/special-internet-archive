@@ -14,6 +14,9 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = async ({
   const categorizedVkUrl = categorizeVkUrl(webPageDocument.webPageUrl);
 
   const env = cleanEnv({
+    VK_ALBUM_SNAPSHOT_FREQUENCY_IN_DAYS: envalid.num({
+      default: 100,
+    }),
     VK_ACCOUNT_SNAPSHOT_FREQUENCY_IN_DAYS: envalid.num({
       default: 0.8,
     }),
@@ -65,7 +68,20 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = async ({
     : Number.MAX_SAFE_INTEGER;
 
   switch (categorizedVkUrl.vkPageType) {
+    case "account": {
+      // @todo Look into posts time stamps in the snapshot summary combination.
+      // If there are time gaps, return true for Playwright because previous
+      // snapshots could fail half-way.
+      return (
+        daysSinceNewestSnapshot > env.VK_ACCOUNT_SNAPSHOT_FREQUENCY_IN_DAYS
+      );
+    }
+
     case "album":
+    case "albumComments": {
+      return daysSinceNewestSnapshot > env.VK_ALBUM_SNAPSHOT_FREQUENCY_IN_DAYS;
+    }
+
     case "photo":
     case "post": {
       return knownSnapshotTimesToUse.length === 0;
@@ -80,14 +96,6 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = async ({
       // } else {
       //   return daysSinceNewestSnapshot > 90;
       // }
-    }
-    case "account": {
-      // @todo Look into posts time stamps in the snapshot summary combination.
-      // If there are time gaps, return true for Playwright because previous
-      // snapshots could fail half-way.
-      return (
-        daysSinceNewestSnapshot > env.VK_ACCOUNT_SNAPSHOT_FREQUENCY_IN_DAYS
-      );
     }
   }
 };

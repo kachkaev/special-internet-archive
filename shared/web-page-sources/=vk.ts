@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 import { assertVkUrl } from "./=vk/assert-vk-url";
 import { calculateRelevantTimeMinForNewIncrementalVkSnapshot } from "./=vk/calculate-relevant-time-min-for-mew-incremental-vk-snapshot";
 import { categorizeVkUrl } from "./=vk/categorize-vk-url";
@@ -23,6 +25,14 @@ export const vkWebPageSource: WebPageSource = {
     switch (categorizedVkUrl.vkPageType) {
       case "account": {
         pathSegments = ["accounts", categorizedVkUrl.accountSlug];
+        break;
+      }
+      case "albumComments": {
+        pathSegments = [
+          _.kebabCase(categorizedVkUrl.vkPageType),
+          `${categorizedVkUrl.accountId}`,
+          `${categorizedVkUrl.itemId}`,
+        ];
         break;
       }
 
@@ -51,6 +61,7 @@ export const vkWebPageSource: WebPageSource = {
     "https://vk.com/public123",
     "https://vk.com/something",
     "https://vk.com/album-123-456",
+    "https://vk.com/album-123-456?act=comments",
     "https://vk.com/photo-123-456",
     "https://vk.com/wall-123-456",
   ],
