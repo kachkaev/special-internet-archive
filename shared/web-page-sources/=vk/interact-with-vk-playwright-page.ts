@@ -309,13 +309,6 @@ const scrollAlbumPhotos = async (
   await closeAuthModalIfPresent(payload);
 };
 
-const captureLikes = async (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  payload: PlaywrightPageInteractionPayload,
-): Promise<void> => {
-  // @todo Implement interaction (capture likes)
-};
-
 type VkPageContentType = CategorizedVkUrl["vkPageType"];
 
 const guessVkPageContentType = async (
@@ -355,11 +348,6 @@ export const interactWithVkPlaywrightPage: InteractWithPlaywrightPage = async (
     }
     case "album": {
       await scrollAlbumPhotos(payload);
-      break;
-    }
-    case "photo":
-    case "post": {
-      await captureLikes(payload);
       break;
     }
     default:

@@ -69,10 +69,10 @@ export const extractPlaywrightSnapshotSummaryData: ExtractSnapshotSummaryData =
           tempPageTitleInfo,
         }),
 
+        // https://github.com/angus-c/just/issues/517
         ...(tempRawVkPhotosInAlbum.length > 0
           ? { tempRawVkPhotosInAlbum }
           : undefined),
-
         ...(tempRawVkPosts.length > 0 ? { tempRawVkPosts } : undefined),
       };
     });

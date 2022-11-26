@@ -16,7 +16,7 @@ export interface TempRawVkPhotoInAlbum {
 }
 
 /**
- * Property names are preliminary, the shape is not yet designed to scale up for different web page sources.
+ * Property names are preliminary; the interface needs to be redesigned to support multiple web page sources.
  */
 export interface SnapshotSummaryData {
   tempPageDescription?: string;
@@ -54,14 +54,6 @@ const generateSnapshotSummaryDocumentPath = (
   return snapshotOrSnapshotSummaryFilePath.endsWith(".summary.json")
     ? snapshotOrSnapshotSummaryFilePath
     : `${snapshotOrSnapshotSummaryFilePath}.summary.json`;
-};
-
-export const checkIfSnapshotSummaryDocumentExists = async (
-  snapshotOrSnapshotSummaryFilePath: string,
-): Promise<boolean> => {
-  return await fs.pathExists(
-    generateSnapshotSummaryDocumentPath(snapshotOrSnapshotSummaryFilePath),
-  );
 };
 
 export const readSnapshotSummaryDocument = async (
