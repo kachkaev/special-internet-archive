@@ -268,6 +268,12 @@ const scrollAlbumPhotos = async (
           element.style.backgroundImage.replace(/^url\("(.+)"\)$/, "$1"),
         );
 
+        if (photoUrls.length === 0) {
+          resolve();
+
+          return;
+        }
+
         let numberOfCompletedImages = 0;
         const handleImageComplete = () => {
           numberOfCompletedImages += 1;
@@ -319,8 +325,10 @@ const guessVkPageContentType = async (
     const resultBySelector: Record<VkPageContentType, string> = {
       account: "#public_wall,#group_wall,#profile_wall",
       album: "#photos_all_block",
-      post: ".big_wall",
+      albumComments: ".photos_comments.wall_module",
       photo: ".photo_box_img_wrap",
+      photoRev: ".photo_box_img_wrap",
+      post: ".big_wall",
     };
 
     for (const [result, selector] of Object.entries(resultBySelector) as Array<
