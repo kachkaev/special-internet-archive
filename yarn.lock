@@ -1738,13 +1738,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:0.27.2":
-  version: 0.27.2
-  resolution: "axios@npm:0.27.2"
+"axios@npm:1.2.0":
+  version: 1.2.0
+  resolution: "axios@npm:1.2.0"
   dependencies:
-    follow-redirects: "npm:^1.14.9"
+    follow-redirects: "npm:^1.15.0"
     form-data: "npm:^4.0.0"
-  checksum: 4cd898afe90caaf05307fc5a0da4c61012493b6bfd4937fff9774455c01d368db583b17c4737e73853f149b32e615487930b491661682a1f69a1973b1f533bb7
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 03fd51fb655c5d717d2bff88e6189f8db87e4acf3339338493b43a29e3c9302a1251559f81974b7bf2a6a70fc2b5142746a4db4cb03b5c0449117a02045d8ebc
   languageName: node
   linkType: hard
 
@@ -3298,7 +3299,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.14.9":
+"follow-redirects@npm:^1.15.0":
   version: 1.15.2
   resolution: "follow-redirects@npm:1.15.2"
   peerDependenciesMeta:
@@ -6134,6 +6135,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"proxy-from-env@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "proxy-from-env@npm:1.1.0"
+  checksum: 0bba2ef7c8374b384e94e4477764e53df66fcdfa7d19e2c4a063cb39eea979c139ce13981970223665422e72b7d149609a927046e2e40ab340b84d91af082591
+  languageName: node
+  linkType: hard
+
 "psl@npm:^1.1.33":
   version: 1.9.0
   resolution: "psl@npm:1.9.0"
@@ -6485,7 +6493,7 @@ __metadata:
     "@types/luxon": "npm:3.1.0"
     "@types/node": "npm:18.11.9"
     "@types/react": "npm:18.0.25"
-    axios: "npm:0.27.2"
+    axios: "npm:1.2.0"
     axios-retry: "npm:3.3.1"
     chalk: "npm:5.1.2"
     csv-parse: "npm:5.3.2"

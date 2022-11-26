@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@next/eslint-plugin-next": "13.0.5",
-    "axios": "0.27.2",
+    "axios": "1.2.0",
     "axios-retry": "3.3.1",
     "csv-parse": "5.3.2",
     "dotenv-flow": "3.2.0",
