@@ -4,14 +4,26 @@ import fs from "fs-extra";
 
 import { writeFormattedJson } from "./json-formatting";
 
-export type SnapshotSummaryData = {
+export interface TempRawVkPost {
+  ad?: true;
+  url: string;
+  date: string;
+  text: string;
+}
+export interface TempRawVkPhotoInAlbum {
+  url: string;
+  imageUrl: string;
+}
+
+export interface SnapshotSummaryData {
   tempPageDescription?: string;
   tempPageNotFound?: true;
   tempPageTitle?: string;
   tempPageTitleInfo?: string;
   tempPageVerified?: true;
   tempRawVkPosts?: TempRawVkPost[];
-};
+}
+
 export type SnapshotSummaryCombinationData = SnapshotSummaryData;
 
 export const snapshotSummaryStaleTime = "2022-09-15T10:10:00Z";
@@ -104,10 +116,3 @@ export const writeSnapshotSummaryCombinationDocument = async (
     snapshotSummaryCombinationDocument,
   );
 };
-
-export interface TempRawVkPost {
-  ad?: true;
-  url: string;
-  date: string;
-  text: string;
-}

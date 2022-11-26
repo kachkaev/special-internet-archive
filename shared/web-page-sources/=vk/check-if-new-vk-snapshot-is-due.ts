@@ -55,7 +55,10 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = async ({
   // so we can rely on snapshots made by Wayback Machine.
   if (
     snapshotGeneratorId === "playwright" &&
-    categorizedVkUrl.vkPageType === "post"
+    (categorizedVkUrl.vkPageType === "post" ||
+      categorizedVkUrl.vkPageType === "albumComments" ||
+      categorizedVkUrl.vkPageType === "photo" ||
+      categorizedVkUrl.vkPageType === "photoRev")
   ) {
     return false;
   }
@@ -83,6 +86,7 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = async ({
     }
 
     case "photo":
+    case "photoRev":
     case "post": {
       return knownSnapshotTimesToUse.length === 0;
       // if (daysSinceOldestSnapshot <= 5) {

@@ -7,7 +7,7 @@ export type CategorizedVkUrl =
       accountSlug: string;
     }
   | {
-      vkPageType: "album" | "albumComments" | "photo" | "post";
+      vkPageType: "album" | "albumComments" | "photo" | "photoRev" | "post";
       accountId: string;
       itemId: string; // can be 00, e.g. in https://vk.com/albumNNN_00 for all wall post photos
     };
