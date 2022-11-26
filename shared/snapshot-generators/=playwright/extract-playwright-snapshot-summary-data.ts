@@ -16,7 +16,7 @@ export const extractPlaywrightSnapshotSummaryData: ExtractSnapshotSummaryData =
       )) {
         const id = photoInAlbum.dataset["id"];
         const style = photoInAlbum.getAttribute("style");
-        const imageUrl = style?.match(/url\("(.+)"\)/)?.[1];
+        const imageUrl = style?.match(/url\((.+)\)/)?.[1];
 
         if (id && imageUrl) {
           tempRawVkPhotosInAlbum.push({

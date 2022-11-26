@@ -15,6 +15,9 @@ export interface TempRawVkPhotoInAlbum {
   imageUrl: string;
 }
 
+/**
+ * Property names are preliminary, the shape is not yet designed to scale up for different web page sources.
+ */
 export interface SnapshotSummaryData {
   tempPageDescription?: string;
   tempPageNotFound?: true;
@@ -22,6 +25,7 @@ export interface SnapshotSummaryData {
   tempPageTitleInfo?: string;
   tempPageVerified?: true;
   tempRawVkPosts?: TempRawVkPost[];
+  tempRawVkPhotosInAlbum?: TempRawVkPhotoInAlbum[];
 }
 
 export type SnapshotSummaryCombinationData = SnapshotSummaryData;
