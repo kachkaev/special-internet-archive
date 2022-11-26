@@ -6,10 +6,7 @@ import { serializeTime } from "../../../time";
 import { SnapshotInventoryItem } from "../../../web-page-documents";
 
 const extractUrlPrefix = (url: string): string | undefined => {
-  return (
-    url.match(/^https:\/\/vk.com\/wall-?\d+/)?.[0] ??
-    url.match(/^https:\/\/m.vk.com\/wall-?\d+/)?.[0]
-  );
+  return url.match(/^https:\/\/(m\.)?vk.com\/(wall|album)-?\d+/)?.[0];
 };
 
 type TimeRecord = Pick<SnapshotInventoryItem, "capturedAt" | "statusCode">;
