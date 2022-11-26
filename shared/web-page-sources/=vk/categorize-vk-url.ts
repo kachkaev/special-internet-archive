@@ -17,6 +17,18 @@ export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
 
   {
     const [, accountId, itemId] =
+      webPageUrl.match(/^https:\/\/vk.com\/photo(-?\d+)_(\d+)\?rev=1$/) ?? [];
+    if (accountId && itemId) {
+      return {
+        vkPageType: "photoRev",
+        accountId,
+        itemId,
+      };
+    }
+  }
+
+  {
+    const [, accountId, itemId] =
       webPageUrl.match(
         /^https:\/\/vk.com\/album(-?\d+)_(\d+)\?act=comments$/,
       ) ?? [];

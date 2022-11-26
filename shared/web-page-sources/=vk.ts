@@ -67,6 +67,7 @@ export const vkWebPageSource: WebPageSource = {
     "https://vk.com/album-123-456",
     "https://vk.com/album-123-456?act=comments",
     "https://vk.com/photo-123-456",
+    "https://vk.com/photo-123-456?rev=1",
     "https://vk.com/wall-123-456",
   ],
 
