@@ -206,6 +206,13 @@ export const extractRelevantWebPageUrls: ExtractRelevantWebPageUrls = async ({
     }
   }
 
+  for (const tempRawVkPhotoInAlbum of snapshotSummaryCombinationDocument.tempRawVkPhotosInAlbum ??
+    []) {
+    // Wayback Machine snapshots only display the splash screen when both URLs below are captured
+    newLinkSet.add(tempRawVkPhotoInAlbum.url);
+    newLinkSet.add(`${tempRawVkPhotoInAlbum.url}?rev=1`);
+  }
+
   return [...newLinkSet];
 };
 
