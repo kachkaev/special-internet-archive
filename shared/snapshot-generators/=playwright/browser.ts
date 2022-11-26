@@ -23,8 +23,8 @@ export const getPlaywrightBrowser = async (): Promise<Browser> => {
   playwrightBrowser = "launching";
   playwrightBrowser = await firefox.launch({
     firefoxUserPrefs: {
-      // - eslint-disable-next-line @typescript-eslint/naming-convention -- https://support.mozilla.org/en-US/questions/981640#answer-516383
-      // - "permissions.default.image": 2,
+      // eslint-disable-next-line @typescript-eslint/naming-convention -- https://support.mozilla.org/en-US/questions/981640#answer-516383
+      "permissions.default.image": 2,
     },
     headless,
   });

@@ -260,7 +260,7 @@ export const generateProcessSnapshotQueueScript =
             SnapshotContext
           >({}, item.context, {
             relevantTimeMin,
-            // completeness: "noImages",
+            completeness: "noImages",
           }),
           webPageDirPath,
           reportIssue: (message) =>
