@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/naming-convention,unicorn/consistent-function-scoping -- needed for playwrightPage.evaluate() */
-
 import { DateTime } from "luxon";
+import { Page } from "playwright";
 
 import { AbortError } from "../../errors";
 import { calculateDaysBetween, unserializeTime } from "../../time";
@@ -8,6 +7,7 @@ import {
   InteractWithPlaywrightPage,
   PlaywrightPageInteractionPayload,
 } from "../types";
+import { CategorizedVkUrl } from "./categorize-vk-url";
 import { parseRawVkTime } from "./parse-raw-vk-time";
 import { serializeVkDate } from "./serialize-vk-date";
 
@@ -83,7 +83,7 @@ const listRawDatesToScrollPast = ({
   return result;
 };
 
-const scrollPosts = async (
+const scrollWallPosts = async (
   payload: PlaywrightPageInteractionPayload,
 ): Promise<void> => {
   const dateTimeAtScrollIterationStart = DateTime.local();
@@ -105,6 +105,7 @@ const scrollPosts = async (
             relevantTimeMin,
           })
         : [];
+    /* eslint-disable @typescript-eslint/naming-convention,unicorn/consistent-function-scoping */
 
     // All interactions are placed inside a single evaluate call to reduce the number of
     // Playwright actions in the trace. This speeds up page capturing and reduces trace size.
@@ -209,6 +210,8 @@ const scrollPosts = async (
       [rawDatesToScrollPast, maxNumberOfPosts],
     );
 
+    /* eslint-enable @typescript-eslint/naming-convention,unicorn/consistent-function-scoping */
+
     if (abortSignal?.aborted) {
       throw new AbortError();
     }
@@ -249,21 +252,105 @@ const scrollPosts = async (
   }
 };
 
+const scrollAlbumPhotos = async (
+  payload: PlaywrightPageInteractionPayload,
+): Promise<void> => {
+  await payload.playwrightPage.evaluate(() => {
+    return new Promise<void>((resolve) => {
+      let scrollY = 0;
+      const scrollDownOrCapture = () => {
+        window.scrollTo({ left: window.scrollX, top: 10_000_000 });
+        const newScrollY = window.scrollY;
+
+        const photoUrls = [
+          ...document.querySelectorAll<HTMLElement>(".photos_row"),
+        ].map((element) =>
+          element.style.backgroundImage.replace(/^url\("(.+)"\)$/, "$1"),
+        );
+
+        if (photoUrls.length === 0) {
+          resolve();
+
+          return;
+        }
+
+        let numberOfCompletedImages = 0;
+        const handleImageComplete = () => {
+          numberOfCompletedImages += 1;
+          if (numberOfCompletedImages !== photoUrls.length) {
+            return;
+          }
+
+          if (
+            document.querySelector<HTMLElement>("#ui_photos_load_more")
+              ?.offsetHeight ||
+            newScrollY !== scrollY
+          ) {
+            scrollY = newScrollY;
+
+            window.requestIdleCallback(scrollDownOrCapture);
+          } else {
+            resolve();
+          }
+        };
+
+        for (const photoUrl of photoUrls) {
+          const image = new Image();
+          image.src = photoUrl;
+          image.addEventListener("load", handleImageComplete);
+          image.addEventListener("error", handleImageComplete);
+        }
+      };
+
+      scrollDownOrCapture();
+    });
+  });
+
+  await closeAuthModalIfPresent(payload);
+};
+
+type VkPageContentType = CategorizedVkUrl["vkPageType"];
+
+const guessVkPageContentType = async (
+  playwrightPage: Page,
+): Promise<VkPageContentType | undefined> => {
+  return playwrightPage.evaluate(() => {
+    const resultBySelector: Record<VkPageContentType, string> = {
+      account: "#public_wall,#group_wall,#profile_wall",
+      album: "#photos_all_block",
+      albumComments: ".photos_comments.wall_module",
+      photo: ".photo_box_img_wrap",
+      photoRev: ".photo_box_img_wrap",
+      post: ".big_wall",
+    };
+
+    for (const [result, selector] of Object.entries(resultBySelector) as Array<
+      [VkPageContentType, string]
+    >) {
+      if (document.querySelector<HTMLElement>(selector)?.offsetHeight) {
+        return result;
+      }
+    }
+  });
+};
+
 export const interactWithVkPlaywrightPage: InteractWithPlaywrightPage = async (
   payload,
 ) => {
-  // Account page (contains posts in a wall)
-  if (
-    await payload.playwrightPage
-      .locator("#public_wall,#group_wall,#profile_wall")
-      .isVisible()
-  ) {
-    await closeAgeRestrictionModalIfPreset(payload);
-    await scrollPosts(payload);
+  const guessedPageType = await guessVkPageContentType(payload.playwrightPage);
 
-    return;
+  await closeAgeRestrictionModalIfPreset(payload);
+
+  switch (guessedPageType) {
+    case "account": {
+      await scrollWallPosts(payload);
+      break;
+    }
+    case "album": {
+      await scrollAlbumPhotos(payload);
+      break;
+    }
+    default:
+    // Any other page – no interaction
   }
-
-  // Post page
-  // @todo Implement interaction (capture likes)
 };

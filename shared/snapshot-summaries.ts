@@ -4,14 +4,30 @@ import fs from "fs-extra";
 
 import { writeFormattedJson } from "./json-formatting";
 
-export type SnapshotSummaryData = {
+export interface TempRawVkPost {
+  ad?: true;
+  url: string;
+  date: string;
+  text: string;
+}
+export interface TempRawVkPhotoInAlbum {
+  url: string;
+  imageUrl: string;
+}
+
+/**
+ * Property names are preliminary; the interface needs to be redesigned to support multiple web page sources.
+ */
+export interface SnapshotSummaryData {
   tempPageDescription?: string;
   tempPageNotFound?: true;
   tempPageTitle?: string;
   tempPageTitleInfo?: string;
   tempPageVerified?: true;
   tempRawVkPosts?: TempRawVkPost[];
-};
+  tempRawVkPhotosInAlbum?: TempRawVkPhotoInAlbum[];
+}
+
 export type SnapshotSummaryCombinationData = SnapshotSummaryData;
 
 export const snapshotSummaryStaleTime = "2022-09-15T10:10:00Z";
@@ -38,14 +54,6 @@ const generateSnapshotSummaryDocumentPath = (
   return snapshotOrSnapshotSummaryFilePath.endsWith(".summary.json")
     ? snapshotOrSnapshotSummaryFilePath
     : `${snapshotOrSnapshotSummaryFilePath}.summary.json`;
-};
-
-export const checkIfSnapshotSummaryDocumentExists = async (
-  snapshotOrSnapshotSummaryFilePath: string,
-): Promise<boolean> => {
-  return await fs.pathExists(
-    generateSnapshotSummaryDocumentPath(snapshotOrSnapshotSummaryFilePath),
-  );
 };
 
 export const readSnapshotSummaryDocument = async (
@@ -104,10 +112,3 @@ export const writeSnapshotSummaryCombinationDocument = async (
     snapshotSummaryCombinationDocument,
   );
 };
-
-export interface TempRawVkPost {
-  ad?: true;
-  url: string;
-  date: string;
-  text: string;
-}

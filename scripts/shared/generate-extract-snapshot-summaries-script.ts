@@ -14,7 +14,6 @@ import {
   getSnapshotGenerator,
 } from "../../shared/snapshot-generators";
 import {
-  checkIfSnapshotSummaryDocumentExists,
   readSnapshotSummaryDocument,
   SnapshotSummaryDocument,
   snapshotSummaryStaleTime,
@@ -159,7 +158,7 @@ export const generateExtractSnapshotSummariesScript =
             }
           }
 
-          if (await checkIfSnapshotSummaryDocumentExists(snapshotFilePath)) {
+          if (existingSnapshotSummary) {
             output.write("snapshot summary is being updated... ");
           } else {
             output.write("snapshot summary is being created... ");

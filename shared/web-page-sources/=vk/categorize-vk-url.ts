@@ -7,29 +7,71 @@ export type CategorizedVkUrl =
       accountSlug: string;
     }
   | {
-      vkPageType: "post";
-      accountId: number;
-      postId: number;
+      vkPageType: "album" | "albumComments" | "photo" | "photoRev" | "post";
+      accountId: string;
+      itemId: string; // can be 00, e.g. in https://vk.com/albumNNN_00 for all wall post photos
     };
 
 export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
   assertVkUrl(webPageUrl);
 
+  {
+    const [, accountId, itemId] =
+      webPageUrl.match(/^https:\/\/vk.com\/photo(-?\d+)_(\d+)\?rev=1$/) ?? [];
+    if (accountId && itemId) {
+      return {
+        vkPageType: "photoRev",
+        accountId,
+        itemId,
+      };
+    }
+  }
+
+  {
+    const [, accountId, itemId] =
+      webPageUrl.match(
+        /^https:\/\/vk.com\/album(-?\d+)_(\d+)\?act=comments$/,
+      ) ?? [];
+    if (accountId && itemId) {
+      return {
+        vkPageType: "albumComments",
+        accountId,
+        itemId,
+      };
+    }
+  }
+
   const slug = webPageUrl.match(/^https:\/\/vk.com\/([\d._a-z-]+)$/)?.[1];
 
   if (slug) {
-    const [, rawAccountId, rawPostId] = slug.match(/^wall(-?\d+)_(\d+)$/) ?? [];
+    const [, prefix, accountId, itemId] =
+      slug.match(/^(album|photo|wall)(-?\d+)_(\d+)$/) ?? [];
 
-    if (rawAccountId && rawPostId) {
-      return {
-        vkPageType: "post",
-        accountId: Number.parseInt(rawAccountId),
-        postId: Number.parseInt(rawPostId),
-      };
+    if (prefix && accountId && itemId) {
+      switch (prefix) {
+        case "album":
+        case "photo": {
+          return {
+            vkPageType: prefix,
+            accountId,
+            itemId,
+          };
+        }
+        case "wall": {
+          return {
+            vkPageType: "post",
+            accountId,
+            itemId,
+          };
+        }
+        default: {
+          throw new Error(`Unexpected prefix: ${prefix}`);
+        }
+      }
     }
 
     // @todo Improve slug check via https://vk.com/faq18038
-    if (!/^(album|photo|video|event)-?\d/.test(slug)) {
+    if (!/^(video|event)-?\d/.test(slug)) {
       return { vkPageType: "account", accountSlug: slug };
     }
   }

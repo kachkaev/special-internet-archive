@@ -83,8 +83,12 @@ const script = async () => {
           throw new Error(`Unexpected vkPageType ${urlPayload.vkPageType}`);
         }
 
-        return `${urlPayload.accountId < 0 ? "1" : "2"}${
-          Math.abs(urlPayload.accountId) + 1_000_000_000 + urlPayload.postId
+        const numericAccountId = Number.parseInt(urlPayload.accountId);
+
+        return `${numericAccountId < 0 ? "1" : "2"}${
+          Math.abs(numericAccountId) +
+          1_000_000_000 +
+          Number.parseInt(urlPayload.itemId)
         }`;
       },
     ]),

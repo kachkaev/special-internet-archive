@@ -1,4 +1,5 @@
-import { TempRawVkPost } from "../../snapshot-summaries";
+import { deepClean } from "../../deep-clean";
+import { TempRawVkPhotoInAlbum, TempRawVkPost } from "../../snapshot-summaries";
 import { ExtractSnapshotSummaryData } from "../types";
 import { evaluateLastSnapshotInTrace } from "./traces";
 
@@ -7,6 +8,22 @@ export const extractPlaywrightSnapshotSummaryData: ExtractSnapshotSummaryData =
     return await evaluateLastSnapshotInTrace(snapshotFilePath, (body) => {
       if (body.style.backgroundImage.includes("error404.png")) {
         return { tempPageNotFound: true };
+      }
+
+      const tempRawVkPhotosInAlbum: TempRawVkPhotoInAlbum[] = [];
+      for (const photoInAlbum of body.querySelectorAll<HTMLElement>(
+        ".photos_container_grid .photos_row",
+      )) {
+        const id = photoInAlbum.dataset["id"];
+        const style = photoInAlbum.getAttribute("style");
+        const imageUrl = style?.match(/url\((.+)\)/)?.[1];
+
+        if (id && imageUrl) {
+          tempRawVkPhotosInAlbum.push({
+            url: `https://vk.com/photo${id}`,
+            imageUrl,
+          });
+        }
       }
 
       const tempRawVkPosts: TempRawVkPost[] = [];
@@ -34,7 +51,9 @@ export const extractPlaywrightSnapshotSummaryData: ExtractSnapshotSummaryData =
         .querySelector(".group_info_row.info")
         ?.textContent?.trim();
 
-      const tempPageVerified = Boolean(body.querySelector("h1 .page_verified"));
+      const tempPageVerified = body.querySelector("h1 .page_verified")
+        ? true
+        : undefined;
 
       const tempPageTitle = body.querySelector("h1")?.textContent?.trim();
 
@@ -43,11 +62,18 @@ export const extractPlaywrightSnapshotSummaryData: ExtractSnapshotSummaryData =
         ?.textContent?.trim();
 
       return {
-        ...(tempPageVerified ? { tempPageVerified } : {}),
-        ...(tempPageDescription ? { tempPageDescription } : {}),
-        ...(tempPageTitle ? { tempPageTitle } : {}),
-        ...(tempPageTitleInfo ? { tempPageTitleInfo } : {}),
-        tempRawVkPosts,
+        ...deepClean({
+          tempPageVerified,
+          tempPageDescription,
+          tempPageTitle,
+          tempPageTitleInfo,
+        }),
+
+        // https://github.com/angus-c/just/issues/517
+        ...(tempRawVkPhotosInAlbum.length > 0
+          ? { tempRawVkPhotosInAlbum }
+          : undefined),
+        ...(tempRawVkPosts.length > 0 ? { tempRawVkPosts } : undefined),
       };
     });
   };
