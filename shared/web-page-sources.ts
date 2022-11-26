@@ -8,6 +8,7 @@ import { getWebPagesDirPath, relevantTimeMin } from "./collection";
 import { UserFriendlyError } from "./errors";
 import {
   readSnapshotSummaryCombinationDocument,
+  TempRawVkPhotoInAlbum,
   TempRawVkPost,
 } from "./snapshot-summaries";
 import { vkWebPageSource } from "./web-page-sources/=vk";
@@ -116,12 +117,12 @@ export const extractSnapshotSummaryCombinationData: ExtractSnapshotSummaryCombin
     // @todo Implement proper logic for various web page types
 
     const tempRawVkPostByUrl: Record<string, TempRawVkPost> = {};
+    const tempRawVkPhotoInAlbumByUrl: Record<string, TempRawVkPhotoInAlbum> =
+      {};
 
     for (const snapshotSummaryDocument of snapshotSummaryDocuments) {
-      if (!snapshotSummaryDocument.tempRawVkPosts) {
-        continue;
-      }
-      for (const tempRawVkPost of snapshotSummaryDocument.tempRawVkPosts) {
+      for (const tempRawVkPost of snapshotSummaryDocument.tempRawVkPosts ??
+        []) {
         tempRawVkPostByUrl[tempRawVkPost.url] = {
           ...tempRawVkPost,
           date: parseRawVkTime(
@@ -130,10 +131,21 @@ export const extractSnapshotSummaryCombinationData: ExtractSnapshotSummaryCombin
           ),
         };
       }
+
+      for (const tempRawVkPhotoInAlbum of snapshotSummaryDocument.tempRawVkPhotosInAlbum ??
+        []) {
+        tempRawVkPhotoInAlbumByUrl[tempRawVkPhotoInAlbum.url] =
+          tempRawVkPhotoInAlbum;
+      }
     }
 
     const tempRawVkPosts = _.orderBy(
       Object.values(tempRawVkPostByUrl),
+      (tempRawVkPost) => tempRawVkPost.url,
+    );
+
+    const tempRawVkPhotosInAlbum = _.orderBy(
+      Object.values(tempRawVkPhotoInAlbumByUrl),
       (tempRawVkPost) => tempRawVkPost.url,
     );
 
@@ -150,7 +162,8 @@ export const extractSnapshotSummaryCombinationData: ExtractSnapshotSummaryCombin
       ...(tempPageTitle ? { tempPageTitle } : {}),
       ...(tempPageTitleInfo ? { tempPageTitleInfo } : {}),
       ...(tempPageVerified ? { tempPageVerified } : {}),
-      tempRawVkPosts,
+      ...(tempRawVkPosts.length > 0 ? { tempRawVkPosts } : {}),
+      ...(tempRawVkPhotosInAlbum.length > 0 ? { tempRawVkPhotosInAlbum } : {}),
     };
   };
 
