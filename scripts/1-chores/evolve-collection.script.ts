@@ -38,9 +38,7 @@ const script = async () => {
       { scriptFilePath: "scripts/4-snapshot-summaries/extract-summary-combinations.script.ts" },
       { scriptFilePath: "scripts/5-annotations/extract-from-snapshot-summary-combinations.script.ts" },
 
-      { scriptFilePath: "scripts/6-results/auto-populate-url-inbox.script.ts" },
-
-      { scriptFilePath: "scripts/2-registration/1-ensure-url-inbox-exists.script.ts" },
+      { scriptFilePath: "scripts/2-registration/1-auto-populate-url-inbox-with-relevant-urls.script.ts" },
       { scriptFilePath: "scripts/2-registration/2-register-from-url-inbox.script.ts" },
       { scriptFilePath: "scripts/2-registration/3-clean-up-url-inbox.script.ts" },
 

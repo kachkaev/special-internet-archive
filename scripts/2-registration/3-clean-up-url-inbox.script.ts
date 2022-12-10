@@ -39,11 +39,8 @@ const script = async () => {
 
   for (let rowIndex = 0; rowIndex < urlInboxRowsToKeep.length; rowIndex += 1) {
     if (
-      !urlInboxRowsToKeep[rowIndex]?.text.startsWith(
-        "## ↓ appended by auto-populate-url-inbox script",
-      ) ||
-      !urlInboxRowsToKeep[rowIndex + 1]?.text.startsWith(
-        "## ↑ appended by auto-populate-url-inbox script",
+      !urlInboxRowsToKeep[rowIndex]?.text.match(
+        /## (↓|↑) (appended by|\d+ URLs? auto-populated with)/, // "appended by" was used before 2022-12-10
       )
     ) {
       continue;
