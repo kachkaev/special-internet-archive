@@ -28,6 +28,7 @@ const significantTitleMatches: Array<string | RegExp> = [
   "яблоко",
   "новые люди",
   "навальн",
+  "совет матерей",
   //
   /г?трк/,
   "24",
@@ -59,6 +60,8 @@ const significantTitleMatches: Array<string | RegExp> = [
   "события",
   "типичн",
   "эхо ",
+  "черный список",
+  "чс ",
   //
   // "говорит",
   // "знаком",
@@ -70,7 +73,6 @@ const significantTitleMatches: Array<string | RegExp> = [
   // "объявления",
   // "говорящ",
   // "дежурн",
-  // "чс ",
   // "афиша",
   // "злой",
   // "злое",
@@ -80,7 +82,6 @@ const significantTitleMatches: Array<string | RegExp> = [
   // " инфо",
   // "работа",
   // "тревожн",
-  // "черный список",
   // "чп ",
 ];
 
