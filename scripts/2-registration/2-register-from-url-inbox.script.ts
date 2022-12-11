@@ -38,7 +38,9 @@ const script = async () => {
   const webPageDirPathLookup = await generateWebPageDirPathLookup();
 
   for (const urlInboxRow of urlInboxRows) {
-    output.write(`\n${chalk.blue(urlInboxRow.text.padEnd(maxRowLength + 1))}`);
+    output.write(
+      `\n${chalk.blue(urlInboxRow.text.padEnd(Math.min(maxRowLength, 80)))} `,
+    );
 
     if (urlInboxRow.type !== "url") {
       if (urlInboxRow.text.trim().length > 0) {
