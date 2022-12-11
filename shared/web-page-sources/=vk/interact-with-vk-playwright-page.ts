@@ -315,19 +315,23 @@ const guessVkPageContentType = async (
   playwrightPage: Page,
 ): Promise<VkPageContentType | undefined> => {
   return playwrightPage.evaluate(() => {
-    const resultBySelector: Record<VkPageContentType, string> = {
+    const resultBySelector: Record<VkPageContentType, string | undefined> = {
       account: "#public_wall,#group_wall,#profile_wall",
       album: "#photos_all_block",
       albumComments: ".photos_comments.wall_module",
       photo: ".photo_box_img_wrap",
       photoRev: ".photo_box_img_wrap",
       post: ".big_wall",
+      uncategorized: undefined,
     };
 
     for (const [result, selector] of Object.entries(resultBySelector) as Array<
-      [VkPageContentType, string]
+      [VkPageContentType, string | undefined]
     >) {
-      if (document.querySelector<HTMLElement>(selector)?.offsetHeight) {
+      if (
+        selector &&
+        document.querySelector<HTMLElement>(selector)?.offsetHeight
+      ) {
         return result;
       }
     }

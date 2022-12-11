@@ -5,6 +5,7 @@ import { checkIfNewVkSnapshotIsDue } from "./=vk/check-if-new-vk-snapshot-is-due
 import { checkVkContentMatch } from "./=vk/check-vk-content-match";
 import { getVkWebPageCreationTime } from "./=vk/get-vk-web-page-creation-time";
 import { interactWithVkPlaywrightPage } from "./=vk/interact-with-vk-playwright-page";
+import { generateUncategorisedUrlPathSegment } from "./shared/generate-uncategorised-url-path-segment";
 import { WebPageSource } from "./types";
 
 const dirByVkPageType: Record<CategorizedVkUrl["vkPageType"], string> = {
@@ -14,6 +15,7 @@ const dirByVkPageType: Record<CategorizedVkUrl["vkPageType"], string> = {
   photo: "photos",
   photoRev: "photos-rev",
   post: "posts",
+  uncategorized: "-",
 };
 
 export const vkWebPageSource: WebPageSource = {
@@ -49,6 +51,9 @@ export const vkWebPageSource: WebPageSource = {
           `${categorizedVkUrl.itemId}`,
         ];
         break;
+      }
+      case "uncategorized": {
+        return ["vk", "-", generateUncategorisedUrlPathSegment(webPageUrl)];
       }
     }
 

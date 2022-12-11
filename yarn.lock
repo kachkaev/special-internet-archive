@@ -1015,6 +1015,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sindresorhus/slugify@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "@sindresorhus/slugify@npm:2.1.1"
+  dependencies:
+    "@sindresorhus/transliterate": "npm:^1.0.0"
+    escape-string-regexp: "npm:^5.0.0"
+  checksum: 976207a73abeefc607e4a5582afbc15458616e536a82f158cdda0546d82e60f865f63febba7c6785517c2ab44f642f1433dc86e0a615108740d85a0efe4ea7a9
+  languageName: node
+  linkType: hard
+
+"@sindresorhus/transliterate@npm:^1.0.0":
+  version: 1.6.0
+  resolution: "@sindresorhus/transliterate@npm:1.6.0"
+  dependencies:
+    escape-string-regexp: "npm:^5.0.0"
+  checksum: c35224f3f54c4909fc62b23ad544deedb2350af9a50ec26dc5365aac160a69fe041a529c3ee1f13528c8ffd5fe71c14db9b1eef6808b403a6c2b90bf196a340b
+  languageName: node
+  linkType: hard
+
 "@sinonjs/commons@npm:^1.7.0":
   version: 1.8.5
   resolution: "@sinonjs/commons@npm:1.8.5"
@@ -2748,6 +2767,13 @@ __metadata:
   version: 4.0.0
   resolution: "escape-string-regexp@npm:4.0.0"
   checksum: 09f81f2e5eb8d6108ea2fe366eb3041b8bc35381c95c7b7e38f0eb64825a3967618bb0840b7a9e950457d9b4c0a6e758b69374fb7906d939a67018d6c53e8cbe
+  languageName: node
+  linkType: hard
+
+"escape-string-regexp@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "escape-string-regexp@npm:5.0.0"
+  checksum: 9c968d6e975030ef1349f1f011348de4b1fe5e13d5e0c407d38ab141d5e8a8b163ba727a9df22f3e796211aa340b73080455d3a1784af90409e2b8afaed02f76
   languageName: node
   linkType: hard
 
@@ -6492,6 +6518,7 @@ __metadata:
     "@kachkaev/markdownlint-config": "npm:0.5.0"
     "@kachkaev/prettier-config": "npm:1.4.0"
     "@next/eslint-plugin-next": "npm:13.0.5"
+    "@sindresorhus/slugify": "npm:^2.1.1"
     "@types/dotenv-flow": "npm:3.2.0"
     "@types/fs-extra": "npm:9.0.13"
     "@types/jest": "npm:29.2.3"

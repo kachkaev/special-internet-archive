@@ -1,4 +1,5 @@
 import { UserFriendlyError } from "../../errors";
+import { uncategorizedVkPagesAreEnabled } from "../../experiments";
 import { assertVkUrl } from "./assert-vk-url";
 
 export type CategorizedVkUrl =
@@ -10,6 +11,10 @@ export type CategorizedVkUrl =
       vkPageType: "album" | "albumComments" | "photo" | "photoRev" | "post";
       accountId: string;
       itemId: string; // can be 00, e.g. in https://vk.com/albumNNN_00 for all wall post photos
+    }
+  | {
+      vkPageType: "uncategorized";
+      url: string;
     };
 
 export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
@@ -74,6 +79,10 @@ export const categorizeVkUrl = (webPageUrl: string): CategorizedVkUrl => {
     if (!/^(video|event)-?\d/.test(slug)) {
       return { vkPageType: "account", accountSlug: slug };
     }
+  }
+
+  if (uncategorizedVkPagesAreEnabled) {
+    return { vkPageType: "uncategorized", url: webPageUrl };
   }
 
   throw new UserFriendlyError(

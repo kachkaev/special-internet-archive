@@ -6,11 +6,13 @@ import { checkIfTextIsRelevant } from "./check-if-text-is-relevant";
 import { checkIfVkAccountIsSignificant } from "./check-if-vk-page-is-significant";
 import { getWebPagesDirPath, relevantTimeMin } from "./collection";
 import { UserFriendlyError } from "./errors";
+import { genericUrlsAreEnabled } from "./experiments";
 import {
   readSnapshotSummaryCombinationDocument,
   TempRawVkPhotoInAlbum,
   TempRawVkPost,
 } from "./snapshot-summaries";
+import { genericWebPageSource } from "./web-page-sources/=generic";
 import { vkWebPageSource } from "./web-page-sources/=vk";
 import { parseRawVkTime } from "./web-page-sources/=vk/parse-raw-vk-time";
 import {
@@ -27,6 +29,7 @@ import {
 
 export const webPageSourceLookup = {
   vk: vkWebPageSource,
+  generic: genericUrlsAreEnabled ? genericWebPageSource : undefined,
 };
 
 type WebPageSourceId = keyof typeof webPageSourceLookup;
@@ -36,6 +39,10 @@ const getWebPageSource = (webPageUrl: string): WebPageSource => {
     if (Object.hasOwn(webPageSourceLookup, webpageSourceId)) {
       const webPageSource =
         webPageSourceLookup[webpageSourceId as WebPageSourceId];
+
+      if (!webPageSource) {
+        continue;
+      }
 
       try {
         webPageSource.assertWebPageUrl(webPageUrl);
@@ -218,7 +225,7 @@ export const extractRelevantWebPageUrls: ExtractRelevantWebPageUrls = async ({
 
 const listWebPageUrlExamples = (): string[] => {
   return Object.values(webPageSourceLookup)
-    .flatMap((source) => source.listUrlExamples())
+    .flatMap((source) => (source ? source.listUrlExamples() : []))
     .sort();
 };
 

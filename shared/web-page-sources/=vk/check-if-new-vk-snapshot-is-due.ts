@@ -58,7 +58,8 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = async ({
     (categorizedVkUrl.vkPageType === "post" ||
       categorizedVkUrl.vkPageType === "albumComments" ||
       categorizedVkUrl.vkPageType === "photo" ||
-      categorizedVkUrl.vkPageType === "photoRev")
+      categorizedVkUrl.vkPageType === "photoRev" ||
+      categorizedVkUrl.vkPageType === "uncategorized")
   ) {
     return false;
   }
@@ -87,7 +88,8 @@ export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = async ({
 
     case "photo":
     case "photoRev":
-    case "post": {
+    case "post":
+    case "uncategorized": {
       return knownSnapshotTimesToUse.length === 0;
       // if (daysSinceOldestSnapshot <= 5) {
       //   return daysSinceNewestSnapshot > 2;
