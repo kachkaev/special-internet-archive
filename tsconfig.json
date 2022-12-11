@@ -23,5 +23,11 @@
     "target": "es2018"
   },
   "exclude": ["node_modules"],
-  "include": ["next-env.d.ts", "**/*.cjs", "**/*.ts", "**/*.tsx"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.cjs",
+    "**/*.ts",
+    "**/*.tsx",
+    "jest.config.js"
+  ]
 }

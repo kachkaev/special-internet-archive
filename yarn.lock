@@ -1900,6 +1900,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bs-logger@npm:0.x":
+  version: 0.2.6
+  resolution: "bs-logger@npm:0.2.6"
+  dependencies:
+    fast-json-stable-stringify: "npm:2.x"
+  checksum: 36eec820b0a17d7c4646405265fa2c654ad64f25ac11123fa32d3f60e0d12de6fa7abeb9eda1ca734e58268815f72816dca676a2d281c59ca203d2ba6b3a6695
+  languageName: node
+  linkType: hard
+
 "bser@npm:2.1.1":
   version: 2.1.1
   resolution: "bser@npm:2.1.1"
@@ -3196,7 +3205,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-json-stable-stringify@npm:^2.0.0, fast-json-stable-stringify@npm:^2.1.0":
+"fast-json-stable-stringify@npm:2.x, fast-json-stable-stringify@npm:^2.0.0, fast-json-stable-stringify@npm:^2.1.0":
   version: 2.1.0
   resolution: "fast-json-stable-stringify@npm:2.1.0"
   checksum: cc64810b004155f5ac29b208ebd5c862599a1a8aef3c4d27a34dfb694db7797e121dceda183507ec4a2a5413d9cb59521fd2540d0d00a5589ee6ea6bfac3c12e
@@ -4587,7 +4596,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-util@npm:^29.3.1":
+"jest-util@npm:^29.0.0, jest-util@npm:^29.3.1":
   version: 29.3.1
   resolution: "jest-util@npm:29.3.1"
   dependencies:
@@ -4970,6 +4979,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.memoize@npm:4.x":
+  version: 4.1.2
+  resolution: "lodash.memoize@npm:4.1.2"
+  checksum: f48328f75ecb118629197850ad19ced8d8cd5833c1d461fa5f9923e8b06125ba20b871e6a3ebfe72c0d2d4ee6437733969334bae50bc02840b278a8b4589ac2e
+  languageName: node
+  linkType: hard
+
 "lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
@@ -5039,7 +5055,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"make-error@npm:^1.1.1":
+"make-error@npm:1.x, make-error@npm:^1.1.1":
   version: 1.3.6
   resolution: "make-error@npm:1.3.6"
   checksum: 4b81ce1392495d554ce5fd28c8de95066642e5e1a5efd395e3b3413bc75068a025d8a567aefb0738ba6da18e73323ffde17794780f632fe4395e009aa9ebcc8a
@@ -6517,6 +6533,8 @@ __metadata:
     rm-up: "npm:1.1.0"
     sleep-promise: "npm:9.1.0"
     sort-keys: "npm:5.0.0"
+    suppress-experimental-warnings: "npm:1.1.2"
+    ts-jest: "npm:29.0.3"
     ts-node: "npm:10.9.1"
     typescript: "npm:4.9.3"
   languageName: unknown
@@ -6615,16 +6633,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^6.0.0, semver@npm:^6.3.0":
-  version: 6.3.0
-  resolution: "semver@npm:6.3.0"
-  bin:
-    semver: ./bin/semver.js
-  checksum: 18f3d42ec70a542e9efc498ecc3d0b9b088099115e8658b49d2bfc6470b46a6144b294374dac3f343fe1600039cbd80d5e830dd356053fd5abd4f1af5118a928
-  languageName: node
-  linkType: hard
-
-"semver@npm:^7.3.5, semver@npm:^7.3.7":
+"semver@npm:7.x, semver@npm:^7.3.5, semver@npm:^7.3.7":
   version: 7.3.8
   resolution: "semver@npm:7.3.8"
   dependencies:
@@ -6632,6 +6641,15 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 94ad80ee14889020cb4a14d809fb99d16cbf4ff3dc7f4c564fc72efe2c5763a60090a1c16a9fd18ceeb1e993a1303a4d870c0a22f26adaf435b368b46a7d8462
+  languageName: node
+  linkType: hard
+
+"semver@npm:^6.0.0, semver@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "semver@npm:6.3.0"
+  bin:
+    semver: ./bin/semver.js
+  checksum: 18f3d42ec70a542e9efc498ecc3d0b9b088099115e8658b49d2bfc6470b46a6144b294374dac3f343fe1600039cbd80d5e830dd356053fd5abd4f1af5118a928
   languageName: node
   linkType: hard
 
@@ -7167,6 +7185,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"suppress-experimental-warnings@npm:1.1.2":
+  version: 1.1.2
+  resolution: "suppress-experimental-warnings@npm:1.1.2"
+  checksum: 9d09dd3d930a05169333828a5c4ad5a3dabd3eb5b8a918be4d8e5e7284fe639564331b44246c2fcfe409cd5edbcbf8fd85f2526c93392cced554753c469c2444
+  languageName: node
+  linkType: hard
+
 "symbol-tree@npm:^3.2.4":
   version: 3.2.4
   resolution: "symbol-tree@npm:3.2.4"
@@ -7281,6 +7306,39 @@ __metadata:
   dependencies:
     punycode: "npm:^2.1.1"
   checksum: 3a481676bf6956ca7ffd4b21c5826f61d7dd57dcad56ee202a5d9d5a34f5ddd1a98ee938366f7964e8dfabc640377d53725164724da49a7a2331694270a1b7d8
+  languageName: node
+  linkType: hard
+
+"ts-jest@npm:29.0.3":
+  version: 29.0.3
+  resolution: "ts-jest@npm:29.0.3"
+  dependencies:
+    bs-logger: "npm:0.x"
+    fast-json-stable-stringify: "npm:2.x"
+    jest-util: "npm:^29.0.0"
+    json5: "npm:^2.2.1"
+    lodash.memoize: "npm:4.x"
+    make-error: "npm:1.x"
+    semver: "npm:7.x"
+    yargs-parser: "npm:^21.0.1"
+  peerDependencies:
+    "@babel/core": ">=7.0.0-beta.0 <8"
+    "@jest/types": ^29.0.0
+    babel-jest: ^29.0.0
+    jest: ^29.0.0
+    typescript: ">=4.3"
+  peerDependenciesMeta:
+    "@babel/core":
+      optional: true
+    "@jest/types":
+      optional: true
+    babel-jest:
+      optional: true
+    esbuild:
+      optional: true
+  bin:
+    ts-jest: cli.js
+  checksum: ea0c993ed3054f3cf53410e63203ab432b492b209a489116fbe1a8754bef9a69454d9bf079f53d0e1c4e60ff08f2310712925e9ef4adc8f42f78a7e537208078
   languageName: node
   linkType: hard
 
@@ -7821,7 +7879,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs-parser@npm:^21.1.1":
+"yargs-parser@npm:^21.0.1, yargs-parser@npm:^21.1.1":
   version: 21.1.1
   resolution: "yargs-parser@npm:21.1.1"
   checksum: fc4457cf1e4d7d41e5b3a1d62e86b3934af704dd8777979a3c4c573e08eea437801444622cd68607c0266d53b90d84e8e79fd4f5ff170d1be8860064111bbad6
