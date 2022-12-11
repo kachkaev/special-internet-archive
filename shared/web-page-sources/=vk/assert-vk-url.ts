@@ -3,5 +3,5 @@ import { AssertSourceUrl } from "../types";
 
 export const assertVkUrl: AssertSourceUrl = generateAssertWebPageUrlSource(
   "vk",
-  (webPageUrl) => Boolean(/^https:vk\.com(\/.*|)/.test(webPageUrl)),
+  (webPageUrl) => Boolean(/^https:\/\/vk\.com(\/.*|)/.test(webPageUrl)),
 );
