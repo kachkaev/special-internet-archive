@@ -17,6 +17,7 @@ const significantTitleMatches: Array<string | RegExp> = [
   /^деп/,
   /^дом (офицеров|культуры|молодежи)/,
   "библиоте",
+  "школ",
   //
   "единая россия",
   "кпрф",
@@ -37,6 +38,7 @@ const significantTitleMatches: Array<string | RegExp> = [
   "газета",
   "известия",
   "информ",
+  "правда",
   "радио",
   "телеканал",
   //
@@ -61,6 +63,8 @@ const significantTitleMatches: Array<string | RegExp> = [
   "типичн",
   "эхо ",
   "черный список",
+  "подслушано",
+  "чп ",
   "чс ",
   //
   // "говорит",
@@ -78,11 +82,9 @@ const significantTitleMatches: Array<string | RegExp> = [
   // "злое",
   // "злая",
   // "интересн",
-  // "подслушано",
   // " инфо",
   // "работа",
   // "тревожн",
-  // "чп ",
 ];
 
 export const checkIfVkAccountIsSignificant = (
