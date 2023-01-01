@@ -61,14 +61,15 @@ const significantTitleMatches: Array<string | RegExp> = [
   "лайф",
   "новости",
   "онлайн",
+  "подслушано",
   "сейчас",
   "события",
   "типичн",
-  "эхо ",
+  "тревожн",
   "черный список",
-  "подслушано",
   "чп ",
   "чс ",
+  "эхо ",
   //
   // "говорит",
   // "знаком",
@@ -87,7 +88,6 @@ const significantTitleMatches: Array<string | RegExp> = [
   // "интересн",
   // " инфо",
   // "работа",
-  // "тревожн",
 ];
 
 export const checkIfVkAccountIsSignificant = (
