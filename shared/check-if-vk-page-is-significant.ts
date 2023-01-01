@@ -1,3 +1,6 @@
+import * as envalid from "envalid";
+
+import { cleanEnv } from "./clean-env";
 import { SnapshotSummaryCombinationDocument } from "./snapshot-summaries";
 
 const significantTitleMatches: Array<string | RegExp> = [
@@ -90,6 +93,17 @@ const significantTitleMatches: Array<string | RegExp> = [
 export const checkIfVkAccountIsSignificant = (
   snapshotSummaryCombinationDocument: SnapshotSummaryCombinationDocument,
 ): boolean => {
+  const env = cleanEnv({
+    FORCE_VK_ACCOUNT_IS_SIGNIFICANT: envalid.bool({
+      desc: "Treat all VK accounts as significant",
+      default: false,
+    }),
+  });
+
+  if (env.FORCE_VK_ACCOUNT_IS_SIGNIFICANT) {
+    return true;
+  }
+
   if (snapshotSummaryCombinationDocument.tempPageVerified) {
     return true;
   }
