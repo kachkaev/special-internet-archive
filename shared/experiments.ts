@@ -16,4 +16,4 @@ const env = cleanEnv({
 export const uncategorizedVkPagesAreEnabled =
   env.EXPERIMENTAL_UNCATEGORIZED_VK_PAGES;
 
-export const genericUrlsAreEnabled = env.EXPERIMENTAL_UNCATEGORIZED_VK_PAGES;
+export const genericUrlsAreEnabled = env.EXPERIMENTAL_GENERIC_URLS;
