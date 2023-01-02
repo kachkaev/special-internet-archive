@@ -78,12 +78,18 @@ const doParseRawVkTime = (
       rawTime.match(/^(\d+)\s(\p{L}{3})\sв\s(\d+):(\d+)$/u) ?? [];
 
     if (rawDay && rawMonth && rawHour && rawMinute) {
-      return baseDateTimeRoundedToMinute.set({
+      const result = baseDateTimeRoundedToMinute.set({
         month: parseRawMonth(rawMonth),
         day: Number.parseInt(rawDay),
         hour: Number.parseInt(rawHour),
         minute: Number.parseInt(rawMinute),
       });
+
+      if (result > baseDateTimeRoundedToMinute) {
+        return result.minus({ year: 1 });
+      }
+
+      return result;
     }
   }
 
