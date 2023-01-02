@@ -6,7 +6,7 @@ import { generateAutoPopulateUrlInbox } from "./shared/generate-auto-populate-ur
 
 const script = generateAutoPopulateUrlInbox({
   contentsLabel: "relevant URLs",
-  listWebPageUrls: async ({ output }) => {
+  listNewUrlInboxRows: async ({ output }) => {
     const relevantWebPageUrlSet = new Set<string>();
 
     const operationResult = await processWebPages({

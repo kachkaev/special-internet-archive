@@ -2,7 +2,7 @@ import chalk from "chalk";
 import * as envalid from "envalid";
 
 import { cleanEnv } from "../../shared/clean-env";
-import { readUrlInboxRows } from "../../shared/collection";
+import { readUrlInboxRecords } from "../../shared/collection";
 import { runScriptSequence } from "../../shared/script-sequencing";
 import { generateWebPageDirPathLookup } from "../../shared/web-page-documents";
 import { checkIfWebPageUrlIsAcceptable } from "../../shared/web-page-sources";
@@ -54,13 +54,13 @@ const script = async () => {
     }
 
     const webPageDirPathLookup = await generateWebPageDirPathLookup();
-    const urlInboxRows = (await readUrlInboxRows()) ?? [];
+    const urlInboxRecords = (await readUrlInboxRecords()) ?? [];
 
-    const urlInboxContainsUnregisteredAcceptableUrls = urlInboxRows.some(
-      (urlInboxRow) =>
-        urlInboxRow.type === "url" &&
-        !webPageDirPathLookup[urlInboxRow.url] &&
-        checkIfWebPageUrlIsAcceptable(urlInboxRow.url),
+    const urlInboxContainsUnregisteredAcceptableUrls = urlInboxRecords.some(
+      (urlInboxRecord) =>
+        urlInboxRecord.type === "url" &&
+        !webPageDirPathLookup[urlInboxRecord.url] &&
+        checkIfWebPageUrlIsAcceptable(urlInboxRecord.url),
     );
 
     if (!urlInboxContainsUnregisteredAcceptableUrls) {

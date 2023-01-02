@@ -7,6 +7,22 @@ import { cleanEnv } from "./clean-env";
 import { UserFriendlyError } from "./errors";
 import { isUrl } from "./urls";
 
+export const parseUrlInboxRow = (row: string): UrlInboxRecord => {
+  const [url, comment] = row.trim().split(/ /, 1);
+  if (url && isUrl(url)) {
+    const trimmedComment = comment?.trim();
+
+    return {
+      type: "url",
+      text: row,
+      url,
+      ...(trimmedComment?.length ? { comment: trimmedComment } : {}),
+    };
+  }
+
+  return { type: "other", text: row };
+};
+
 export const getCollectionDirPath = (): string => {
   const env = cleanEnv({
     COLLECTION_DIR_PATH: envalid.str({
@@ -26,12 +42,19 @@ export const getUrlInboxFilePath = (): string =>
 
 export const relevantTimeMin = "2022-02-20T00:00:00Z";
 
-export type UrlInboxRow =
-  | { type: "url"; text: string; url: string }
+export type UrlInboxUrlRecord = {
+  type: "url";
+  text: string;
+  url: string;
+  comment?: string;
+};
+
+export type UrlInboxRecord =
+  | UrlInboxUrlRecord
   | { type: "other"; text: string };
 
-export const readUrlInboxRows = async (): Promise<
-  UrlInboxRow[] | undefined
+export const readUrlInboxRecords = async (): Promise<
+  UrlInboxRecord[] | undefined
 > => {
   const filePath = getUrlInboxFilePath();
 
@@ -42,14 +65,9 @@ export const readUrlInboxRows = async (): Promise<
       return undefined;
     }
 
-    return fileContents.split(/\r?\n/g).map((text) => {
-      const trimmedText = text.trim();
-      if (isUrl(trimmedText)) {
-        return { type: "url", text, url: trimmedText };
-      }
-
-      return { type: "other", text };
-    });
+    return fileContents
+      .split(/\r?\n/g)
+      .map<UrlInboxRecord>((row) => parseUrlInboxRow(row));
   } catch {
     throw new UserFriendlyError(
       "Unable tor read URL inbox. Try running `yarn exe yarn exe scripts/2-registration/1-ensure-url-inbox-exists.script.ts` first.",

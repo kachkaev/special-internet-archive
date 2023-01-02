@@ -3,7 +3,10 @@ import fs from "fs-extra";
 
 import {
   getUrlInboxFilePath,
-  readUrlInboxRows,
+  parseUrlInboxRow,
+  readUrlInboxRecords,
+  UrlInboxRecord,
+  UrlInboxUrlRecord,
   writeUrlInbox,
 } from "../../../shared/collection";
 import { serializeTime } from "../../../shared/time";
@@ -13,12 +16,14 @@ const output = process.stdout;
 
 export const generateAutoPopulateUrlInbox = ({
   contentsLabel,
-  listWebPageUrls,
+  listNewUrlInboxRows: listNewUrlInboxRows,
 }: {
   contentsLabel: string;
-  listWebPageUrls: ({
+  listNewUrlInboxRows: ({
+    existingUrlInboxRows,
     output,
   }: {
+    existingUrlInboxRows: UrlInboxRecord[];
     output: NodeJS.WriteStream;
   }) => Promise<string[]>;
 }) => {
@@ -31,27 +36,48 @@ export const generateAutoPopulateUrlInbox = ({
     const webPageDirPathLookup = await generateWebPageDirPathLookup();
     output.write(" Done\n");
 
-    const webPageUrls = await listWebPageUrls({ output });
+    const existingUrlInboxRecords = (await readUrlInboxRecords()) ?? [];
 
-    if (webPageUrls.length === 0) {
+    const existingUrlInboxUrlRecordLookup: Record<string, UrlInboxUrlRecord> =
+      {};
+    for (const record of existingUrlInboxRecords) {
+      if (record.type === "url") {
+        existingUrlInboxUrlRecordLookup[record.url] = record;
+      }
+    }
+
+    const newUrlInboxRows = await listNewUrlInboxRows({
+      existingUrlInboxRows: existingUrlInboxRecords,
+      output,
+    });
+
+    if (newUrlInboxRows.length === 0) {
       output.write(chalk.gray(`There are no URLs to register.\n`));
 
       return;
     }
 
-    const notYetRegisteredUrlsSet = new Set<string>();
-    for (const webPageUrl of webPageUrls) {
-      if (!webPageDirPathLookup[webPageUrl]) {
-        notYetRegisteredUrlsSet.add(webPageUrl);
+    const notYetRegisteredUrlRecordLookup: Record<string, UrlInboxUrlRecord> =
+      {};
+    for (const row of newUrlInboxRows) {
+      const record = parseUrlInboxRow(row);
+      if (record.type === "url" && !webPageDirPathLookup[record.url]) {
+        notYetRegisteredUrlRecordLookup[record.url] = record;
+      } else {
+        output.write(chalk.yellow(`New record "${row}" is not a URL.\n`));
       }
     }
 
-    if (notYetRegisteredUrlsSet.size === 0) {
+    const numberOfNotYetRegisteredUrls = Object.keys(
+      notYetRegisteredUrlRecordLookup,
+    ).length;
+
+    if (numberOfNotYetRegisteredUrls === 0) {
       output.write(
         chalk.gray(
-          webPageUrls[0] && !webPageUrls[1]
-            ? `${webPageUrls[0]} is already registered in the collection.\n`
-            : `All ${webPageUrls.length} web page URLs are already registered in the collection.\n`,
+          newUrlInboxRows[0] && !newUrlInboxRows[1]
+            ? `${newUrlInboxRows[0]} is already registered in the collection.\n`
+            : `All ${numberOfNotYetRegisteredUrls} web page URLs are already registered in the collection.\n`,
         ),
       );
 
@@ -59,35 +85,45 @@ export const generateAutoPopulateUrlInbox = ({
     }
 
     output.write(
-      `Unique URLs that are not yet registered: ${notYetRegisteredUrlsSet.size}.\n`,
+      `Unique URLs that are not yet registered: ${numberOfNotYetRegisteredUrls}.\n`,
     );
 
     await fs.ensureFile(getUrlInboxFilePath());
 
-    const urlInboxLookup: Record<string, true> = {};
-    const urlInboxRows = (await readUrlInboxRows()) ?? [];
-    let linesToWrite: string[] = [];
-    for (const urlInboxRow of urlInboxRows) {
-      linesToWrite.push(urlInboxRow.text);
-      if (urlInboxRow.type === "url") {
-        urlInboxLookup[urlInboxRow.url] = true;
+    let rowsToWrite: string[] = existingUrlInboxRecords.map(
+      (record) => record.text,
+    );
+
+    const rowsToAppend: string[] = [];
+    for (const notYetRegisteredUrlRecord of Object.values(
+      notYetRegisteredUrlRecordLookup,
+    )) {
+      const existingUrlInboxUrlRecord =
+        existingUrlInboxUrlRecordLookup[notYetRegisteredUrlRecord.url];
+      if (!existingUrlInboxUrlRecord) {
+        rowsToAppend.push(notYetRegisteredUrlRecord.text);
+      } else if (
+        existingUrlInboxUrlRecord.comment !== notYetRegisteredUrlRecord.comment
+      ) {
+        output.write(
+          chalk.yellow(
+            `URL inbox already contains ${
+              notYetRegisteredUrlRecord.url
+            } with a different comment:  ${
+              existingUrlInboxUrlRecord.comment ?? ""
+            }\n  instead of  ${notYetRegisteredUrlRecord.comment ?? ""}\n`,
+          ),
+        );
       }
     }
 
-    const urlsToAppend: string[] = [];
-    for (const notYetRegisteredUrl of notYetRegisteredUrlsSet) {
-      if (!urlInboxLookup[notYetRegisteredUrl]) {
-        urlsToAppend.push(notYetRegisteredUrl);
-      }
-    }
-
-    if (urlsToAppend.length === 0) {
+    if (rowsToAppend.length === 0) {
       output.write(
         chalk.gray(
           `URL inbox already contains ${
-            notYetRegisteredUrlsSet.size === 1
+            numberOfNotYetRegisteredUrls === 1
               ? "the URL that has"
-              : `all ${notYetRegisteredUrlsSet.size} URLs that have`
+              : `all ${numberOfNotYetRegisteredUrls} URLs that have`
           } not been registered yet.\n`,
         ),
       );
@@ -100,38 +136,38 @@ export const generateAutoPopulateUrlInbox = ({
 
     const serializedTime = serializeTime();
 
-    if (linesToWrite.at(-1)?.trim() !== "") {
-      linesToWrite.push("");
+    if (rowsToWrite.at(-1)?.trim() !== "") {
+      rowsToWrite.push("");
     }
 
-    urlsToAppend.sort();
+    rowsToAppend.sort();
 
-    const wrapperMessage = `${urlsToAppend.length} URL${
-      urlsToAppend.length === 1 ? "s" : ""
+    const wrapperMessage = `${rowsToAppend.length} URL${
+      rowsToAppend.length === 1 ? "s" : ""
     } auto-populated with ${contentsLabel} at ${serializedTime}`;
 
     // Avoids ‘RangeError: Maximum call stack size exceeded’ when using `Array#push`
-    linesToWrite = [
-      ...linesToWrite,
+    rowsToWrite = [
+      ...rowsToWrite,
       `## ↓ ${wrapperMessage} ##`,
-      ...urlsToAppend,
+      ...rowsToAppend,
       `## ↑ ${wrapperMessage} ##`,
     ];
 
     output.write(chalk.green("Updating URL inbox..."));
-    await writeUrlInbox(linesToWrite);
+    await writeUrlInbox(rowsToWrite);
 
-    output.write(` Done (URLs appended: ${chalk.blue(urlsToAppend.length)}`);
-    if (urlsToAppend.length !== notYetRegisteredUrlsSet.size) {
+    output.write(` Done (URLs appended: ${chalk.blue(rowsToAppend.length)}`);
+    if (rowsToAppend.length !== numberOfNotYetRegisteredUrls) {
       output.write(
         `, ${
-          notYetRegisteredUrlsSet.size - urlsToAppend.length
+          numberOfNotYetRegisteredUrls - rowsToAppend.length
         } already found in URL inbox`,
       );
     }
     output.write(`).\n`);
 
-    for (const urlToAppend of urlsToAppend) {
+    for (const urlToAppend of rowsToAppend) {
       output.write(`${chalk.blue(chalk.underline(urlToAppend))}\n`);
     }
 

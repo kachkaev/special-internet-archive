@@ -2,8 +2,8 @@ import chalk from "chalk";
 
 import {
   getUrlInboxFilePath,
-  readUrlInboxRows,
-  UrlInboxRow,
+  readUrlInboxRecords,
+  UrlInboxRecord,
   writeUrlInbox,
 } from "../../shared/collection";
 import { generateWebPageDirPathLookup } from "../../shared/web-page-documents";
@@ -17,69 +17,80 @@ const script = async () => {
     `${chalk.green("URL inbox location:")} ${getUrlInboxFilePath()}\n`,
   );
 
-  const urlInboxRows = await readUrlInboxRows();
-  if (!urlInboxRows) {
+  const urlInboxRecords = await readUrlInboxRecords();
+  if (!urlInboxRecords) {
     output.write(chalk.yellow("File is empty.\n"));
 
     return;
   }
 
-  const urlInboxRowsToKeep: UrlInboxRow[] = [];
-  const urlInboxRowsToRemove: UrlInboxRow[] = [];
+  const urlInboxRecordsToKeep: UrlInboxRecord[] = [];
+  const urlInboxRecordsToRemove: UrlInboxRecord[] = [];
 
   const webPageDirPathLookup = await generateWebPageDirPathLookup();
 
-  for (const urlInboxRow of urlInboxRows) {
-    if (urlInboxRow.type === "url" && webPageDirPathLookup[urlInboxRow.url]) {
-      urlInboxRowsToRemove.push(urlInboxRow);
+  for (const urlInboxRecord of urlInboxRecords) {
+    if (
+      urlInboxRecord.type === "url" &&
+      webPageDirPathLookup[urlInboxRecord.url]
+    ) {
+      urlInboxRecordsToRemove.push(urlInboxRecord);
     } else {
-      urlInboxRowsToKeep.push(urlInboxRow);
+      urlInboxRecordsToKeep.push(urlInboxRecord);
     }
   }
 
-  for (let rowIndex = 0; rowIndex < urlInboxRowsToKeep.length; rowIndex += 1) {
+  for (
+    let rowIndex = 0;
+    rowIndex < urlInboxRecordsToKeep.length;
+    rowIndex += 1
+  ) {
     if (
-      !urlInboxRowsToKeep[rowIndex]?.text.match(
+      !urlInboxRecordsToKeep[rowIndex]?.text.match(
         /## (↓|↑) (appended by|\d+ URLs? auto-populated with)/, // "appended by" was used before 2022-12-10
       )
     ) {
       continue;
     }
 
-    urlInboxRowsToRemove.push(...urlInboxRowsToKeep.splice(rowIndex, 2));
+    urlInboxRecordsToRemove.push(...urlInboxRecordsToKeep.splice(rowIndex, 2));
 
-    if (urlInboxRowsToKeep[rowIndex - 1]?.text.trim() === "") {
-      urlInboxRowsToRemove.push(...urlInboxRowsToKeep.splice(rowIndex - 1, 1));
+    if (urlInboxRecordsToKeep[rowIndex - 1]?.text.trim() === "") {
+      urlInboxRecordsToRemove.push(
+        ...urlInboxRecordsToKeep.splice(rowIndex - 1, 1),
+      );
       rowIndex -= 1;
     }
   }
 
-  if (urlInboxRowsToKeep.length === urlInboxRows.length) {
+  if (urlInboxRecordsToKeep.length === urlInboxRecords.length) {
     output.write(chalk.gray("There are no rows to remove from url-inbox\n"));
 
     return;
   }
 
-  const linesToWrite = urlInboxRowsToKeep.map(
-    (urlInboxRow) => urlInboxRow.text,
+  const linesToWrite = urlInboxRecordsToKeep.map(
+    (urlInboxRecord) => urlInboxRecord.text,
   );
 
   await writeUrlInbox(linesToWrite);
 
-  for (const urlInboxRow of urlInboxRows) {
-    if (urlInboxRowsToRemove.includes(urlInboxRow)) {
-      output.write(`\n${chalk.magenta(chalk.strikethrough(urlInboxRow.text))}`);
+  for (const urlInboxRecord of urlInboxRecords) {
+    if (urlInboxRecordsToRemove.includes(urlInboxRecord)) {
+      output.write(
+        `\n${chalk.magenta(chalk.strikethrough(urlInboxRecord.text))}`,
+      );
     } else {
-      output.write(`\n${chalk.blue(urlInboxRow.text)}`);
+      output.write(`\n${chalk.blue(urlInboxRecord.text)}`);
     }
   }
 
-  const removedUrlCount = urlInboxRowsToRemove.filter(
-    (urlInboxRow) => urlInboxRow.type === "url",
+  const removedUrlCount = urlInboxRecordsToRemove.filter(
+    (urlInboxRecord) => urlInboxRecord.type === "url",
   ).length;
 
-  const totalUrlCount = urlInboxRows.filter(
-    (urlInboxRow) => urlInboxRow.type === "url",
+  const totalUrlCount = urlInboxRecords.filter(
+    (urlInboxRecord) => urlInboxRecord.type === "url",
   ).length;
 
   output.write(

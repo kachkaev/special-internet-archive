@@ -12,7 +12,7 @@ interface BotListApiResponse {
 
 const script = generateAutoPopulateUrlInbox({
   contentsLabel: botListApiUrl,
-  listWebPageUrls: async ({ output }) => {
+  listNewUrlInboxRows: async ({ output }) => {
     output.write(chalk.green(`Fetching data from ${botListApiUrl}...`));
     const { data } = await axios.get<BotListApiResponse>(botListApiUrl, {
       responseType: "json",
