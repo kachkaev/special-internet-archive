@@ -59,12 +59,17 @@ export const generateAutoPopulateUrlInbox = ({
 
     const notYetRegisteredUrlRecordLookup: Record<string, UrlInboxUrlRecord> =
       {};
+    let numberOfNewUrls = 0;
     for (const row of newUrlInboxRows) {
       const record = parseUrlInboxRow(row);
-      if (record.type === "url" && !webPageDirPathLookup[record.url]) {
-        notYetRegisteredUrlRecordLookup[record.url] = record;
+      if (record.type === "url") {
+        if (!webPageDirPathLookup[record.url]) {
+          notYetRegisteredUrlRecordLookup[record.url] = record;
+        } else {
+          numberOfNewUrls += 1;
+        }
       } else {
-        output.write(chalk.yellow(`New record "${row}" is not a URL.\n`));
+        output.write(chalk.yellow(`New row "${row}" is not a URL.\n`));
       }
     }
 
@@ -77,7 +82,7 @@ export const generateAutoPopulateUrlInbox = ({
         chalk.gray(
           newUrlInboxRows[0] && !newUrlInboxRows[1]
             ? `${newUrlInboxRows[0]} is already registered in the collection.\n`
-            : `All ${numberOfNotYetRegisteredUrls} web page URLs are already registered in the collection.\n`,
+            : `All ${numberOfNewUrls} web page URLs are already registered in the collection.\n`,
         ),
       );
 
