@@ -28,7 +28,7 @@
   "dependencies": {
     "@next/eslint-plugin-next": "13.1.1",
     "@sindresorhus/slugify": "^2.1.1",
-    "axios": "1.2.2",
+    "axios": "0.27.2",
     "axios-retry": "3.3.1",
     "csv-parse": "5.3.3",
     "dotenv-flow": "3.2.0",
