@@ -7,19 +7,28 @@ const nbsp = String.fromCodePoint(160); // Found in some dates like "20 июл 2
 const formatMoscowTime = ({
   minus,
   set,
+  withinOneYear,
 }: {
   minus?: DurationLike;
   set?: DateObjectUnits;
-}) =>
-  DateTime.local({ zone: "Europe/Moscow" })
+  withinOneYear?: boolean;
+}) => {
+  const now = DateTime.local({ zone: "Europe/Moscow" });
+
+  let result = now
     .minus(minus ?? {})
     .set({
       second: 0,
       millisecond: 0,
       ...set,
     })
-    .setZone("utc")
-    .toISO({ suppressMilliseconds: true });
+    .setZone("utc");
+  if (withinOneYear && result > now) {
+    result = result.minus({ year: 1 });
+  }
+
+  return result.toISO({ suppressMilliseconds: true });
+};
 
 describe("parseRawVkTime", () => {
   it.each`
@@ -37,14 +46,14 @@ describe("parseRawVkTime", () => {
     ${"10 часов назад"}                   | ${formatMoscowTime({ minus: { hour: 10 } })}
     ${"сегодня в 13:42"}                  | ${formatMoscowTime({ set: { hour: 13, minute: 42 } })}
     ${"вчера в 10:15"}                    | ${formatMoscowTime({ minus: { day: 1 }, set: { hour: 10, minute: 15 } })}
-    ${"10 фев в 0:15"}                    | ${formatMoscowTime({ set: { month: 2, day: 10, hour: 0, minute: 15 } })}
-    ${"10 фев в 00:15"}                   | ${formatMoscowTime({ set: { month: 2, day: 10, hour: 0, minute: 15 } })}
-    ${`10${nbsp}фев${nbsp}в${nbsp}00:15`} | ${formatMoscowTime({ set: { month: 2, day: 10, hour: 0, minute: 15 } })}
+    ${"10 фев в 0:15"}                    | ${formatMoscowTime({ withinOneYear: true, set: { month: 2, day: 10, hour: 0, minute: 15 } })}
+    ${"10 фев в 00:15"}                   | ${formatMoscowTime({ withinOneYear: true, set: { month: 2, day: 10, hour: 0, minute: 15 } })}
+    ${`10${nbsp}фев${nbsp}в${nbsp}00:15`} | ${formatMoscowTime({ withinOneYear: true, set: { month: 2, day: 10, hour: 0, minute: 15 } })}
     ${"10 фев 2020 в 20:30"}              | ${formatMoscowTime({ set: { year: 2020, month: 2, day: 10, hour: 20, minute: 30 } })}
     ${`20${nbsp}июл${nbsp}2021`}          | ${formatMoscowTime({ set: { year: 2021, month: 7, day: 20, hour: 23, minute: 59, second: 59 } })}
     ${"10 фев 2020"}                      | ${formatMoscowTime({ set: { year: 2020, month: 2, day: 10, hour: 23, minute: 59, second: 59 } })}
-    ${"10 июн в 20:15"}                   | ${formatMoscowTime({ set: { month: 6, day: 10, hour: 20, minute: 15 } })}
-    ${`10${nbsp}июн${nbsp}в${nbsp}20:15`} | ${formatMoscowTime({ set: { month: 6, day: 10, hour: 20, minute: 15 } })}
+    ${"10 июн в 20:15"}                   | ${formatMoscowTime({ withinOneYear: true, set: { month: 6, day: 10, hour: 20, minute: 15 } })}
+    ${`10${nbsp}июн${nbsp}в${nbsp}20:15`} | ${formatMoscowTime({ withinOneYear: true, set: { month: 6, day: 10, hour: 20, minute: 15 } })}
     ${"10 июн 2018 в 9:30"}               | ${formatMoscowTime({ set: { year: 2018, month: 6, day: 10, hour: 9, minute: 30 } })}
     ${"10 июн 2018"}                      | ${formatMoscowTime({ set: { year: 2018, month: 6, day: 10, hour: 23, minute: 59, second: 59 } })}
   `(`returns "$expectedResult" for "$input"`, ({ input, expectedResult }) => {
