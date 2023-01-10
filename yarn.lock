@@ -5085,10 +5085,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:3.2.0":
-  version: 3.2.0
-  resolution: "luxon@npm:3.2.0"
-  checksum: 8edec03f36af515f7ba337b48232e608c945591f707f9d784fc9121833a22a40b20f1142b27fa17207f00ed36c2c8da92c065d33fab1f152a933428d4c76631b
+"luxon@npm:3.2.1":
+  version: 3.2.1
+  resolution: "luxon@npm:3.2.1"
+  checksum: 39d7a8e42372af2fc874853d44f824f5c1e05f93a3b2605436e42212f17158dadcdbb9fec683038f441211fb257d8bb37a9f7cc06f7ae70588798008ca196852
   languageName: node
   linkType: hard
 
@@ -6575,7 +6575,7 @@ __metadata:
     lint-staged: "npm:13.1.0"
     lodash: "npm:4.17.21"
     lru-cache: "npm:7.14.1"
-    luxon: "npm:3.2.0"
+    luxon: "npm:3.2.1"
     markdownlint-cli: "npm:0.32.2"
     next: "npm:13.1.1"
     next-remote-watch: "npm:2.0.0"
