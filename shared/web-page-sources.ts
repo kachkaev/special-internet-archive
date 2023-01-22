@@ -162,6 +162,7 @@ export const extractSnapshotSummaryCombinationData: ExtractSnapshotSummaryCombin
     const tempPageTitle = mostRecentDocument?.tempPageTitle;
     const tempPageTitleInfo = mostRecentDocument?.tempPageTitleInfo;
     const tempPageVerified = mostRecentDocument?.tempPageVerified;
+    const tempNumberOfFollowers = mostRecentDocument?.tempNumberOfFollowers;
 
     return {
       ...(tempPageDescription ? { tempPageDescription } : {}),
@@ -169,6 +170,7 @@ export const extractSnapshotSummaryCombinationData: ExtractSnapshotSummaryCombin
       ...(tempPageTitle ? { tempPageTitle } : {}),
       ...(tempPageTitleInfo ? { tempPageTitleInfo } : {}),
       ...(tempPageVerified ? { tempPageVerified } : {}),
+      ...(tempNumberOfFollowers ? { tempNumberOfFollowers } : {}),
       ...(tempRawVkPosts.length > 0 ? { tempRawVkPosts } : {}),
       ...(tempRawVkPhotosInAlbum.length > 0 ? { tempRawVkPhotosInAlbum } : {}),
     };

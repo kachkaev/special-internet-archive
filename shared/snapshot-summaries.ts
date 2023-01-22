@@ -19,6 +19,7 @@ export interface TempRawVkPhotoInAlbum {
  * Property names are preliminary; the interface needs to be redesigned to support multiple web page sources.
  */
 export interface SnapshotSummaryData {
+  tempNumberOfFollowers?: number;
   tempPageDescription?: string;
   tempPageNotFound?: true;
   tempPageTitle?: string;

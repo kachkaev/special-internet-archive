@@ -3,6 +3,38 @@ import { TempRawVkPhotoInAlbum, TempRawVkPost } from "../../snapshot-summaries";
 import { ExtractSnapshotSummaryData } from "../types";
 import { evaluateLastSnapshotInTrace } from "./traces";
 
+export const parseNumberOfFollowers = (
+  text: string | undefined,
+): number | undefined => {
+  const trimmedText = text?.trim();
+  if (!trimmedText) {
+    return undefined;
+  }
+
+  const [, rawNumber, suffix] =
+    trimmedText.match(/^([\d ,.]+)([KMКМ])?$/) ?? [];
+  if (!rawNumber) {
+    return undefined;
+  }
+
+  const multiplier =
+    suffix === "K" || suffix === "К"
+      ? 1000
+      : suffix === "M" || suffix === "М"
+      ? 1_000_000
+      : 1;
+
+  const decimalSeparator = suffix === "К" || suffix === "М" ? "," : ".";
+
+  return (
+    Number.parseFloat(
+      rawNumber.replaceAll(/\D/g, (char) =>
+        char === decimalSeparator ? "." : "",
+      ),
+    ) * multiplier
+  );
+};
+
 export const extractPlaywrightSnapshotSummaryData: ExtractSnapshotSummaryData =
   async ({ snapshotFilePath }) => {
     return await evaluateLastSnapshotInTrace(snapshotFilePath, (body) => {
@@ -51,6 +83,15 @@ export const extractPlaywrightSnapshotSummaryData: ExtractSnapshotSummaryData =
         .querySelector(".group_info_row.info")
         ?.textContent?.trim();
 
+      const tempNumberOfFollowers = parseNumberOfFollowers(
+        (
+          body.querySelector(".redesigned-group-subscribers span") ??
+          body.querySelector(".group_friends_count") ??
+          body.querySelector(".counts_module .page_counter .count") ??
+          body.querySelector(".header_count")
+        )?.textContent ?? undefined,
+      );
+
       const tempPageVerified = body.querySelector("h1 .page_verified")
         ? true
         : undefined;
@@ -63,10 +104,11 @@ export const extractPlaywrightSnapshotSummaryData: ExtractSnapshotSummaryData =
 
       return {
         ...deepClean({
-          tempPageVerified,
+          tempNumberOfFollowers,
           tempPageDescription,
           tempPageTitle,
           tempPageTitleInfo,
+          tempPageVerified,
         }),
 
         // https://github.com/angus-c/just/issues/517

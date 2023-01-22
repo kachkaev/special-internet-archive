@@ -21,6 +21,7 @@ interface VkAccountSummary {
   title?: string;
   titleInfo?: string;
   verified?: true;
+  numberOfFollowers?: number;
   numberOfPosts?: number;
 }
 
@@ -71,6 +72,8 @@ const script = async () => {
         description: snapshotSummaryCombinationDocument.tempPageDescription,
         id: id ? Number.parseInt(id) : undefined,
         notFound: snapshotSummaryCombinationDocument.tempPageNotFound,
+        numberOfFollowers:
+          snapshotSummaryCombinationDocument.tempNumberOfFollowers,
         numberOfPosts:
           snapshotSummaryCombinationDocument.tempRawVkPosts?.length,
         title: snapshotSummaryCombinationDocument.tempPageTitle,

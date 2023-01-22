@@ -63,10 +63,28 @@ const testCases: Array<{
   {
     document: {
       documentType: "snapshotSummaryCombination",
-      webPageUrl: "https://vk.com/case6",
+      webPageUrl: "https://vk.com/case7",
       combinedAt: "2022-01-01T00:00:00.000Z",
     },
     significant: false,
+  },
+  {
+    document: {
+      documentType: "snapshotSummaryCombination",
+      webPageUrl: "https://vk.com/case8",
+      combinedAt: "2022-01-01T00:00:00.000Z",
+      tempNumberOfFollowers: 10_000,
+    },
+    significant: false,
+  },
+  {
+    document: {
+      documentType: "snapshotSummaryCombination",
+      webPageUrl: "https://vk.com/case9",
+      combinedAt: "2022-01-01T00:00:00.000Z",
+      tempNumberOfFollowers: 101_000,
+    },
+    significant: true,
   },
 ];
 

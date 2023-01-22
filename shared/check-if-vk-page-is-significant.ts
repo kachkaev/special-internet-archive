@@ -98,6 +98,10 @@ export const checkIfVkAccountIsSignificant = (
       desc: "Treat all VK accounts as significant",
       default: false,
     }),
+    VK_ACCOUNT_SIGNIFICANT_FOLLOWER_COUNT: envalid.num({
+      desc: "Number of followers to count an account as significant",
+      default: 100_000,
+    }),
   });
 
   if (env.FORCE_VK_ACCOUNT_IS_SIGNIFICANT) {
@@ -105,6 +109,13 @@ export const checkIfVkAccountIsSignificant = (
   }
 
   if (snapshotSummaryCombinationDocument.tempPageVerified) {
+    return true;
+  }
+
+  if (
+    (snapshotSummaryCombinationDocument.tempNumberOfFollowers ?? 0) >=
+    env.VK_ACCOUNT_SIGNIFICANT_FOLLOWER_COUNT
+  ) {
     return true;
   }
 
