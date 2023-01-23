@@ -133,8 +133,10 @@ export const generateExtractSnapshotSummariesScript =
           if (
             existingSnapshotSummary?.extractedAt &&
             (existingSnapshotSummary.extractedAt > snapshotSummaryStaleTime ||
-              (existingSnapshotSummary.capturedAt > "2023-01-15T00:00:00Z" && // @todo remove this after extracting numberOfFollowers for the first time
-                existingSnapshotSummary.extractedAt < "2023-01-22T00:00:00Z"))
+              !(
+                existingSnapshotSummary.capturedAt > "2023-01-15T00:00:00Z" && // @todo remove this after extracting numberOfFollowers for the first time
+                existingSnapshotSummary.extractedAt < "2023-01-22T00:00:00Z"
+              ))
           ) {
             output.write(chalk.gray("snapshot summary is up to date"));
             continue;
