@@ -100,7 +100,7 @@ export const checkIfVkAccountIsSignificant = (
     }),
     VK_ACCOUNT_SIGNIFICANT_FOLLOWER_COUNT: envalid.num({
       desc: "Number of followers to count an account as significant",
-      default: 100_000,
+      default: 70_000,
     }),
   });
 
