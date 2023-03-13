@@ -34,6 +34,10 @@ export const serializeTime = (time?: string | DateTime): string => {
     .toISO({ suppressMilliseconds: true });
 };
 
+export const normalizeStringifiedTime = (time: string): string => {
+  return serializeTime(unserializeTime(time));
+};
+
 export const isTimeOlderThan = (
   time: string | DateTime,
   duration: DurationLike,

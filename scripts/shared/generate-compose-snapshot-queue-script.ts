@@ -21,7 +21,7 @@ import {
   SnapshotQueueItem,
   writeSnapshotQueueDocument,
 } from "../../shared/snapshot-queues";
-import { serializeTime } from "../../shared/time";
+import { normalizeStringifiedTime, serializeTime } from "../../shared/time";
 import { processWebPages } from "../../shared/web-page-documents";
 import { skipWebPageBasedOnEnv } from "../../shared/web-page-documents/skip-web-page-based-on-env";
 import {
@@ -50,15 +50,30 @@ export const generateComposeSnapshotQueueScript =
       FORCE: envalid.bool({
         default: false,
       }),
+      FORCED_RELEVANT_TIME_MIN: envalid.str({
+        default: "",
+      }),
     });
     const force = env.FORCE;
-    output.write(
-      force
-        ? chalk.yellow(
-            "Opted out of incremental mode by using FORCE=true. Full snapshots will be requested even if they were made recently.\n",
-          )
-        : "",
-    );
+    const forcedRelevantTimeMin = env.FORCED_RELEVANT_TIME_MIN
+      ? normalizeStringifiedTime(env.FORCED_RELEVANT_TIME_MIN)
+      : undefined;
+
+    if (force) {
+      output.write(
+        chalk.yellow(
+          `Opted out of incremental mode by using FORCE=true. Full snapshots${
+            forcedRelevantTimeMin ? ` up until ${forcedRelevantTimeMin}` : ""
+          } will be requested even if they were made recently.\n`,
+        ),
+      );
+    } else if (forcedRelevantTimeMin) {
+      output.write(
+        chalk.yellow(
+          "Set FORCE in addition to FORCED_RELEVANT_TIME_MIN for this variable to be read.\n",
+        ),
+      );
+    }
 
     output.write(
       `${chalk.green(`Queue file:`)} ${generateSnapshotQueueDocumentPath(
@@ -190,15 +205,16 @@ export const generateComposeSnapshotQueueScript =
           };
 
           const mostRecentSnapshotTime = knownSnapshotTimesInAscOrder.at(-1);
-          const relevantTimeMin =
-            force || !mostRecentSnapshotTime
-              ? undefined
-              : await calculateRelevantTimeMinForNewIncrementalSnapshot({
-                  mostRecentSnapshotTime,
-                  webPageDirPath,
-                  webPageDocument,
-                  snapshotGeneratorId,
-                });
+          const relevantTimeMin = force
+            ? forcedRelevantTimeMin
+            : mostRecentSnapshotTime
+            ? await calculateRelevantTimeMinForNewIncrementalSnapshot({
+                mostRecentSnapshotTime,
+                webPageDirPath,
+                webPageDocument,
+                snapshotGeneratorId,
+              })
+            : undefined;
 
           if (relevantTimeMin) {
             newQueueItem.context = {
