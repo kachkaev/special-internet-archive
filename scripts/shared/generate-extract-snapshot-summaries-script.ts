@@ -172,10 +172,15 @@ export const generateExtractSnapshotSummariesScript =
             snapshotFilePath,
           });
 
-          // @todo remove this after extracting numberOfFollowers for the first time
-          if (snapshotSummaryData.tempNumberOfFollowers) {
+          // @todo remove this after debugging the extraction of posts and followers
+          if (
+            snapshotSummaryData.tempRawVkPosts ||
+            snapshotSummaryData.tempNumberOfFollowers
+          ) {
             output.write(
-              `Number of followers: ${snapshotSummaryData.tempNumberOfFollowers} `,
+              `Posts: ${
+                snapshotSummaryData.tempRawVkPosts?.length ?? 0
+              }, Followers: ${snapshotSummaryData.tempNumberOfFollowers || 0} `,
             );
           }
 

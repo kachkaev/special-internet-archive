@@ -60,7 +60,10 @@ export const extractPlaywrightSnapshotSummaryData: ExtractSnapshotSummaryData =
 
       const tempRawVkPosts: TempRawVkPost[] = [];
       for (const post of body.querySelectorAll(".post")) {
-        const postLinkNode = post.querySelector(".post_link");
+        // First selector is used for snapshots made before approx. 2023-02-05
+        const postLinkNode = post.querySelector(
+          ".post_link, .PostHeaderSubtitle__link",
+        );
         const localUrl = postLinkNode?.getAttribute("href");
         const date = postLinkNode?.textContent;
         const text = [...post.querySelectorAll(".wall_post_text")]

@@ -124,7 +124,10 @@ const scrollWallPosts = async (
         };
 
         const _listPostDateElements = (): NodeListOf<Element> => {
-          return document.body.querySelectorAll(".post_date .rel_date");
+          return document.body.querySelectorAll(
+            // First selector is used for snapshots made before approx. 2023-02-05
+            ".post_date .rel_date, .PostHeaderInfo time",
+          );
         };
 
         const _extractBottomPostRawTime = (
