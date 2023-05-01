@@ -32,7 +32,7 @@ import {
 } from "../../shared/web-page-documents";
 import { skipWebPageBasedOnEnv } from "../../shared/web-page-documents/skip-web-page-based-on-env";
 import {
-  checkIfSnapshotIsDue,
+  checkIfNewSnapshotIsDue,
   listWebPageAliases,
 } from "../../shared/web-page-sources";
 
@@ -249,7 +249,7 @@ export const generateUpdateInventoryScript =
             mostRecentSnapshotTime &&
             existingSnapshotInventory &&
             mostRecentSnapshotTime < existingSnapshotInventory.updatedAt &&
-            !(await checkIfSnapshotIsDue({
+            !(await checkIfNewSnapshotIsDue({
               knownSnapshotTimesInAscOrder,
               snapshotGeneratorId,
               webPageDirPath,

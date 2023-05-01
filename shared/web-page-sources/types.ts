@@ -11,7 +11,7 @@ import { WebPageAnnotation, WebPageDocument } from "../web-page-documents";
 
 export type GetWebPageCreationTime = (
   webPageUrl: string,
-) => Promise<string | undefined>;
+) => Promise<string | undefined> | void;
 export type GenerateWebPageDirPathSegments = (webPageUrl: string) => string[];
 export type AssertSourceUrl = (webPageUrl: string) => void;
 
@@ -22,7 +22,7 @@ export type CalculateRelevantTimeMinForNewIncrementalSnapshot = (payload: {
   webPageDocument: WebPageDocument;
 }) => string | undefined | Promise<string | undefined>;
 
-export type CheckIfSnapshotIsDue = (payload: {
+export type CheckIfNewSnapshotIsDue = (payload: {
   knownSnapshotTimesInAscOrder: string[];
   snapshotGeneratorId: SnapshotGeneratorId;
   webPageDirPath: string;
@@ -64,8 +64,8 @@ export interface WebPageSource {
   assertWebPageUrl: AssertSourceUrl;
   calculateRelevantTimeMinForNewIncrementalSnapshot?: CalculateRelevantTimeMinForNewIncrementalSnapshot;
   checkContentMatch: CheckContentMatch;
-  checkIfSnapshotIsDue: CheckIfSnapshotIsDue;
-  getWebPageCreationTime: GetWebPageCreationTime;
+  checkIfNewSnapshotIsDue: CheckIfNewSnapshotIsDue;
+  getWebPageCreationTime?: GetWebPageCreationTime;
   generateWebPageDirPathSegments: GenerateWebPageDirPathSegments;
   interactWithPlaywrightPage?: InteractWithPlaywrightPage;
   listUrlExamples: () => string[];

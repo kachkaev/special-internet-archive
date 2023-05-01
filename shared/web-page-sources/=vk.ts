@@ -25,7 +25,7 @@ export const vkWebPageSource: WebPageSource = {
     calculateRelevantTimeMinForNewIncrementalVkSnapshot,
 
   checkContentMatch: checkVkContentMatch,
-  checkIfSnapshotIsDue: checkIfNewVkSnapshotIsDue,
+  checkIfNewSnapshotIsDue: checkIfNewVkSnapshotIsDue,
 
   generateWebPageDirPathSegments: (webPageUrl) => {
     const categorizedVkUrl = categorizeVkUrl(webPageUrl);

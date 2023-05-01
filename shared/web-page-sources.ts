@@ -18,7 +18,7 @@ import { parseRawVkTime } from "./web-page-sources/=vk/parse-raw-vk-time";
 import {
   CalculateRelevantTimeMinForNewIncrementalSnapshot,
   CheckContentMatch,
-  CheckIfSnapshotIsDue,
+  CheckIfNewSnapshotIsDue,
   ExtractRelevantWebPageUrls,
   ExtractSnapshotSummaryCombinationData,
   GetWebPageCreationTime,
@@ -95,10 +95,10 @@ export const calculateRelevantTimeMinForNewIncrementalSnapshot: CalculateRelevan
     ).calculateRelevantTimeMinForNewIncrementalSnapshot?.(payload);
   };
 
-export const checkIfSnapshotIsDue: CheckIfSnapshotIsDue = (payload) => {
+export const checkIfNewSnapshotIsDue: CheckIfNewSnapshotIsDue = (payload) => {
   return getWebPageSource(
     payload.webPageDocument.webPageUrl,
-  ).checkIfSnapshotIsDue(payload);
+  ).checkIfNewSnapshotIsDue(payload);
 };
 
 export const checkContentMatch: CheckContentMatch = (payload) => {
@@ -108,7 +108,7 @@ export const checkContentMatch: CheckContentMatch = (payload) => {
 };
 
 export const getWebPageCreationTime: GetWebPageCreationTime = (webPageUrl) => {
-  return getWebPageSource(webPageUrl).getWebPageCreationTime(webPageUrl);
+  return getWebPageSource(webPageUrl).getWebPageCreationTime?.(webPageUrl);
 };
 
 export const interactWithPlaywrightPage: InteractWithPlaywrightPage = async (

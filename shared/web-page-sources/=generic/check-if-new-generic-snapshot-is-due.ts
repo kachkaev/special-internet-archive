@@ -1,6 +1,6 @@
-import { CheckIfSnapshotIsDue } from "../types";
+import { CheckIfNewSnapshotIsDue } from "../types";
 
-export const checkIfNewGenericSnapshotIsDue: CheckIfSnapshotIsDue = ({
+export const checkIfNewGenericSnapshotIsDue: CheckIfNewSnapshotIsDue = ({
   knownSnapshotTimesInAscOrder,
   snapshotGeneratorId,
 }) => {

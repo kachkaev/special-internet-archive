@@ -26,7 +26,7 @@ import { processWebPages } from "../../shared/web-page-documents";
 import { skipWebPageBasedOnEnv } from "../../shared/web-page-documents/skip-web-page-based-on-env";
 import {
   calculateRelevantTimeMinForNewIncrementalSnapshot,
-  checkIfSnapshotIsDue,
+  checkIfNewSnapshotIsDue,
 } from "../../shared/web-page-sources";
 
 export const generateComposeSnapshotQueueScript =
@@ -190,7 +190,7 @@ export const generateComposeSnapshotQueueScript =
 
         const snapshotIsDue =
           force ||
-          (await checkIfSnapshotIsDue({
+          (await checkIfNewSnapshotIsDue({
             knownSnapshotTimesInAscOrder,
             snapshotGeneratorId,
             webPageDirPath,

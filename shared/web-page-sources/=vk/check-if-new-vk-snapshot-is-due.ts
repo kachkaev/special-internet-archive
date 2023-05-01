@@ -2,11 +2,11 @@ import * as envalid from "envalid";
 
 import { cleanEnv } from "../../clean-env";
 import { calculateDaysSince, serializeTime, unserializeTime } from "../../time";
-import { CheckIfSnapshotIsDue } from "../types";
+import { CheckIfNewSnapshotIsDue } from "../types";
 import { categorizeVkUrl } from "./categorize-vk-url";
 import { getVkWebPageCreationTime } from "./get-vk-web-page-creation-time";
 
-export const checkIfNewVkSnapshotIsDue: CheckIfSnapshotIsDue = async ({
+export const checkIfNewVkSnapshotIsDue: CheckIfNewSnapshotIsDue = async ({
   knownSnapshotTimesInAscOrder,
   snapshotGeneratorId,
   webPageDocument,
