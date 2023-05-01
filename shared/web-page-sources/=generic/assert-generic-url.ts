@@ -1,6 +1,12 @@
 import { generateAssertWebPageUrlSource } from "../shared/generate-assert-web-page-url-source";
 import { AssertSourceUrl } from "../types";
 
+const excludedUrlPatterns = [
+  /^https?:\/\/[^/]*airtable(usercontent|)\.com/,
+  /^https?:\/\/[^/]*archive\./,
+  /^https?:\/\/t\.me\/c\//,
+];
+
 export const assertGenericUrl: AssertSourceUrl = generateAssertWebPageUrlSource(
   "generic",
   (webPageUrl) => {
@@ -13,6 +19,12 @@ export const assertGenericUrl: AssertSourceUrl = generateAssertWebPageUrlSource(
         parsedUrl.port !== ""
       ) {
         return false;
+      }
+
+      for (const excludedUrlPattern of excludedUrlPatterns) {
+        if (excludedUrlPattern.test(webPageUrl)) {
+          return false;
+        }
       }
 
       return true;
