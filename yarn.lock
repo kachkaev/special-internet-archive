@@ -1016,7 +1016,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sindresorhus/slugify@npm:^2.1.1":
+"@sindresorhus/slugify@npm:2.1.1":
   version: 2.1.1
   resolution: "@sindresorhus/slugify@npm:2.1.1"
   dependencies:
@@ -1237,6 +1237,13 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: 4f7f0667d7573ce2888e01e5e887c9661bb2a7e7fd79aae3c57391e812e87cc2fadc4dc1616530f33e63798a011fabe816f41730b511050aba702688466765fd
+  languageName: node
+  linkType: hard
+
+"@types/linkify-it@npm:3.0.2":
+  version: 3.0.2
+  resolution: "@types/linkify-it@npm:3.0.2"
+  checksum: 2de369c0c17d27bd6f6a4b19cc2cea0593c2c4a9e2c27fc039ce787ef54f42507085c82228f782ada40c678712abae41d9a6254fc0dd95f6d0bc7fc8d36798b3
   languageName: node
   linkType: hard
 
@@ -4933,7 +4940,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkify-it@npm:^4.0.1":
+"linkify-it@npm:4.0.1, linkify-it@npm:^4.0.1":
   version: 4.0.1
   resolution: "linkify-it@npm:4.0.1"
   dependencies:
@@ -6547,12 +6554,13 @@ __metadata:
     "@kachkaev/markdownlint-config": "npm:0.5.0"
     "@kachkaev/prettier-config": "npm:1.4.0"
     "@next/eslint-plugin-next": "npm:13.1.1"
-    "@sindresorhus/slugify": "npm:^2.1.1"
+    "@sindresorhus/slugify": "npm:2.1.1"
     "@types/dotenv-flow": "npm:3.2.0"
     "@types/fs-extra": "npm:9.0.13"
     "@types/jest": "npm:29.2.5"
     "@types/js-yaml": "npm:4.0.5"
     "@types/jsdom": "npm:20.0.1"
+    "@types/linkify-it": "npm:3.0.2"
     "@types/lodash": "npm:4.14.191"
     "@types/luxon": "npm:3.2.0"
     "@types/node": "npm:18.11.18"
@@ -6572,6 +6580,7 @@ __metadata:
     jest: "npm:29.3.1"
     js-yaml: "npm:4.1.0"
     jsdom: "npm:20.0.3"
+    linkify-it: "npm:4.0.1"
     lint-staged: "npm:13.1.0"
     lodash: "npm:4.17.21"
     lru-cache: "npm:7.14.1"
