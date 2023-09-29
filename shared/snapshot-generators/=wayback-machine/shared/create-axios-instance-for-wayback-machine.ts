@@ -10,12 +10,8 @@ export const createAxiosInstanceForWaybackMachine = ({
   keepAlive?: boolean;
 } = {}): AxiosInstance => {
   const axiosInstance = axios.create({
-    ...(keepAlive
-      ? {
-          httpAgent: new http.Agent({ keepAlive: true }),
-          httpsAgent: new https.Agent({ keepAlive: true }),
-        }
-      : {}),
+    httpAgent: new http.Agent({ keepAlive }),
+    httpsAgent: new https.Agent({ keepAlive }),
     timeout: 10_000,
   });
 
