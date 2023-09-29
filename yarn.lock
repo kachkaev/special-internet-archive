@@ -1755,24 +1755,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios-retry@npm:3.8.0":
-  version: 3.8.0
-  resolution: "axios-retry@npm:3.8.0"
+"axios-retry@npm:3.3.1":
+  version: 3.3.1
+  resolution: "axios-retry@npm:3.3.1"
   dependencies:
     "@babel/runtime": "npm:^7.15.4"
     is-retry-allowed: "npm:^2.2.0"
-  checksum: ddc10fcc72f6c4bcda421a705ceaf73e980808d03f04722d85c8b91dcf0a94d02af75683faa5ad77f162da0de7929b19b45b22065c78051d007ffa29f192c00d
+  checksum: 4c5c20ecbf0a3afc288579fad548d1e0f0eb969d87a823e5a3488c7106c1a5fa7cc2cdc894d855f646d03ed5cbfa8e087d94a9ec0bf602267cdebe772ffd828b
   languageName: node
   linkType: hard
 
-"axios@npm:1.5.1":
-  version: 1.5.1
-  resolution: "axios@npm:1.5.1"
+"axios@npm:0.27.2":
+  version: 0.27.2
+  resolution: "axios@npm:0.27.2"
   dependencies:
-    follow-redirects: "npm:^1.15.0"
+    follow-redirects: "npm:^1.14.9"
     form-data: "npm:^4.0.0"
-    proxy-from-env: "npm:^1.1.0"
-  checksum: 64a26417b5ce899a931c318db28a762ca530b37ac999b83961dfcb61b67a9f77c207b31467fe464184d9b7897a8843084a1c28b054a752305d6926fc4ebb8402
+  checksum: 4cd898afe90caaf05307fc5a0da4c61012493b6bfd4937fff9774455c01d368db583b17c4737e73853f149b32e615487930b491661682a1f69a1973b1f533bb7
   languageName: node
   linkType: hard
 
@@ -3343,13 +3342,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.15.0":
-  version: 1.15.3
-  resolution: "follow-redirects@npm:1.15.3"
+"follow-redirects@npm:^1.14.9":
+  version: 1.15.2
+  resolution: "follow-redirects@npm:1.15.2"
   peerDependenciesMeta:
     debug:
       optional: true
-  checksum: bbdd012afa48de9d20ab9547a06b8f2150690b58e4cc60d8125b1f615750b7c9152953bb05a6f27371dc137459ad71fbba7eb3243b18b83280c805bcb217eb33
+  checksum: 930171f8b81bf00e9368df4b17f3b835934762d51192632af53a51a8a608d5510a1ffbc6da5761dce9996cdbd750740490ca844320e5ff11cdaf2329a5a69647
   languageName: node
   linkType: hard
 
@@ -6213,13 +6212,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"proxy-from-env@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "proxy-from-env@npm:1.1.0"
-  checksum: 0bba2ef7c8374b384e94e4477764e53df66fcdfa7d19e2c4a063cb39eea979c139ce13981970223665422e72b7d149609a927046e2e40ab340b84d91af082591
-  languageName: node
-  linkType: hard
-
 "psl@npm:^1.1.33":
   version: 1.9.0
   resolution: "psl@npm:1.9.0"
@@ -6573,8 +6565,8 @@ __metadata:
     "@types/luxon": "npm:3.2.0"
     "@types/node": "npm:18.11.18"
     "@types/react": "npm:18.0.26"
-    axios: "npm:1.5.1"
-    axios-retry: "npm:3.8.0"
+    axios: "npm:0.27.2"
+    axios-retry: "npm:3.3.1"
     chalk: "npm:5.2.0"
     csv-parse: "npm:5.3.3"
     dotenv-flow: "npm:3.2.0"
