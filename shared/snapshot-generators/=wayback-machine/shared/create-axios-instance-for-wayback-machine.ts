@@ -4,10 +4,18 @@ import https from "node:https";
 import axios, { AxiosInstance } from "axios";
 import axiosRetry from "axios-retry";
 
-export const createAxiosInstanceForWaybackMachine = (): AxiosInstance => {
+export const createAxiosInstanceForWaybackMachine = ({
+  keepAlive = true,
+}: {
+  keepAlive?: boolean;
+} = {}): AxiosInstance => {
   const axiosInstance = axios.create({
-    httpAgent: new http.Agent({ keepAlive: true }),
-    httpsAgent: new https.Agent({ keepAlive: true }),
+    ...(keepAlive
+      ? {
+          httpAgent: new http.Agent({ keepAlive: true }),
+          httpsAgent: new https.Agent({ keepAlive: true }),
+        }
+      : {}),
     timeout: 10_000,
   });
 

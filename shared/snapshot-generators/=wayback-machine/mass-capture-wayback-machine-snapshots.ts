@@ -4,7 +4,9 @@ import { cleanEnv } from "../../clean-env";
 import { MassCaptureSnapshots } from "../types";
 import { createAxiosInstanceForWaybackMachine } from "./shared/create-axios-instance-for-wayback-machine";
 
-const axiosInstance = createAxiosInstanceForWaybackMachine();
+const axiosInstance = createAxiosInstanceForWaybackMachine({
+  keepAlive: false,
+});
 
 type Response =
   | { error: string }
