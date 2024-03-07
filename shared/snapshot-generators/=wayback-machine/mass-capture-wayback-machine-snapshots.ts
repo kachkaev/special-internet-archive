@@ -20,17 +20,17 @@ export const massCaptureWaybackMachineSnapshots: MassCaptureSnapshots = async ({
     // Wayback machine updates indexes faster if Isodos API is not used.
     // So it’s best to not mass-capture small numbers of snapshots.
     INTERNET_ARCHIVE_ISODOS_MIN_QUEUE_SIZE: envalid.num({ default: 1 }),
-    INTERNET_ARCHIVE_ISODOS_PROJECT: envalid.str({ default: "" }),
+    INTERNET_ARCHIVE_ISODOS_ENDPOINT_URL: envalid.str({ default: "" }),
     INTERNET_ARCHIVE_S3_ACCESS_KEY: envalid.str({ default: "" }),
     INTERNET_ARCHIVE_S3_SECRET_KEY: envalid.str({ default: "" }),
   });
 
   const isodosMinQueueSize = env.INTERNET_ARCHIVE_ISODOS_MIN_QUEUE_SIZE;
-  const isodosProject = env.INTERNET_ARCHIVE_ISODOS_PROJECT;
+  const isodosEndpointUrl = env.INTERNET_ARCHIVE_ISODOS_ENDPOINT_URL;
   const s3AccessKey = env.INTERNET_ARCHIVE_S3_ACCESS_KEY;
   const s3SecretKey = env.INTERNET_ARCHIVE_S3_SECRET_KEY;
 
-  if (!s3AccessKey || !s3SecretKey || !isodosProject) {
+  if (!s3AccessKey || !s3SecretKey || !isodosEndpointUrl) {
     return {
       status: "skipped",
       message: "Auth credentials not configured",
@@ -45,7 +45,7 @@ export const massCaptureWaybackMachineSnapshots: MassCaptureSnapshots = async ({
   }
 
   const res = await axiosInstance.post<Response>(
-    `https://isodos.archive.org/api/batch/${isodosProject}`,
+    isodosEndpointUrl,
     webPagesUrls
       .map((webPageUrl) => JSON.stringify({ url: webPageUrl }))
       .join("\n"),
