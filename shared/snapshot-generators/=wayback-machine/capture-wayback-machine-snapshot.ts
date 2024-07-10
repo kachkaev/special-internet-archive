@@ -58,6 +58,9 @@ const personalApiLimitsReachedMessage =
 const urlLimitsReachedMessage =
   "Wayback Machine servers stopped crawling this URL for today. Try again tomorrow";
 
+const crawlingPausedMessage =
+  "Crawling this host is paused because they notified us that they are overloaded right now.";
+
 const hostLimitsReachedMessage =
   "Wayback Machine servers stopped crawling this host for today. Try again tomorrow";
 
@@ -82,6 +85,7 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
       .find(
         (failureMessage) =>
           failureMessage === cannotResolveHostMessage ||
+          failureMessage === crawlingPausedMessage ||
           failureMessage === hostLimitsReachedMessage ||
           failureMessage === ipAddressBlocked ||
           failureMessage === personalApiLimitsReachedMessage,
