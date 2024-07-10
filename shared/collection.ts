@@ -40,7 +40,12 @@ export const getWebPagesDirPath = (): string =>
 export const getUrlInboxFilePath = (): string =>
   path.resolve(getCollectionDirPath(), "url-inbox.txt");
 
-export const relevantTimeMin = "2021-12-25T00:00:00Z";
+export const relevantTimeMin = cleanEnv({
+  RELEVANT_TIME_MIN: envalid.str({
+    desc: "",
+    default: "2021-12-25T00:00:00Z",
+  }),
+}).RELEVANT_TIME_MIN;
 
 export type UrlInboxUrlRecord = {
   type: "url";
