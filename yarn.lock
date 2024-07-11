@@ -3404,7 +3404,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fsevents@npm:^2.3.2, fsevents@npm:~2.3.2":
+"fsevents@npm:2.3.2, fsevents@npm:^2.3.2, fsevents@npm:~2.3.2":
   version: 2.3.2
   resolution: "fsevents@npm:2.3.2"
   dependencies:
@@ -3414,7 +3414,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fsevents@patch:fsevents@npm%3A^2.3.2#optional!builtin<compat/fsevents>, fsevents@patch:fsevents@npm%3A~2.3.2#optional!builtin<compat/fsevents>":
+"fsevents@patch:fsevents@npm%3A2.3.2#optional!builtin<compat/fsevents>, fsevents@patch:fsevents@npm%3A^2.3.2#optional!builtin<compat/fsevents>, fsevents@patch:fsevents@npm%3A~2.3.2#optional!builtin<compat/fsevents>":
   version: 2.3.2
   resolution: "fsevents@patch:fsevents@npm%3A2.3.2#optional!builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"
   dependencies:
@@ -6065,23 +6065,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.29.1":
-  version: 1.29.1
-  resolution: "playwright-core@npm:1.29.1"
+"playwright-core@npm:1.45.1":
+  version: 1.45.1
+  resolution: "playwright-core@npm:1.45.1"
   bin:
-    playwright: cli.js
-  checksum: 10/a8feaa2f6853c6ef6e47d7e8ad025ff25930991d59f42c3b68b5193f882698ff5cf0f545d67fcfec8db700e07e2bc25714781bc6032ddf05054f6c1678b27bab
+    playwright-core: cli.js
+  checksum: 10/206a5ecd2de7b8cefa5136331fa22012416b37eb2c471e3105c09a8a17a10621efa900acb6a780314f06aa2a3d6651aad3a323fa360d046ccce8f3844b3ca615
   languageName: node
   linkType: hard
 
-"playwright@npm:1.29.1":
-  version: 1.29.1
-  resolution: "playwright@npm:1.29.1"
+"playwright@npm:1.45.1":
+  version: 1.45.1
+  resolution: "playwright@npm:1.45.1"
   dependencies:
-    playwright-core: "npm:1.29.1"
+    fsevents: "npm:2.3.2"
+    playwright-core: "npm:1.45.1"
+  dependenciesMeta:
+    fsevents:
+      optional: true
   bin:
     playwright: cli.js
-  checksum: 10/35f52b2f3a55332c7ed7e0429a7b11eb82f3f960e9de1e351a3320da38493aa5e17f3b43811f21257d3aa24f246a028b0e3afcfea22ac9452d11e43716765a31
+  checksum: 10/092d510a79ca8fb1d0c1a83460735b9eaf02261a48df2ae1b025f95ee31e2be9d962ddc62c7e5c0d2c44e5b982b66aaf3fe24243f736ab14dbfd2d6e88897824
   languageName: node
   linkType: hard
 
@@ -6590,7 +6594,7 @@ __metadata:
     next-remote-watch: "npm:2.0.0"
     npm-run-all: "npm:4.1.5"
     object-hash: "npm:3.0.0"
-    playwright: "npm:1.29.1"
+    playwright: "npm:1.45.1"
     prettier: "npm:2.8.1"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"

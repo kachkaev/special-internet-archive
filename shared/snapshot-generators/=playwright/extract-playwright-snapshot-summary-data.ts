@@ -64,7 +64,9 @@ export const extractPlaywrightSnapshotSummaryData: ExtractSnapshotSummaryData =
         const postLinkNode = post.querySelector(
           ".post_link, .PostHeaderSubtitle__link",
         );
-        const localUrl = postLinkNode?.getAttribute("href");
+        const localUrl = postLinkNode
+          ?.getAttribute("href")
+          ?.replace("link://", "");
         const date = postLinkNode?.textContent?.trim();
         const text = [...post.querySelectorAll(".wall_post_text")]
           .map((node) => node.textContent)

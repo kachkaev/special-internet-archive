@@ -4,6 +4,19 @@ import sleep from "sleep-promise";
 
 import { startTraceServer, TraceServer } from "./traces/trace-server";
 
+// Inspired by https://github.com/microsoft/playwright/blob/a3b0f0cba86dd6ead900f0635ef4351dfcccc6c7/packages/trace-viewer/src/entries.ts#L21
+type ContextEntry = {
+  actions: Array<{
+    type: "action";
+    pageId?: string;
+    afterSnapshot?: string;
+  }>;
+  events: Array<{
+    method: "navigated" | string;
+    params?: { url: string };
+  }>;
+};
+
 let traceServer: TraceServer | undefined;
 
 let traceBrowser: Browser | undefined;
@@ -60,44 +73,39 @@ export const evaluateLastSnapshotInTrace = async <T>(
       sleep(timeoutThatToleratesEvenVeryLargeSnapshots) as Promise<void>,
       page.evaluate<{ html: string; url: string | undefined }, string>(
         async (encodedTraceFilePathInEvaluate) => {
-          const contextResponse = await fetch(
-            `/trace/context?trace=${encodedTraceFilePathInEvaluate}`,
+          const contextsResponse = await fetch(
+            `/trace/contexts?trace=${encodedTraceFilePathInEvaluate}`,
           );
 
-          const { actions, events } = (await contextResponse.json()) as {
-            actions: Array<{
-              metadata: { frameId?: string; id: string; pageId: string };
-            }>;
-            events: Array<{
-              metadata?: { method: "navigated"; params?: { url: string } };
-            }>;
-          };
+          const [{ actions, events }] = (await contextsResponse.json()) as [
+            ContextEntry,
+          ];
 
-          const lastActionMetadata = [...actions]
+          const lastAction = [...actions]
             .reverse()
-            .find((action) => action.metadata.frameId)?.metadata;
+            .find((action) => action.afterSnapshot && action.pageId);
 
-          if (!lastActionMetadata) {
-            throw new Error("Encountered empty lastActionMetadata");
+          if (!lastAction) {
+            throw new Error("Could not find an action with afterSnapshot");
           }
 
-          const lastNavigationMetadata = events.find(
+          const lastNavigation = events.find(
             (event) =>
-              event.metadata?.method === "navigated" &&
-              event.metadata.params?.url !== "about:blank",
-          )?.metadata;
+              event.method === "navigated" &&
+              event.params?.url !== "about:blank",
+          );
 
-          if (!lastNavigationMetadata) {
+          if (!lastNavigation) {
             throw new Error("Encountered empty lastNavigationMetadata");
           }
 
           const htmlResponse = await fetch(
-            `/trace/snapshot/${lastActionMetadata.pageId}?trace=${encodedTraceFilePathInEvaluate}&name=after@${lastActionMetadata.id}`,
+            `/trace/snapshot/${lastAction.pageId!}?trace=${encodedTraceFilePathInEvaluate}&name=${lastAction.afterSnapshot!}`,
           );
 
           return {
             html: await htmlResponse.text(),
-            url: lastNavigationMetadata.params?.url,
+            url: lastNavigation.params?.url,
           };
         },
         encodedTraceFilePath,

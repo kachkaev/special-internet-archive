@@ -24,7 +24,7 @@ export const startTraceServer = async (): Promise<TraceServer> => {
 
   const webpackTraceViewerDirPath = path.resolve(
     path.dirname(require.resolve("playwright-core")),
-    "lib/webpack/traceViewer",
+    "lib/vite/traceViewer",
   );
 
   const { HttpServer } = await import(`file://${httpServerPath}`);
@@ -52,8 +52,10 @@ export const startTraceServer = async (): Promise<TraceServer> => {
     return server.serveFile(request, response, absolutePath);
   });
 
+  await server.start(port);
+
   return {
-    urlPrefix: await server.start(port),
+    urlPrefix: server.urlPrefix("precise"),
     stop: async () => {
       await server.stop();
     },
