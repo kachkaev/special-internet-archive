@@ -173,6 +173,16 @@ export const captureWaybackMachineSnapshot: CaptureSnapshot = async ({
         };
       }
 
+      // You have reached your daily not-logged-in captures limit of 200 webpages,
+      // log in to archive up to 40,000 webpages per day. Please email us at "info@archive.org"
+      // if you would like to discuss this more.
+      if (html.includes("daily not-logged-in captures limit")) {
+        return {
+          status: "failed",
+          message: personalApiLimitsReachedMessage,
+        };
+      }
+
       // This URL has been already captured 10 times today. Please try
       // again tomorrow. Please email us at "info@archive.org" if you
       // would like to discuss this more.
